@@ -309,12 +309,12 @@
                 <?php if (!empty($t['qr_token'])): ?>
                     new QRCode(document.getElementById('qr-<?= $t['id'] ?>'), {
                         text: '<?= BASE_URL ?>/q?t=<?= $t['qr_token'] ?>',
-                        width: 60,
-                        height: 60,
+                        width: 70,
+                        height: 70,
                         colorDark: '#000000',
                         colorLight: '#ffffff',
-                        correctLevel: QRCode.CorrectLevel.H,
-                        margin: 0
+                        correctLevel: QRCode.CorrectLevel.L,
+                        margin: 2
                     });
                 <?php endif; ?>
             <?php endforeach; ?>

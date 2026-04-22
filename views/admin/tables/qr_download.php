@@ -38,7 +38,7 @@
             height: 250,
             colorDark : "#000000",
             colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.H, // Changed to H (High) for better logo tolerance
+            correctLevel : QRCode.CorrectLevel.L, // Lowest complexity for better scanning
             margin: 2
         });
     });
