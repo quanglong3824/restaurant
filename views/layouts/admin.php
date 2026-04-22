@@ -767,13 +767,13 @@
 
         .help-modal-content {
             background: #fff;
-            margin: 3% auto;
+            margin: 2% auto;
             border-radius: 24px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            max-width: 900px;
-            width: 90%;
+            max-width: 1200px;
+            width: 95%;
             animation: modalFadeIn 0.3s ease-out;
-            max-height: 90vh;
+            max-height: 96vh;
             display: flex;
             flex-direction: column;
         }
@@ -790,8 +790,8 @@
         }
 
         .help-modal-header {
-            padding: 1.5rem 2rem;
-            border-bottom: 2px solid #f1f5f9;
+            padding: 2rem 2.5rem;
+            border-bottom: 3px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -805,15 +805,15 @@
         .help-modal-title {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            font-size: 1.4rem;
+            gap: 1rem;
+            font-size: 1.6rem;
             font-weight: 800;
             color: #1e293b;
         }
 
         .help-modal-title i {
             color: #d4af37;
-            font-size: 1.8rem;
+            font-size: 2.2rem;
         }
 
         .help-modal-close {
@@ -838,16 +838,16 @@
         }
 
         .help-modal-body {
-            padding: 2rem;
+            padding: 2.5rem;
             overflow-y: auto;
             flex: 1;
         }
 
         .help-section {
             display: flex;
-            gap: 1.5rem;
-            padding: 1.5rem;
-            border-radius: 16px;
+            gap: 2rem;
+            padding: 2rem;
+            border-radius: 20px;
             margin-bottom: 1.5rem;
             background: #f8fafc;
             border: 1px solid #e5e7eb;
@@ -867,25 +867,25 @@
 
         .help-section-icon {
             flex-shrink: 0;
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
-            border-radius: 16px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+            font-size: 2rem;
+            box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
         }
 
         .help-section-content h3 {
-            margin: 0 0 0.5rem 0;
-            font-size: 1.1rem;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.3rem;
             color: #1e293b;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
         }
 
         .help-section-content h3 i {
@@ -893,18 +893,19 @@
         }
 
         .help-desc {
-            margin: 0 0 1rem 0;
+            margin: 0 0 1.25rem 0;
             color: #64748b;
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-style: italic;
+            line-height: 1.6;
         }
 
         .help-list {
             margin: 0;
-            padding-left: 1.25rem;
+            padding-left: 1.5rem;
             color: #374151;
-            font-size: 0.875rem;
-            line-height: 1.8;
+            font-size: 0.95rem;
+            line-height: 2;
         }
 
         .help-list li {
@@ -923,8 +924,8 @@
 
         .help-steps li {
             position: relative;
-            padding-left: 2rem;
-            margin-bottom: 0.75rem;
+            padding-left: 2.5rem;
+            margin-bottom: 1rem;
         }
 
         .help-steps li::before {
@@ -933,16 +934,17 @@
             position: absolute;
             left: 0;
             top: 0;
-            width: 1.5rem;
-            height: 1.5rem;
-            background: #d4af37;
+            width: 1.75rem;
+            height: 1.75rem;
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
             color: #fff;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             font-weight: 700;
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
         }
 
         .help-shortcuts {
@@ -989,12 +991,12 @@
         }
 
         .help-modal-footer {
-            padding: 1.5rem 2rem;
-            border-top: 2px solid #f1f5f9;
+            padding: 2rem 2.5rem;
+            border-top: 3px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #f8fafc;
+            background: linear-gradient(135deg, #f8fafc 0%, #fff 100%);
             border-radius: 0 0 24px 24px;
         }
 
@@ -1013,16 +1015,17 @@
 
         /* Help Tip Box */
         .help-tip {
-            margin-top: 1rem;
-            padding: 1rem 1.25rem;
+            margin-top: 1.5rem;
+            padding: 1.25rem 1.5rem;
             background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-left: 4px solid #d4af37;
-            border-radius: 8px;
-            font-size: 0.875rem;
+            border-left: 5px solid #d4af37;
+            border-radius: 12px;
+            font-size: 0.95rem;
             color: #92400e;
             display: flex;
             align-items: flex-start;
-            gap: 0.75rem;
+            gap: 1rem;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
         }
 
         .help-tip i {
