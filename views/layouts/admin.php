@@ -767,13 +767,13 @@
 
         .help-modal-content {
             background: #fff;
-            margin: 2% auto;
+            margin: 1% auto;
             border-radius: 24px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             max-width: 1200px;
             width: 95%;
             animation: modalFadeIn 0.3s ease-out;
-            max-height: 96vh;
+            max-height: 98vh;
             display: flex;
             flex-direction: column;
         }
