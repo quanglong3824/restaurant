@@ -22,6 +22,7 @@
         
         <div class="qr-card-footer">
             <div class="table-number">BÀN <?= e($tableName) ?></div>
+            <div class="table-number-en" style="font-size: 1.2rem; color: #666; margin-bottom: 15px;">TABLE <?= e($tableName) ?></div>
             <p>Quét mã để xem menu & đặt món</p>
             <small>Scan to order</small>
         </div>

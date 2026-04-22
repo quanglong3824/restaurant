@@ -285,6 +285,7 @@
                     
                     <div class="qr-divider">
                         <h2><?= $type === 'room' ? 'PHÒNG' : 'BÀN' ?> <?= e(strtoupper($t['name'])) ?></h2>
+                        <p style="font-size: 9px; color: #666; margin-top: 2px; font-weight: 500;"><?= $type === 'room' ? 'ROOM' : 'TABLE' ?> <?= e(strtoupper($t['name'])) ?></p>
                     </div>
                     
                     <div class="qr-code-wrapper">
@@ -292,7 +293,8 @@
                     </div>
                     
                     <div class="qr-card-footer">
-                        <p>QUÉT MÃ ĐỂ ĐẶT MÓN</p>
+                        <p style="font-size: 7px; margin-bottom: 0px;">QUÉT MÃ ĐỂ ĐẶT MÓN</p>
+                        <p style="font-size: 6px; margin: 1px 0; color: #666;">SCAN TO ORDER</p>
                         <span>Cảm ơn Quý khách / Thank you!</span>
                     </div>
                 </div>
