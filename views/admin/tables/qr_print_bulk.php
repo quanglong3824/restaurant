@@ -150,10 +150,15 @@
             justify-content: center;
         }
 
-        .qr-code-wrapper img {
+        /* QR code canvas inside the wrapper */
+        .qr-code-wrapper > div {
             width: 90px;
             height: 90px;
-            object-fit: contain;
+        }
+
+        .qr-code-wrapper canvas {
+            width: 90px;
+            height: 90px;
         }
 
         .qr-logo {
@@ -161,12 +166,13 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             background: white;
             padding: 2px;
-            border-radius: 4px;
+            border-radius: 3px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            z-index: 10;
         }
 
         .qr-card-footer {
@@ -270,7 +276,6 @@
                             
                             <div class="qr-code-wrapper">
                                 <div id="qr-<?= $t['id'] ?>"></div>
-                                <img src="<?= BASE_URL ?>/public/src/logo/favicon.png" class="qr-logo" alt="Logo">
                             </div>
                             
                             <div class="qr-card-footer">
