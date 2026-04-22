@@ -86,9 +86,7 @@
         .qr-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(5, 1fr);
             gap: 10mm;
-            height: calc(297mm - 30mm);
         }
 
         .qr-card {
@@ -100,6 +98,7 @@
             align-items: center;
             background: white;
             position: relative;
+            min-height: 110px;
         }
 
         .qr-card-header {
@@ -209,23 +208,71 @@
         }
 
         @media print {
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+
             body {
                 background: white;
                 padding: 0;
+                margin: 0;
             }
 
             .print-controls {
-                display: none;
+                display: none !important;
             }
 
             .a4-page {
-                box-shadow: none;
-                margin: 0;
-                padding: 15mm;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                min-height: auto !important;
+                page-break-after: always;
+                break-after: page;
+            }
+
+            .a4-page:last-child {
+                page-break-after: auto;
+                break-after: auto;
+            }
+
+            .qr-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8mm;
+                width: 100%;
+                height: auto !important;
             }
 
             .qr-card {
                 border: 1px solid #ddd;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .page-info {
+                display: none;
+            }
+
+            /* Hide empty placeholder cards */
+            .qr-card[style*="visibility: hidden"] {
+                display: none !important;
+                visibility: hidden !important;
+                position: absolute !important;
+            }
+
+            /* Ensure QR codes print properly */
+            .qr-code-wrapper > div {
+                page-break-inside: avoid;
+            }
+
+            /* Force background graphics printing */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
             }
         }
     </style>
