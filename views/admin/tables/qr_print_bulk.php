@@ -72,69 +72,59 @@
             background: #f5f5f5;
         }
 
-        /* A4 Page Layout */
-        .a4-page {
-            width: 210mm;
-            min-height: 297mm;
-            margin: 0 auto 20px;
-            background: white;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            padding: 10mm;
-            page-break-after: always;
-        }
-
+        /* Continuous flow layout - no wasted space */
         .qr-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(5, 1fr);
-            gap: 5mm;
-            height: calc(297mm - 20mm);
+            gap: 4mm;
+            padding: 10mm;
         }
 
         .qr-card {
             border: 1px solid #e5e5e5;
-            border-radius: 8px;
-            padding: 10px 8px;
+            border-radius: 6px;
+            padding: 8px 6px;
             display: flex;
             flex-direction: column;
             align-items: center;
             background: white;
             position: relative;
+            page-break-inside: avoid;
         }
 
         .qr-card-header {
             text-align: center;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             width: 100%;
         }
 
         .qr-card-header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             color: #D4AF37;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.6px;
             margin-bottom: 1px;
         }
 
         .qr-card-header p {
-            font-size: 6px;
+            font-size: 5px;
             color: #666;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
         }
 
         .qr-divider {
             border-top: 1px solid #D4AF37;
             border-bottom: 1px solid #D4AF37;
-            padding: 4px 0;
-            margin: 4px 0;
+            padding: 3px 0;
+            margin: 3px 0;
             width: 100%;
             text-align: center;
         }
 
         .qr-divider h2 {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: #1a1a1a;
             margin: 0;
@@ -142,9 +132,9 @@
 
         .qr-code-wrapper {
             position: relative;
-            width: 70px;
-            height: 70px;
-            margin: 4px 0;
+            width: 65px;
+            height: 65px;
+            margin: 3px 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -152,13 +142,13 @@
 
         /* QR code canvas inside the wrapper */
         .qr-code-wrapper > div {
-            width: 70px;
-            height: 70px;
+            width: 65px;
+            height: 65px;
         }
 
         .qr-code-wrapper canvas {
-            width: 70px;
-            height: 70px;
+            width: 65px;
+            height: 65px;
         }
 
         .qr-logo {
@@ -166,8 +156,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             background: white;
             padding: 2px;
             border-radius: 3px;
@@ -177,29 +167,28 @@
 
         .qr-card-footer {
             text-align: center;
-            margin-top: 6px;
+            margin-top: 4px;
         }
 
         .qr-card-footer p {
-            font-size: 8px;
+            font-size: 7px;
             font-weight: 600;
             color: #333;
             margin-bottom: 1px;
         }
 
         .qr-card-footer span {
-            font-size: 6px;
+            font-size: 5px;
             color: #888;
             text-transform: uppercase;
         }
 
-        .page-info {
-            text-align: center;
-            padding-top: 10px;
-            font-size: 10px;
-            color: #999;
-            border-top: 1px solid #eee;
-            margin-top: 10px;
+        .page-break {
+            page-break-after: always;
+            break-after: page;
+            display: block;
+            height: 0;
+            visibility: hidden;
         }
 
         .empty-message {
@@ -211,7 +200,7 @@
         @media print {
             @page {
                 size: A4;
-                margin: 10mm;
+                margin: 5mm;
             }
 
             body {
@@ -224,27 +213,12 @@
                 display: none !important;
             }
 
-            .a4-page {
-                box-shadow: none !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 100% !important;
-                min-height: auto !important;
-                page-break-after: always;
-                break-after: page;
-            }
-
-            .a4-page:last-child {
-                page-break-after: auto;
-                break-after: auto;
-            }
-
             .qr-grid {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
-                gap: 8mm;
+                gap: 4mm;
+                padding: 0;
                 width: 100%;
-                height: auto !important;
             }
 
             .qr-card {
@@ -253,20 +227,14 @@
                 break-inside: avoid;
             }
 
-            .page-info {
-                display: none;
+            .page-break {
+                page-break-after: always;
+                break-after: page;
             }
 
             /* Hide empty placeholder cards */
             .qr-card[style*="visibility: hidden"] {
                 display: none !important;
-                visibility: hidden !important;
-                position: absolute !important;
-            }
-
-            /* Ensure QR codes print properly */
-            .qr-code-wrapper > div {
-                page-break-inside: avoid;
             }
 
             /* Force background graphics printing */
@@ -292,7 +260,7 @@
     </div>
 
     <?php if (empty($tables)): ?>
-        <div class="a4-page">
+        <div class="qr-grid" style="padding: 20px;">
             <div class="empty-message">
                 <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem; color: #D4AF37;"></i>
                 <h3>Không có <?= $type === 'room' ? 'phòng' : 'bàn' ?> nào có mã QR</h3>
@@ -300,52 +268,29 @@
             </div>
         </div>
     <?php else: ?>
-        <?php 
-        $itemsPerPage = 10;
-        $totalPages = ceil(count($tables) / $itemsPerPage);
-        
-        for ($page = 0; $page < $totalPages; $page++):
-            $startIndex = $page * $itemsPerPage;
-            $endIndex = min($startIndex + $itemsPerPage, count($tables));
-            $pageTables = array_slice($tables, $startIndex, $itemsPerPage);
-        ?>
-            <div class="a4-page">
-                <div class="qr-grid">
-                    <?php foreach ($pageTables as $index => $t): ?>
-                        <div class="qr-card">
-                            <div class="qr-card-header">
-                                <h1>AURORA HOTEL PLAZA</h1>
-                                <p>Restaurant & Bar</p>
-                            </div>
-                            
-                            <div class="qr-divider">
-                                <h2><?= $type === 'room' ? 'PHÒNG' : 'BÀN' ?> <?= e(strtoupper($t['name'])) ?></h2>
-                            </div>
-                            
-                            <div class="qr-code-wrapper">
-                                <div id="qr-<?= $t['id'] ?>"></div>
-                            </div>
-                            
-                            <div class="qr-card-footer">
-                                <p>QUÉT MÃ ĐỂ ĐẶT MÓN</p>
-                                <span>Cảm ơn Quý khách / Thank you!</span>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
+        <div class="qr-grid">
+            <?php foreach ($tables as $t): ?>
+                <div class="qr-card">
+                    <div class="qr-card-header">
+                        <h1>AURORA HOTEL PLAZA</h1>
+                        <p>Restaurant & Bar</p>
+                    </div>
                     
-                    <?php 
-                    // Fill empty cells to maintain grid layout
-                    for ($i = count($pageTables); $i < $itemsPerPage; $i++): 
-                    ?>
-                        <div class="qr-card" style="visibility: hidden;"></div>
-                    <?php endfor; ?>
+                    <div class="qr-divider">
+                        <h2><?= $type === 'room' ? 'PHÒNG' : 'BÀN' ?> <?= e(strtoupper($t['name'])) ?></h2>
+                    </div>
+                    
+                    <div class="qr-code-wrapper">
+                        <div id="qr-<?= $t['id'] ?>"></div>
+                    </div>
+                    
+                    <div class="qr-card-footer">
+                        <p>QUÉT MÃ ĐỂ ĐẶT MÓN</p>
+                        <span>Cảm ơn Quý khách / Thank you!</span>
+                    </div>
                 </div>
-                
-                <div class="page-info">
-                    Trang <?= $page + 1 ?> / <?= $totalPages ?> • <?= count($tables) ?> <?= $type === 'room' ? 'phòng' : 'bàn' ?> • <?= date('d/m/Y H:i') ?>
-                </div>
-            </div>
-        <?php endfor; ?>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -355,8 +300,8 @@
                 <?php if (!empty($t['qr_token'])): ?>
                     new QRCode(document.getElementById('qr-<?= $t['id'] ?>'), {
                         text: '<?= BASE_URL ?>/q?t=<?= $t['qr_token'] ?>',
-                        width: 70,
-                        height: 70,
+                        width: 65,
+                        height: 65,
                         colorDark: '#000000',
                         colorLight: '#ffffff',
                         correctLevel: QRCode.CorrectLevel.H,
