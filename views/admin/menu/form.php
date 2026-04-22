@@ -88,8 +88,13 @@ $isEdit = !empty($item);
 
             <div class="form-group">
                 <label class="form-label">Giá (VND) <span style="color:var(--danger)">*</span></label>
-                <input type="number" name="price" class="form-control" required min="0" step="1000"
-                    value="<?= $isEdit ? $item['price'] : '' ?>" placeholder="VD: 150000">
+                <div style="position: relative;">
+                    <input type="text" name="price" id="price-input" class="form-control" required 
+                        maxlength="10" pattern="^[0-9]{1,10}$" inputmode="numeric" autocomplete="off"
+                        value="<?= $isEdit ? $item['price'] : '' ?>" placeholder="VD: 198552">
+                    <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--gold); font-weight: 600; pointer-events: none;">VND</span>
+                </div>
+                <p class="form-hint">Nhập số nguyên tối đa 10 ký tự (VD: 99999, 198552, 1234567890).</p>
             </div>
 
             <div class="form-group">
@@ -352,6 +357,48 @@ function initChipBuilder(inputId, chipsId, csvId) {
 document.addEventListener('DOMContentLoaded', () => {
     initChipBuilder('optsInputVI', 'optsChipsVI', 'noteOptsCsvVI');
     initChipBuilder('optsInputEN', 'optsChipsEN', 'noteOptsCsvEN');
+
+    // Price input validation - only allow digits
+    const priceInput = document.getElementById('price-input');
+    if (priceInput) {
+        // Format display with dots as thousand separators on blur
+        priceInput.addEventListener('blur', () => {
+            const rawValue = priceInput.value.replace(/\./g, '');
+            if (rawValue && /^\d+$/.test(rawValue)) {
+                // Store raw value in data attribute for form submission
+                priceInput.dataset.rawValue = rawValue;
+            }
+        });
+
+        // Only allow digits input
+        priceInput.addEventListener('input', (e) => {
+            let value = e.target.value;
+            // Remove any non-digit characters
+            value = value.replace(/[^0-9]/g, '');
+            // Limit to 10 characters
+            if (value.length > 10) {
+                value = value.slice(0, 10);
+            }
+            e.target.value = value;
+        });
+
+        // Prevent non-numeric keys
+        priceInput.addEventListener('keydown', (e) => {
+            // Allow: backspace, delete, tab, escape, enter, arrow keys
+            if ([8, 9, 13, 27, 37, 38, 39, 40, 46].indexOf(e.keyCode) !== -1) {
+                return;
+            }
+            // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+            if ((e.keyCode === 65 || e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 88) && e.ctrlKey) {
+                return;
+            }
+            // Block anything else
+            if ((e.keyCode < 48 || e.keyCode > 57) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+    }
+
 
     // Fix builder IDs (replace 'Input' → 'Builder' in click handler)
     document.getElementById('optsBuilderVI').addEventListener('click', () => document.getElementById('optsInputVI').focus());
