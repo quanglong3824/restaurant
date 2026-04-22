@@ -84,7 +84,7 @@
 
         .qr-card {
             width: 85mm;
-            border: none;
+            border: 1px solid #D4AF37;
             border-radius: 6px;
             padding: 8px 6px;
             display: flex;
@@ -228,7 +228,7 @@
 
             .qr-card {
                 width: 85mm;
-                border: none;
+                border: 1px solid #D4AF37;
                 box-shadow: 0 1px 3px rgba(0,0,0,0.08);
                 page-break-inside: avoid;
                 break-inside: avoid;
