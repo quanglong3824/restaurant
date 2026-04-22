@@ -45,7 +45,6 @@
 
             <!-- Hidden fields -->
             <input type="hidden" name="username" id="usernameField">
-            <input type="hidden" name="shift_id" id="shiftField">
             <input type="hidden" name="pin" id="pinField">
 
             <!-- ── Step 1: Chọn nhân viên ── -->
@@ -69,35 +68,11 @@
                 </div>
             </div>
 
-            <!-- ── Step 2: Chọn ca trực ── -->
-            <div id="shiftSection" class="u-hidden" style="margin-top: 1.5rem;">
-                <p class="field-label">
-                    <i class="fas fa-clock" aria-hidden="true"></i>
-                    2. Chọn ca trực
-                </p>
-                <div class="shift-grid">
-                    <?php if (empty($shifts)): ?>
-                        <p style="color:#ff6b6b; font-size:0.85rem; text-align:center; padding:0.75rem;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Chưa có ca trực nào. Vui lòng liên hệ Admin để tạo ca trực.
-                        </p>
-                    <?php else: ?>
-                        <?php foreach ($shifts as $s): ?>
-                            <button type="button" class="shift-chip" data-id="<?= $s['id'] ?>">
-                                <?= e($s['name']) ?><br>
-                                <small><?= date('H:i', strtotime($s['start_time'])) ?>
-                                    - <?= date('H:i', strtotime($s['end_time'])) ?></small>
-                            </button>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- ── Step 3: Nhập PIN ── -->
+            <!-- ── Step 2: Nhập PIN ── -->
             <div id="pinSection" class="u-hidden" style="margin-top: 1.5rem;">
                 <p class="field-label">
                     <i class="fas fa-lock" aria-hidden="true"></i>
-                    3. Nhập PIN (4 số)
+                    2. Nhập PIN (4 số)
                 </p>
                 <!-- PIN dots indicator -->
                 <div class="pin-dots">

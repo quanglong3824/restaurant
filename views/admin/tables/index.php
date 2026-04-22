@@ -20,7 +20,13 @@
         <div class="card-header">
             <h2><i class="fas <?= $type === 'room' ? 'fa-bed' : 'fa-chair' ?>"></i> Danh sách
                 <?= $type === 'room' ? 'Phòng' : 'Bàn' ?></h2>
-            <span class="badge badge-gold"><?= count($tables) ?> <?= $type === 'room' ? 'phòng' : 'bàn' ?></span>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <span class="badge badge-gold"><?= count($tables) ?> <?= $type === 'room' ? 'phòng' : 'bàn' ?></span>
+                <button type="button" class="btn btn-outline btn-sm" onclick="openBulkPrintModal()"
+                    title="In hàng loạt mã QR">
+                    <i class="fas fa-print"></i> In QR
+                </button>
+            </div>
         </div>
 
         <div class="table-wrap">
@@ -47,21 +53,38 @@
                             <!-- Group Header Row -->
                             <tr style="background-color: #f8fafc;">
                                 <td colspan="6" style="padding: 1rem; border-left: 4px solid var(--gold);">
-                                    <h3
-                                        style="margin: 0; font-size: 1.1rem; color: var(--gold-dark); display: flex; align-items: center; gap: 0.5rem;">
-                                        <i class="fas fa-layer-group"></i>
-                                        Khu vực: <?= e($area) ?>
-                                        <span class="badge badge-outline" style="font-size: 0.75rem; margin-left: auto;">
-                                            <?= count($areaTables) ?>         <?= $type === 'room' ? 'phòng' : 'bàn' ?>
-                                        </span>
-                                    </h3>
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <h3
+                                            style="margin: 0; font-size: 1.1rem; color: var(--gold-dark); display: flex; align-items: center; gap: 0.5rem;">
+                                            <i class="fas fa-layer-group"></i>
+                                            Khu vực: <?= e($area) ?>
+                                        </h3>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer;">
+                                                <input type="checkbox" class="area-checkbox" data-area="<?= e($area) ?>" style="width: 16px; height: 16px; cursor: pointer;">
+                                                <span>Chọn tất cả</span>
+                                            </label>
+                                            <span class="badge badge-outline" style="font-size: 0.75rem;">
+                                                <?= count($areaTables) ?> <?= $type === 'room' ? 'phòng' : 'bàn' ?>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
 
                             <!-- Items in Group -->
                             <?php foreach ($areaTables as $t): ?>
-                                <tr>
-                                    <td><strong><?= e($t['name']) ?></strong></td>
+                                <tr class="table-row" data-area="<?= e($area) ?>" data-table-id="<?= $t['id'] ?>">
+                                    <td>
+                                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                            <input type="checkbox" class="table-checkbox" 
+                                                value="<?= $t['id'] ?>" 
+                                                data-name="<?= e($t['name']) ?>"
+                                                data-token="<?= e($t['qr_token'] ?? '') ?>"
+                                                style="width: 16px; height: 16px; cursor: pointer;">
+                                            <strong><?= e($t['name']) ?></strong>
+                                        </label>
+                                    </td>
                                     <td class="table-hide-sm"><?= e($t['area'] ?? '—') ?></td>
                                     <td class="table-hide-sm"><?= $t['capacity'] ?>             <?= $type === 'room' ? 'người' : 'người' ?></td>
                                     <td>
@@ -504,4 +527,147 @@
         document.body.appendChild(form);
         form.submit();
     }
+
+    // Bulk Print Modal Functions
+    function openBulkPrintModal() {
+        document.getElementById('bulkPrintModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        updateSelectedCount();
+    }
+
+    function closeBulkPrintModal() {
+        document.getElementById('bulkPrintModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    function updateSelectedCount() {
+        const selectedTables = document.querySelectorAll('.table-checkbox:checked');
+        document.getElementById('selectedCount').textContent = selectedTables.length;
+    }
+
+    function selectAllTables() {
+        const checkboxes = document.querySelectorAll('.table-checkbox');
+        checkboxes.forEach(cb => cb.checked = true);
+        updateSelectedCount();
+    }
+
+    function deselectAllTables() {
+        const checkboxes = document.querySelectorAll('.table-checkbox');
+        checkboxes.forEach(cb => cb.checked = false);
+        updateSelectedCount();
+    }
+
+    function printSelected() {
+        const selectedTables = [];
+        document.querySelectorAll('.table-checkbox:checked').forEach(cb => {
+            if (cb.dataset.token) {
+                selectedTables.push({
+                    id: cb.value,
+                    name: cb.dataset.name,
+                    token: cb.dataset.token
+                });
+            }
+        });
+
+        if (selectedTables.length === 0) {
+            alert('Vui lòng chọn ít nhất 1 bàn/phòng có mã QR để in.');
+            return;
+        }
+
+        // Create form and submit
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '<?= BASE_URL ?>/admin/qr-codes/print-bulk';
+        form.target = '_blank';
+
+        const typeInput = document.createElement('input');
+        typeInput.type = 'hidden';
+        typeInput.name = 'type';
+        typeInput.value = '<?= $type ?>';
+
+        const tablesInput = document.createElement('input');
+        tablesInput.type = 'hidden';
+        tablesInput.name = 'tables';
+        tablesInput.value = JSON.stringify(selectedTables);
+
+        form.appendChild(typeInput);
+        form.appendChild(tablesInput);
+        document.body.appendChild(form);
+        form.submit();
+        closeBulkPrintModal();
+    }
+
+    // Area checkbox handling
+    document.addEventListener('DOMContentLoaded', () => {
+        // Area checkboxes
+        document.querySelectorAll('.area-checkbox').forEach(areaCheckbox => {
+            areaCheckbox.addEventListener('change', function() {
+                const area = this.dataset.area;
+                const tableCheckboxes = document.querySelectorAll(`.table-checkbox`);
+                
+                tableCheckboxes.forEach(cb => {
+                    const row = cb.closest('tr');
+                    if (row && row.dataset.area === area) {
+                        cb.checked = this.checked;
+                    }
+                });
+                updateSelectedCount();
+            });
+        });
+
+        // Individual table checkboxes
+        document.querySelectorAll('.table-checkbox').forEach(cb => {
+            cb.addEventListener('change', updateSelectedCount);
+        });
+    });
 </script>
+
+<!-- Bulk Print Modal -->
+<div id="bulkPrintModal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-print"></i> In hàng loạt mã QR</h3>
+            <button type="button" class="close-modal" onclick="closeBulkPrintModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                <div>
+                    <p style="margin: 0; font-weight: 600;">Đã chọn: <span id="selectedCount" style="color: var(--gold);">0</span> bàn/phòng</p>
+                    <p style="margin: 5px 0 0; font-size: 0.85rem; color: #666;">Mỗi trang A4 in được 10 mã (2 cột x 5 hàng)</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="selectAllTables()">
+                        <i class="fas fa-check-square"></i> Chọn tất cả
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="deselectAllTables()">
+                        <i class="fas fa-square"></i> Bỏ chọn tất cả
+                    </button>
+                </div>
+            </div>
+
+            <div style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; padding: 0.5rem;">
+                <p style="text-align: center; padding: 1rem; color: #999;">
+                    <i class="fas fa-info-circle"></i> Sử dụng checkbox ở danh sách bên trên để chọn bàn/phòng cần in
+                </p>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-gold" onclick="printSelected()">
+                    <i class="fas fa-print"></i> In đã chọn
+                </button>
+                <button type="button" class="btn btn-outline" onclick="closeBulkPrintModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Bulk Print Modal Styles */
+    #bulkPrintModal .modal-content {
+        max-width: 600px;
+    }
+
+    #bulkPrintModal .modal-body {
+        padding: 1.5rem;
+    }
+</style>

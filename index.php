@@ -176,6 +176,8 @@ $router->get('/admin/qr-codes', 'AdminQrController', 'index');
 $router->post('/admin/qr-codes/generate', 'AdminQrController', 'generate');
 $router->get('/admin/qr-codes/download', 'AdminQrController', 'download');
 $router->post('/admin/qr-codes/delete', 'AdminQrController', 'delete');
+$router->get('/admin/qr-codes/print-bulk', 'AdminQrController', 'printBulk');
+$router->post('/admin/qr-codes/print-bulk', 'AdminQrController', 'printBulkPost');
 
 // ── Notifications: Real-time Polling ───────────────────────
 $router->get('/notifications', 'NotificationController', 'waiterIndex');

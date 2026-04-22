@@ -51,28 +51,9 @@ class AuthController extends Controller
         $userModel = new User();
         $staff = $userModel->getActiveStaff();
 
-        // Lấy danh sách ca trực
-        $db = getDB();
-        $shifts = $db->query("SELECT * FROM shifts ORDER BY start_time ASC")->fetchAll();
-
-        // Nếu chưa có ca trực nào, tự động tạo ca mặc định
-        if (empty($shifts)) {
-            $defaultShifts = [
-                ['Ca Sáng',  '06:00:00', '14:00:00'],
-                ['Ca Chiều', '14:00:00', '22:00:00'],
-                ['Ca Tối',   '22:00:00', '06:00:00'],
-            ];
-            $stmt = $db->prepare("INSERT INTO shifts (name, start_time, end_time) VALUES (?, ?, ?)");
-            foreach ($defaultShifts as $s) {
-                $stmt->execute($s);
-            }
-            $shifts = $db->query("SELECT * FROM shifts ORDER BY start_time ASC")->fetchAll();
-        }
-
         $this->view('auth/login', [
             'pageTitle' => 'Đăng nhập',
             'staff' => $staff,
-            'shifts' => $shifts,
         ]);
     }
 
@@ -83,7 +64,6 @@ class AuthController extends Controller
     {
         $username = trim($this->input('username', ''));
         $pin = trim($this->input('pin', ''));
-        $shiftId = (int) $this->input('shift_id', 0);
         $activityLog = new ActivityLog();
 
         if (empty($username) || empty($pin)) {
@@ -101,16 +81,8 @@ class AuthController extends Controller
             $this->redirect('/auth/login');
         }
 
-        // Kiểm tra ca trực (Chỉ bắt buộc với Waiter)
-        if ($user['role'] === ROLE_WAITER && $shiftId <= 0) {
-            $activityLog->logLogin($user['id'], false, 'No shift selected');
-            $_SESSION['login_error'] = 'Vui lòng chọn ca trực của bạn.';
-            $this->redirect('/auth/login');
-        }
-
-        // Lưu thông tin ca trực vào session
+        // Lưu thông tin user vào session
         Auth::login($user);
-        $_SESSION['user_shift_id'] = $shiftId;
 
         // Log successful login
         $activityLog->logLogin($user['id'], true);

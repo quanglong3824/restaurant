@@ -72,7 +72,7 @@ if ($hasItems) {
         })();
     </script>
     <div class="loc-card">
-        <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
+u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
         <h3 class="loc-title" data-vi="XÁC NHẬN HIỆN DIỆN / CONFIRM YOUR PRESENCE" data-en="CONFIRM YOUR PRESENCE">XÁC NHẬN HIỆN DIỆN / CONFIRM YOUR PRESENCE</h3>
         <p class="loc-sub">AURORA HOTEL PLAZA</p>
         <div id="liveDistance" class="loc-dist-badge" style="display:none;">

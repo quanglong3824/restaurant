@@ -85,4 +85,68 @@ class AdminQrController extends Controller
         }
         $this->redirect('/admin/qr-codes');
     }
+
+    /**
+     * GET /admin/qr-codes/print-bulk — Bulk print QR codes for tables/rooms
+     */
+    public function printBulk(): void
+    {
+        Auth::requireRole(ROLE_ADMIN, ROLE_IT);
+        
+        $type = $this->input('type', 'table');
+        if (!in_array($type, ['table', 'room'])) $type = 'table';
+        
+        // Get all tables with QR tokens
+        $tables = $this->tableModel->getAllForAdminByType($type);
+        
+        // Filter tables that have QR tokens
+        $tablesWithQr = [];
+        foreach ($tables as $t) {
+            if (!empty($t['qr_token'])) {
+                $tablesWithQr[] = $t;
+            }
+        }
+        
+        $this->view('admin/tables/qr_print_bulk', [
+            'type' => $type,
+            'tables' => $tablesWithQr,
+        ]);
+    }
+
+    /**
+     * POST /admin/qr-codes/print-bulk — Bulk print QR codes for selected tables/rooms
+     */
+    public function printBulkPost(): void
+    {
+        Auth::requireRole(ROLE_ADMIN, ROLE_IT);
+        
+        $type = $this->input('type', 'table');
+        if (!in_array($type, ['table', 'room'])) $type = 'table';
+        
+        $tablesJson = $this->input('tables', '[]');
+        $selectedTables = json_decode($tablesJson, true);
+        
+        if (!is_array($selectedTables) || empty($selectedTables)) {
+            $_SESSION['flash'] = ['type' => 'danger', 'message' => 'Vui lòng chọn ít nhất 1 bàn/phòng để in.'];
+            $this->redirect('/admin/tables?type=' . $type);
+            return;
+        }
+        
+        // Filter to only include tables with valid tokens
+        $tablesWithQr = [];
+        foreach ($selectedTables as $t) {
+            if (!empty($t['token'])) {
+                $tablesWithQr[] = [
+                    'id' => $t['id'],
+                    'name' => $t['name'],
+                    'qr_token' => $t['token'],
+                ];
+            }
+        }
+        
+        $this->view('admin/tables/qr_print_bulk', [
+            'type' => $type,
+            'tables' => $tablesWithQr,
+        ]);
+    }
 }

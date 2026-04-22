@@ -1,5 +1,5 @@
 /**
- * auth.js — 3-Step Login Logic (User -> Shift -> PIN)
+ * auth.js — 2-Step Login Logic (User -> PIN)
  * Aurora Restaurant
  */
 
@@ -9,19 +9,16 @@
   // ── State ──────────────────────────────────────────────
   let pin = "";
   let selectedUsername = "";
-  let selectedShift = "";
   let selectedRole = "";
 
   // ── DOM refs ────────────────────────────────────────────
   const pinDots = document.querySelectorAll(".pin-dot");
   const pinField = document.getElementById("pinField");
   const usernameField = document.getElementById("usernameField");
-  const shiftField = document.getElementById("shiftField");
   const submitBtn = document.getElementById("submitBtn");
   const loginForm = document.getElementById("loginForm");
 
   const waiterSection = document.getElementById("waiterSection");
-  const shiftSection = document.getElementById("shiftSection");
   const pinSection = document.getElementById("pinSection");
 
   // ── PIN helpers ─────────────────────────────────────────
@@ -58,12 +55,8 @@
   }
 
   function checkReady() {
-    const isSpecialRole = (selectedRole === 'admin' || selectedRole === 'it');
-    const hasShift = isSpecialRole || selectedShift.trim().length > 0;
-    
     const ready = pin.length === 4 &&
-                  selectedUsername.trim().length > 0 &&
-                  hasShift;
+                  selectedUsername.trim().length > 0;
     submitBtn.disabled = !ready;
   }
 
@@ -85,45 +78,12 @@
     pinField.value = "";
     syncDots();
 
-    if (selectedRole === 'admin' || selectedRole === 'it') {
-      selectedShift = "-1";
-      shiftField.value = "-1";
-      document.querySelectorAll(".shift-chip").forEach((c) => c.classList.remove("is-selected"));
-      shiftSection.classList.add("u-hidden");
-      pinSection.classList.remove("u-hidden");
-    } else {
-      selectedShift = "";
-      shiftField.value = "";
-      document.querySelectorAll(".shift-chip").forEach((c) => c.classList.remove("is-selected"));
-      shiftSection.classList.remove("u-hidden");
-      pinSection.classList.add("u-hidden");
-    }
-
-    checkReady();
-    
-    // Scroll smoothly to next visible section
-    setTimeout(() => {
-      const nextSection = (selectedRole === 'admin' || selectedRole === 'it') ? pinSection : shiftSection;
-      nextSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 100);
-  }
-
-  // ── Step 2: Shift selection ─────────────────────────────
-  function selectShift(el) {
-    document.querySelectorAll(".shift-chip").forEach((c) => c.classList.remove("is-selected"));
-    el.classList.add("is-selected");
-    selectedShift = el.dataset.id;
-    shiftField.value = selectedShift;
-
-    // Reset following steps
-    pin = "";
-    pinField.value = "";
-    syncDots();
-
+    // Show PIN section directly
     pinSection.classList.remove("u-hidden");
+
     checkReady();
     
-    // Scroll to PIN section smoothly
+    // Scroll smoothly to PIN section
     setTimeout(() => {
       pinSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, 100);
@@ -132,10 +92,6 @@
   // ── Bind Events ─────────────────────────────────────────
   document.querySelectorAll(".user-chip").forEach((chip) => {
     chip.addEventListener("click", () => selectUser(chip));
-  });
-
-  document.querySelectorAll(".shift-chip").forEach((chip) => {
-    chip.addEventListener("click", () => selectShift(chip));
   });
 
   document.querySelectorAll(".pin-key[data-key]").forEach((btn) => {
