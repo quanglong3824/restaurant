@@ -12,14 +12,24 @@
   let selectedRole = "";
 
   // ── DOM refs ────────────────────────────────────────────
-  const pinDots = document.querySelectorAll(".pin-dot");
-  const pinField = document.getElementById("pinField");
-  const usernameField = document.getElementById("usernameField");
-  const submitBtn = document.getElementById("submitBtn");
-  const loginForm = document.getElementById("loginForm");
+  let pinDots, pinField, usernameField, submitBtn, loginForm, waiterSection, pinSection;
 
-  const waiterSection = document.getElementById("waiterSection");
-  const pinSection = document.getElementById("pinSection");
+  function initDOMRefs() {
+    pinDots = document.querySelectorAll(".pin-dot");
+    pinField = document.getElementById("pinField");
+    usernameField = document.getElementById("usernameField");
+    submitBtn = document.getElementById("submitBtn");
+    loginForm = document.getElementById("loginForm");
+    waiterSection = document.getElementById("waiterSection");
+    pinSection = document.getElementById("pinSection");
+  }
+
+  // Initialize DOM refs when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDOMRefs);
+  } else {
+    initDOMRefs();
+  }
 
   // ── PIN helpers ─────────────────────────────────────────
   function syncDots() {
@@ -90,31 +100,47 @@
   }
 
   // ── Bind Events ─────────────────────────────────────────
-  document.querySelectorAll(".user-chip").forEach((chip) => {
-    chip.addEventListener("click", () => selectUser(chip));
-  });
+  function bindEvents() {
+    document.querySelectorAll(".user-chip").forEach((chip) => {
+      chip.addEventListener("click", () => selectUser(chip));
+    });
 
-  document.querySelectorAll(".pin-key[data-key]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const val = btn.dataset.key;
-      if (val === "del") {
-        deleteKey();
-      } else {
-        pressKey(val);
+    document.querySelectorAll(".pin-key[data-key]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const val = btn.dataset.key;
+        if (val === "del") {
+          deleteKey();
+        } else {
+          pressKey(val);
+        }
+      });
+    });
+
+    // ── Keyboard support (desktop) ──────────────────────────
+    document.addEventListener("keydown", (e) => {
+      if (!pinSection || pinSection.classList.contains("u-hidden")) return;
+      if (e.key >= "0" && e.key <= "9") pressKey(e.key);
+      if (e.key === "Backspace") deleteKey();
+      if (e.key === "Enter" && !submitBtn.disabled) {
+        submitForm();
       }
     });
-  });
+  }
 
-  // ── Keyboard support (desktop) ──────────────────────────
-  document.addEventListener("keydown", (e) => {
-    if (pinSection.classList.contains("u-hidden")) return;
-    if (e.key >= "0" && e.key <= "9") pressKey(e.key);
-    if (e.key === "Backspace") deleteKey();
-    if (e.key === "Enter" && !submitBtn.disabled) {
-      submitForm();
+  // Initialize when DOM is ready
+  function init() {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        initDOMRefs();
+        bindEvents();
+        checkReady();
+      });
+    } else {
+      initDOMRefs();
+      bindEvents();
+      checkReady();
     }
-  });
+  }
 
-  // Init
-  checkReady();
+  init();
 })();
