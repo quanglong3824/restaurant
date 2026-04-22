@@ -76,14 +76,17 @@
         .qr-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 4mm;
-            padding: 10mm;
+            gap: 3mm;
+            padding: 5mm;
+            width: 200mm;
+            margin: 0 auto;
         }
 
         .qr-card {
+            width: 95mm;
             border: 1px solid #e5e5e5;
-            border-radius: 6px;
-            padding: 8px 6px;
+            border-radius: 4px;
+            padding: 6px 4px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -94,37 +97,37 @@
 
         .qr-card-header {
             text-align: center;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             width: 100%;
         }
 
         .qr-card-header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 700;
             color: #D4AF37;
-            letter-spacing: 0.6px;
+            letter-spacing: 0.5px;
             margin-bottom: 1px;
         }
 
         .qr-card-header p {
-            font-size: 5px;
+            font-size: 4px;
             color: #666;
-            letter-spacing: 1.2px;
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
 
         .qr-divider {
             border-top: 1px solid #D4AF37;
             border-bottom: 1px solid #D4AF37;
-            padding: 3px 0;
-            margin: 3px 0;
+            padding: 2px 0;
+            margin: 2px 0;
             width: 100%;
             text-align: center;
         }
 
         .qr-divider h2 {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             color: #1a1a1a;
             margin: 0;
@@ -132,9 +135,9 @@
 
         .qr-code-wrapper {
             position: relative;
-            width: 65px;
-            height: 65px;
-            margin: 3px 0;
+            width: 55px;
+            height: 55px;
+            margin: 2px 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -142,13 +145,13 @@
 
         /* QR code canvas inside the wrapper */
         .qr-code-wrapper > div {
-            width: 65px;
-            height: 65px;
+            width: 55px;
+            height: 55px;
         }
 
         .qr-code-wrapper canvas {
-            width: 65px;
-            height: 65px;
+            width: 55px;
+            height: 55px;
         }
 
         .qr-logo {
@@ -156,29 +159,29 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             background: white;
-            padding: 2px;
-            border-radius: 3px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            padding: 1px;
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             z-index: 10;
         }
 
         .qr-card-footer {
             text-align: center;
-            margin-top: 4px;
+            margin-top: 3px;
         }
 
         .qr-card-footer p {
-            font-size: 7px;
+            font-size: 6px;
             font-weight: 600;
             color: #333;
             margin-bottom: 1px;
         }
 
         .qr-card-footer span {
-            font-size: 5px;
+            font-size: 4px;
             color: #888;
             text-transform: uppercase;
         }
@@ -216,12 +219,14 @@
             .qr-grid {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
-                gap: 4mm;
+                gap: 3mm;
                 padding: 0;
-                width: 100%;
+                width: 200mm;
+                margin: 0;
             }
 
             .qr-card {
+                width: 95mm;
                 border: 1px solid #ddd;
                 page-break-inside: avoid;
                 break-inside: avoid;
@@ -300,8 +305,8 @@
                 <?php if (!empty($t['qr_token'])): ?>
                     new QRCode(document.getElementById('qr-<?= $t['id'] ?>'), {
                         text: '<?= BASE_URL ?>/q?t=<?= $t['qr_token'] ?>',
-                        width: 65,
-                        height: 65,
+                        width: 55,
+                        height: 55,
                         colorDark: '#000000',
                         colorLight: '#ffffff',
                         correctLevel: QRCode.CorrectLevel.H,
