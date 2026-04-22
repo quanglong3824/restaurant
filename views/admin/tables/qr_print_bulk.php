@@ -79,61 +79,62 @@
             margin: 0 auto 20px;
             background: white;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            padding: 15mm;
+            padding: 10mm;
             page-break-after: always;
         }
 
         .qr-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10mm;
+            grid-template-rows: repeat(5, 1fr);
+            gap: 5mm;
+            height: calc(297mm - 20mm);
         }
 
         .qr-card {
             border: 1px solid #e5e5e5;
-            border-radius: 12px;
-            padding: 15px;
+            border-radius: 8px;
+            padding: 10px 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
             background: white;
             position: relative;
-            min-height: 110px;
         }
 
         .qr-card-header {
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             width: 100%;
         }
 
         .qr-card-header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 14px;
+            font-size: 11px;
             font-weight: 700;
             color: #D4AF37;
-            letter-spacing: 1px;
-            margin-bottom: 2px;
+            letter-spacing: 0.8px;
+            margin-bottom: 1px;
         }
 
         .qr-card-header p {
-            font-size: 8px;
+            font-size: 6px;
             color: #666;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
         }
 
         .qr-divider {
             border-top: 1px solid #D4AF37;
             border-bottom: 1px solid #D4AF37;
-            padding: 6px 0;
-            margin: 8px 0;
+            padding: 4px 0;
+            margin: 4px 0;
             width: 100%;
             text-align: center;
         }
 
         .qr-divider h2 {
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 700;
             color: #1a1a1a;
             margin: 0;
@@ -141,9 +142,9 @@
 
         .qr-code-wrapper {
             position: relative;
-            width: 90px;
-            height: 90px;
-            margin: 8px 0;
+            width: 70px;
+            height: 70px;
+            margin: 4px 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -151,13 +152,13 @@
 
         /* QR code canvas inside the wrapper */
         .qr-code-wrapper > div {
-            width: 90px;
-            height: 90px;
+            width: 70px;
+            height: 70px;
         }
 
         .qr-code-wrapper canvas {
-            width: 90px;
-            height: 90px;
+            width: 70px;
+            height: 70px;
         }
 
         .qr-logo {
@@ -165,8 +166,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             background: white;
             padding: 2px;
             border-radius: 3px;
@@ -176,18 +177,18 @@
 
         .qr-card-footer {
             text-align: center;
-            margin-top: 8px;
+            margin-top: 6px;
         }
 
         .qr-card-footer p {
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 600;
             color: #333;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
 
         .qr-card-footer span {
-            font-size: 7px;
+            font-size: 6px;
             color: #888;
             text-transform: uppercase;
         }
@@ -354,8 +355,8 @@
                 <?php if (!empty($t['qr_token'])): ?>
                     new QRCode(document.getElementById('qr-<?= $t['id'] ?>'), {
                         text: '<?= BASE_URL ?>/q?t=<?= $t['qr_token'] ?>',
-                        width: 90,
-                        height: 90,
+                        width: 70,
+                        height: 70,
                         colorDark: '#000000',
                         colorLight: '#ffffff',
                         correctLevel: QRCode.CorrectLevel.H,
