@@ -22,6 +22,10 @@
                 <?= $type === 'room' ? 'Phòng' : 'Bàn' ?></h2>
             <div style="display: flex; gap: 0.5rem; align-items: center;">
                 <span class="badge badge-gold"><?= count($tables) ?> <?= $type === 'room' ? 'phòng' : 'bàn' ?></span>
+                <a href="<?= BASE_URL ?>/admin/tables/qr-instructions" class="btn btn-outline btn-sm"
+                    title="In hướng dẫn sử dụng QR cho khách">
+                    <i class="fas fa-file-instruction"></i> In HDSD
+                </a>
                 <button type="button" class="btn btn-outline btn-sm" onclick="openBulkPrintModal()"
                     title="In hàng loạt mã QR">
                     <i class="fas fa-print"></i> In QR

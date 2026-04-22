@@ -198,4 +198,16 @@ class AdminTableController extends Controller
         }
         $this->redirect('/admin/tables?type=' . $type);
     }
+
+    /** GET /admin/tables/qr-instructions */
+    public function qrInstructions(): void
+    {
+        Auth::requireRole(ROLE_ADMIN, ROLE_IT);
+        
+        $this->view('layouts/admin', [
+            'view' => 'admin/tables/qr_instructions',
+            'pageTitle' => 'Hướng dẫn đặt món QR',
+            'pageSubtitle' => 'In hướng dẫn sử dụng QR code cho khách hàng',
+        ]);
+    }
 }

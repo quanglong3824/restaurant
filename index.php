@@ -179,6 +179,9 @@ $router->post('/admin/qr-codes/delete', 'AdminQrController', 'delete');
 $router->get('/admin/qr-codes/print-bulk', 'AdminQrController', 'printBulk');
 $router->post('/admin/qr-codes/print-bulk', 'AdminQrController', 'printBulkPost');
 
+// ── Admin: Tables QR Instructions ───────────────────────────
+$router->get('/admin/tables/qr-instructions', 'AdminTableController', 'qrInstructions');
+
 // ── Notifications: Real-time Polling ───────────────────────
 $router->get('/notifications', 'NotificationController', 'waiterIndex');
 $router->get('/api/notifications/poll', 'NotificationController', 'poll');
