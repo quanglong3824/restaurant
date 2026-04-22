@@ -279,13 +279,41 @@
                     <div class="help-section-content">
                         <h3><i class="fas fa-satellite-dish"></i> Giám Sát Trực Tiếp</h3>
                         <p class="help-desc">Theo dõi toàn bộ hoạt động của nhà hàng theo thời gian thực</p>
-                        <ul class="help-list">
-                            <li><strong>Xem trạng thái bàn:</strong> Bàn đang phục vụ, bàn trống, thời gian mở bàn</li>
-                            <li><strong>Theo dõi đơn hàng:</strong> Xem chi tiết món đã gọi, tổng tiền từng bàn</li>
-                            <li><strong>Doanh thu tạm tính:</strong> Thống kê doanh thu theo thời gian thực</li>
-                            <li><strong>Hoàn tất đơn:</strong> Nút "HOÀN TẤT & LƯU TRỮ" để kết thúc phiên bàn</li>
-                            <li><strong>Tự động reload:</strong> Dữ liệu tự động cập nhật mỗi 8 giây</li>
-                        </ul>
+                        <ol class="help-list help-steps">
+                            <li><strong>Truy cập:</strong> Vào menu "Giám sát trực tiếp" ở sidebar trái</li>
+                            <li><strong>Xem tổng quan:</strong> Nhìn lên thanh command bar trên cùng để xem:
+                                <ul>
+                                    <li>Số bàn đang phục vụ</li>
+                                    <li>Số bàn trống</li>
+                                    <li>Doanh thu tạm tính (tổng tiền các đơn đang mở)</li>
+                                </ul>
+                            </li>
+                            <li><strong>Xem chi tiết bàn:</strong> Mỗi bàn được hiển thị trong một card riêng với:
+                                <ul>
+                                    <li>Tên bàn và số khách</li>
+                                    <li>Danh sách món đã gọi (kèm ghi chú nếu có)</li>
+                                    <li>Tổng tiền tạm tính</li>
+                                    <li>Thời gian mở bàn</li>
+                                    <li>Trạng thái: "Đang ăn" hoặc "Đang chờ gọi món"</li>
+                                </ul>
+                            </li>
+                            <li><strong>Xử lý đơn hoàn tất:</strong> Khi khách ăn xong:
+                                <ul>
+                                    <li>Nhấn nút "HOÀN TẤT & LƯU TRỮ" màu vàng</li>
+                                    <li>Đơn sẽ được lưu vào lịch sử</li>
+                                    <li>Bàn chuyển sang trạng thái "Trống"</li>
+                                </ul>
+                            </li>
+                            <li><strong>Làm mới dữ liệu:</strong> 
+                                <ul>
+                                    <li>Hệ thống tự động reload mỗi 8 giây</li>
+                                    <li>Nhấn nút <i class="fas fa-sync-alt"></i> để refresh thủ công</li>
+                                </ul>
+                            </li>
+                        </ol>
+                        <div class="help-tip">
+                            <i class="fas fa-lightbulb"></i> <strong>Mẹo:</strong> Card bàn có border màu vàng khi có idle timer (khách đã vào nhưng chưa gọi món) - cần kiểm tra gấp!
+                        </div>
                     </div>
                 </div>
 
@@ -297,11 +325,36 @@
                     <div class="help-section-content">
                         <h3><i class="fas fa-mobile-alt"></i> Giám Sát Phiên QR</h3>
                         <p class="help-desc">Theo dõi các phiên khách quét mã QR đặt món</p>
-                        <ul class="help-list">
-                            <li><strong>Phiên đang hoạt động:</strong> Xem khách nào đang đặt món qua QR</li>
-                            <li><strong>Thời gian phiên:</strong> Theo dõi thời gian còn lại của phiên</li>
-                            <li><strong>Đơn hàng từ QR:</strong> Xem món khách tự đặt qua quét mã</li>
-                        </ul>
+                        <ol class="help-list help-steps">
+                            <li><strong>Truy cập:</strong> Vào menu "Giám sát phiên QR" ở sidebar</li>
+                            <li><strong>Xem danh sách phiên:</strong> Mỗi phiên QR hiển thị:
+                                <ul>
+                                    <li>Tên bàn/khách hàng</li>
+                                    <li>Thời gian bắt đầu phiên</li>
+                                    <li>Thời gian còn lại (countdown)</li>
+                                    <li>Danh sách món đã đặt</li>
+                                    <li>Tổng tiền tạm tính</li>
+                                </ul>
+                            </li>
+                            <li><strong>Xử lý phiên:</strong>
+                                <ul>
+                                    <li>Phiên mới: Khách vừa quét QR và đang chọn món</li>
+                                    <li>Phiên chờ: Khách đã chọn món xong, đang chờ chế biến</li>
+                                    <li>Phiên hoàn tất: Nhấn "HOÀN TẤT" để lưu phiên</li>
+                                </ul>
+                            </li>
+                            <li><strong>Lưu ý quan trọng:</strong>
+                                <ul>
+                                    <li>Thời gian phiên mặc định: 5 phút (300 giây)</li>
+                                    <li>Khi hết giờ: Phiên tự động hủy nếu khách chưa đặt món</li>
+                                    <li>Timer hiển thị màu cam: Còn 2-5 phút</li>
+                                    <li>Timer hiển thị màu đỏ: Còn dưới 2 phút - cần xử lý gấp!</li>
+                                </ul>
+                            </li>
+                        </ol>
+                        <div class="help-tip">
+                            <i class="fas fa-lightbulb"></i> <strong>Mẹo:</strong> Nếu khách cần thêm thời gian, hãy hướng dẫn họ quét lại QR để tạo phiên mới.
+                        </div>
                     </div>
                 </div>
 
@@ -313,11 +366,31 @@
                     <div class="help-section-content">
                         <h3><i class="fas fa-user-clock"></i> Nhân Sự & Ca Trực</h3>
                         <p class="help-desc">Quản lý nhân viên và phân công ca làm việc</p>
-                        <ul class="help-list">
-                            <li><strong>Danh sách nhân viên:</strong> Xem danh sách server/waiter</li>
-                            <li><strong>Phân ca:</strong> Gán nhân viên vào ca trực</li>
-                            <li><strong>Theo dõi hiệu suất:</strong> Xem số bàn/nhân viên phụ trách</li>
-                        </ul>
+                        <ol class="help-list help-steps">
+                            <li><strong>Thêm nhân viên mới:</strong>
+                                <ul>
+                                    <li>Vào menu "Nhân sự & Ca trực"</li>
+                                    <li>Nhấn "Thêm nhân viên"</li>
+                                    <li>Nhập thông tin: Họ tên, email, số điện thoại</li>
+                                    <li>Chọn vai trò: Server (phục vụ bàn) hoặc Waiter (order)</li>
+                                    <li>Nhấn "Lưu" để hoàn tất</li>
+                                </ul>
+                            </li>
+                            <li><strong>Phân ca trực:</strong>
+                                <ul>
+                                    <li>Chọn ngày cần xếp ca</li>
+                                    <li>Kéo thả nhân viên vào ca sáng/chiều/tối</li>
+                                    <li>Hệ thống tự động gửi thông báo cho nhân viên</li>
+                                </ul>
+                            </li>
+                            <li><strong>Theo dõi hiệu suất:</strong>
+                                <ul>
+                                    <li>Xem số bàn mỗi nhân viên phụ trách</li>
+                                    <li>Thống kê số đơn đã xử lý</li>
+                                    <li>Đánh giá chất lượng phục vụ</li>
+                                </ul>
+                            </li>
+                        </ol>
                     </div>
                 </div>
 
@@ -329,17 +402,66 @@
                     <div class="help-section-content">
                         <h3><i class="fas fa-utensils"></i> Quản Lý Món Ăn</h3>
                         <p class="help-desc">Thêm, sửa, xóa và quản lý thực đơn</p>
-                        <ul class="help-list">
-                            <li><strong>Thêm món mới:</strong> Nhập tên (VI/EN), mô tả, giá (VND), chọn danh mục, loại menu</li>
-                            <li><strong>Nhập giá:</strong> Giá trị nguyên tối đa 10 chữ số (VD: 99999, 198552, 1234567890)</li>
-                            <li><strong>Ảnh món:</strong> Upload ảnh đại diện và bộ sưu tập ảnh</li>
-                            <li><strong>Tags:</strong> Đánh dấu "Bán chạy", "Mới", "Cay", "Chay", "Đề xuất"</li>
-                            <li><strong>Tùy chọn ghi chú:</strong> Thêm các option như "Ít cay", "Không hành",...</li>
-                            <li><strong>Stock:</strong> Quản lý tồn kho, nhập -1 nếu không giới hạn</li>
-                            <li><strong>Lọc & Tìm kiếm:</strong> Lọc theo danh mục, trạng thái, loại menu, tag, khoảng giá</li>
-                            <li><strong>Toggle hiển thị:</strong> Bật/tắt hiển thị món trong menu</li>
-                            <li><strong>Toggle còn hàng:</strong> Đánh dấu món còn/hết hàng</li>
-                        </ul>
+                        <ol class="help-list help-steps">
+                            <li><strong>Thêm món mới:</strong>
+                                <ul>
+                                    <li>Vào menu "Danh sách món" → Nhấn "Thêm món"</li>
+                                    <li>Nhập tên món tiếng Việt (bắt buộc)</li>
+                                    <li>Nhập tên món tiếng Anh (nếu có)</li>
+                                    <li>Nhập mô tả ngắn về món</li>
+                                    <li><strong>Nhập giá:</strong> 
+                                        <ul>
+                                            <li>Chỉ nhập số nguyên (không nhập dấu chấm/phẩy thập phân)</li>
+                                            <li>Tối đa 10 chữ số (VD: 99999, 198552, 1234567890)</li>
+                                            <li>Đơn vị tính: VND</li>
+                                            <li>Ví dụ: Nhập "99999" thay vì "99.999" hoặc "99,999"</li>
+                                        </ul>
+                                    </li>
+                                    <li>Chọn danh mục (Khai vị, Món chính, Tráng miệng...)</li>
+                                    <li>Chọn loại menu (Món Á, Món Âu, Alacarte...)</li>
+                                    <li>Chọn phục vụ: Nhà hàng, Room Service, hoặc Cả hai</li>
+                                    <li>Upload ảnh đại diện (khuyến khích)</li>
+                                    <li>Thêm tags nếu cần (Bán chạy, Mới, Cay, Chay...)</li>
+                                    <li>Nhập stock: -1 = không giới hạn, hoặc số lượng cụ thể</li>
+                                    <li>Nhấn "Lưu" để hoàn tất</li>
+                                </ul>
+                            </li>
+                            <li><strong>Sửa món:</strong>
+                                <ul>
+                                    <li>Tìm món cần sửa (dùng search hoặc filter)</li>
+                                    <li>Nhấn nút <i class="fas fa-pen"></i> bên phải</li>
+                                    <li>Thay đổi thông tin cần thiết</li>
+                                    <li>Nhấn "Lưu thay đổi"</li>
+                                </ul>
+                            </li>
+                            <li><strong>Xóa món:</strong>
+                                <ul>
+                                    <li>Nhấn nút <i class="fas fa-trash"></i> màu đỏ</li>
+                                    <li>Xác nhận xóa trong popup</li>
+                                    <li><strong>Cảnh báo:</strong> Món đã có trong đơn hàng không nên xóa!</li>
+                                </ul>
+                            </li>
+                            <li><strong>Toggle nhanh:</strong>
+                                <ul>
+                                    <li>Nút "Hiển thị" (mắt): Bật/tắt hiển thị trong menu</li>
+                                    <li>Nút "Còn hàng": Đánh thức món còn/hết hàng</li>
+                                </ul>
+                            </li>
+                            <li><strong>Lọc & Tìm kiếm:</strong>
+                                <ul>
+                                    <li>Search: Tìm theo tên món (VI/EN)</li>
+                                    <li>Danh mục: Lọc theo nhóm món</li>
+                                    <li>Phục vụ: Nhà hàng / Room Service / Cả hai</li>
+                                    <li>Loại menu: Món Á / Món Âu / Alacarte</li>
+                                    <li>Tags: Bán chạy / Mới / Cay / Chay / Đề xuất</li>
+                                    <li>Tồn kho: Còn hàng / Sắp hết / Hết hàng</li>
+                                    <li>Khoảng giá: Dưới 50k / 50k-100k / 100k-200k / Trên 200k</li>
+                                </ul>
+                            </li>
+                        </ol>
+                        <div class="help-tip">
+                            <i class="fas fa-lightbulb"></i> <strong>Mẹo:</strong> Nên upload ảnh món để thực đơn đẹp hơn. Ảnh nên có kích thước tối thiểu 800x600px.
+                        </div>
                     </div>
                 </div>
 
@@ -351,11 +473,39 @@
                     <div class="help-section-content">
                         <h3><i class="fas fa-layer-group"></i> Set & Combo</h3>
                         <p class="help-desc">Tạo các set món combo theo nhóm</p>
-                        <ul class="help-list">
-                            <li><strong>Tạo set mới:</strong> Đặt tên, mô tả, giá set</li>
-                            <li><strong>Thêm món vào set:</strong> Chọn các món lẻ để đưa vào set</li>
-                            <li><strong>Sắp xếp:</strong> Tùy chỉnh thứ tự hiển thị</li>
-                        </ul>
+                        <ol class="help-list help-steps">
+                            <li><strong>Tạo set mới:</strong>
+                                <ul>
+                                    <li>Vào menu "Set & Combo" → Nhấn "Thêm set"</li>
+                                    <li>Nhập tên set (VD: "Set Gia Đình 4 Người")</li>
+                                    <li>Nhập mô tả ngắn về set</li>
+                                    <li>Nhập giá set (thường rẻ hơn mua lẻ)</li>
+                                    <li>Upload ảnh đại diện cho set</li>
+                                    <li>Chọn loại menu phục vụ</li>
+                                    <li>Nhấn "Lưu" để tạo set</li>
+                                </ul>
+                            </li>
+                            <li><strong>Thêm món vào set:</strong>
+                                <ul>
+                                    <li>Mở set vừa tạo</li>
+                                    <li>Nhấn "Thêm món vào set"</li>
+                                    <li>Chọn món từ danh sách có sẵn</li>
+                                    <li>Nhập số lượng mỗi món trong set</li>
+                                    <li>Sắp xếp thứ tự hiển thị của các món</li>
+                                    <li>Nhấn "Lưu" để hoàn tất</li>
+                                </ul>
+                            </li>
+                            <li><strong>Quản lý set:</strong>
+                                <ul>
+                                    <li>Sửa thông tin set: Nhấn nút <i class="fas fa-pen"></i></li>
+                                    <li>Xóa set: Nhấn nút <i class="fas fa-trash"></i></li>
+                                    <li>Toggle hiển thị: Bật/tắt set trong menu</li>
+                                </ul>
+                            </li>
+                        </ol>
+                        <div class="help-tip">
+                            <i class="fas fa-lightbulb"></i> <strong>Mẹo:</strong> Set combo nên có giá ưu đãi hơn 10-20% so với mua lẻ để khuyến khích khách gọi.
+                        </div>
                     </div>
                 </div>
 
@@ -397,15 +547,69 @@
                     <div class="help-section-content">
                         <h3><i class="fas fa-table-cells-large"></i> Sơ Đồ Bàn Ăn</h3>
                         <p class="help-desc">Quản lý bàn ăn và phòng lưu trú</p>
-                        <ul class="help-list">
-                            <li><strong>Thêm bàn/phòng:</strong> Nhập tên, khu vực, sức chứa</li>
-                            <li><strong>Chuyển tab:</strong> Chọn "Bàn Nhà Hàng" hoặc "Khách Lưu Trú"</li>
-                            <li><strong>Tạo QR:</strong> Click nút <i class="fas fa-qrcode"></i> để tạo mã QR cho bàn</li>
-                            <li><strong>Reset QR:</strong> Tạo lại mã QR mới (cảnh báo nếu đã in)</li>
-                            <li><strong>In QR:</strong> In mã QR đơn lẻ hoặc in hàng loạt</li>
-                            <li><strong>In hướng dẫn:</strong> In giấy hướng dẫn sử dụng QR cho khách</li>
-                            <li><strong>Trạng thái:</strong> Xem bàn trống/có khách, đang dùng/tạm ẩn</li>
-                        </ul>
+                        <ol class="help-list help-steps">
+                            <li><strong>Thêm bàn/phòng mới:</strong>
+                                <ul>
+                                    <li>Vào menu "Sơ đồ bàn ăn"</li>
+                                    <li>Chọn tab: "Bàn Nhà Hàng" hoặc "Khách Lưu Trú (Phòng)"</li>
+                                    <li>Nhập tên bàn/phòng (VD: "Bàn 01" hoặc "Phòng 701")</li>
+                                    <li>Nhập khu vực (VD: "Tầng 1", "Sân vườn", "Tầng 7"...)</li>
+                                    <li>Nhập sức chứa (số người tối đa)</li>
+                                    <li>Nhập thứ tự hiển thị (số nhỏ hiển thị trước)</li>
+                                    <li>Nhấn "Thêm bàn/phòng"</li>
+                                </ul>
+                            </li>
+                            <li><strong>Tạo mã QR cho bàn:</strong>
+                                <ul>
+                                    <li>Tìm bàn cần tạo QR trong danh sách</li>
+                                    <li>Nhấn nút <i class="fas fa-qrcode"></i> màu xanh</li>
+                                    <li>Hệ thống tự động tạo mã QR</li>
+                                    <li>Popup hiện ra với mã QR và URL</li>
+                                    <li>Nhấn "In QR" hoặc "Tải ảnh" để lưu</li>
+                                </ul>
+                            </li>
+                            <li><strong>Reset mã QR:</strong>
+                                <ul>
+                                    <li>Nhấn nút <i class="fas fa-sync-alt"></i> màu vàng</li>
+                                    <li><strong>Cảnh báo:</strong> Nếu QR đã in, mã cũ sẽ không dùng được!</li>
+                                    <li>Xác nhận reset trong popup</li>
+                                    <li>In lại QR mới cho bàn</li>
+                                </ul>
+                            </li>
+                            <li><strong>In hàng loạt QR:</strong>
+                                <ul>
+                                    <li>Nhấn nút "In QR" ở góc phải trên</li>
+                                    <li>Chọn các bàn cần in (dùng checkbox)</li>
+                                    <li>Nhấn "In đã chọn"</li>
+                                    <li>Hệ thống mở trang in với layout A4 (10 QR/trang)</li>
+                                </ul>
+                            </li>
+                            <li><strong>In hướng dẫn sử dụng:</strong>
+                                <ul>
+                                    <li>Nhấn nút "In HDSD" ở góc phải trên</li>
+                                    <li>Giấy hướng dẫn khách cách quét QR và đặt món</li>
+                                    <li>Nên in và đặt tại mỗi bàn</li>
+                                </ul>
+                            </li>
+                            <li><strong>Quản lý trạng thái:</strong>
+                                <ul>
+                                    <li>"Trống": Bàn không có khách</li>
+                                    <li>"Có khách": Bàn đang có đơn hàng</li>
+                                    <li>"Đang dùng": Bàn được hiển thị trong hệ thống</li>
+                                    <li>"Tạm ẩn": Bàn bị ẩn (không cho khách đặt)</li>
+                                </ul>
+                            </li>
+                            <li><strong>Sửa/Xóa bàn:</strong>
+                                <ul>
+                                    <li>Sửa: Nhấn nút <i class="fas fa-pen"></i></li>
+                                    <li>Xóa: Nhấn nút <i class="fas fa-trash"></i> màu đỏ</li>
+                                    <li><strong>Lưu ý:</strong> Bàn đang có khách không thể xóa!</li>
+                                </ul>
+                            </li>
+                        </ol>
+                        <div class="help-tip">
+                            <i class="fas fa-lightbulb"></i> <strong>Mẹo:</strong> Nên nhóm bàn theo khu vực để dễ quản lý. Đặt tên khu vực rõ ràng như "Tầng 1", "Sân vườn", "VIP"...
+                        </div>
                     </div>
                 </div>
 
@@ -805,6 +1009,30 @@
 
         .help-footer-text i {
             color: #d4af37;
+        }
+
+        /* Help Tip Box */
+        .help-tip {
+            margin-top: 1rem;
+            padding: 1rem 1.25rem;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #d4af37;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: #92400e;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .help-tip i {
+            font-size: 1rem;
+            flex-shrink: 0;
+            margin-top: 0.125rem;
+        }
+
+        .help-tip strong {
+            color: #78350f;
         }
 
         @media (max-width: 768px) {
