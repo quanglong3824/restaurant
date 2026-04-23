@@ -348,6 +348,13 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
+                <?php if (!CUSTOMER_CONFIG['devMode']): ?>
+                <!-- Location Status Badge -->
+                <div id="locStatusBadge" class="loc-status-badge loc-checking" onclick="showLocationStatus()" style="display:none;">
+                    <div class="loc-dot"></div>
+                    <span id="locStatusText">Định vị</span>
+                </div>
+                <?php endif; ?>
                 <button id="langToggle" onclick="toggleLanguage()" class="lang-toggle-btn">
                     <i class="fas fa-globe me-1"></i><span id="langText">EN</span>
                 </button>

@@ -196,144 +196,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ── Location Status Indicator ────────────────────────────
+// ── Location Status Badge (in Header) ────────────────────────────
 function createLocationIndicator() {
-    if (document.getElementById('locStatusIndicator')) return;
+    // Use badge in header instead of floating indicator
+    const badge = document.getElementById('locStatusBadge');
+    if (!badge) return;
     
-    // In DEV_MODE, show a special indicator
+    // Show badge
+    badge.style.display = 'flex';
+    
+    // In DEV_MODE, show special status
     if (CUSTOMER_CONFIG.devMode) {
-        const indicator = document.createElement('div');
-        indicator.id = 'locStatusIndicator';
-        indicator.innerHTML = `
-            <div class="loc-dot" style="background:#8b5cf6;box-shadow:0 0 8px rgba(139,92,246,0.6);"></div>
-            <span class="loc-label" style="color:#8b5cf6;">DEV MODE</span>
-        `;
-        document.body.appendChild(indicator);
-        
-        // Add click to show dev info
-        indicator.addEventListener('click', () => {
+        updateLocationIndicator('granted', 'DEV MODE');
+        badge.addEventListener('click', () => {
             showToast('🔧 DEV MODE: Kiểm tra vị trí đã tắt. Bạn có thể test từ bất kỳ đâu.');
         });
-        
-        // Add dev mode styles
-        const style = document.createElement('style');
-        style.textContent = `
-            #locStatusIndicator {
-                position: fixed;
-                bottom: 90px;
-                left: 12px;
-                z-index: 9998;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                background: rgba(139, 92, 246, 0.15);
-                backdrop-filter: blur(10px);
-                padding: 6px 12px 6px 8px;
-                border-radius: 50px;
-                box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-                cursor: pointer;
-                transition: all 0.3s ease;
-                font-family: inherit;
-                border: 1px solid rgba(139, 92, 246, 0.4);
-            }
-            #locStatusIndicator:active { transform: scale(0.95); }
-            #locStatusIndicator .loc-dot {
-                width: 10px; height: 10px;
-                border-radius: 50%;
-                animation: devPulse 2s infinite;
-                flex-shrink: 0;
-            }
-            #locStatusIndicator .loc-label {
-                font-size: 0.7rem;
-                font-weight: 800;
-                white-space: nowrap;
-                letter-spacing: 0.5px;
-            }
-            @keyframes devPulse {
-                0%, 100% { transform: scale(1); opacity: 1; }
-                50% { transform: scale(1.3); opacity: 0.7; }
-            }
-        `;
-        document.head.appendChild(style);
         return;
     }
     
-    const indicator = document.createElement('div');
-    indicator.id = 'locStatusIndicator';
-    indicator.innerHTML = `
-        <div class="loc-dot"></div>
-        <span class="loc-label">Định vị</span>
-    `;
-    document.body.appendChild(indicator);
-
-    // Add styles
-    const style = document.createElement('style');
-    style.id = 'locIndicatorStyles';
-    style.textContent = `
-        #locStatusIndicator {
-            position: fixed;
-            bottom: 90px;
-            left: 12px;
-            z-index: 9998;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(10px);
-            padding: 6px 12px 6px 8px;
-            border-radius: 50px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-        #locStatusIndicator:active { transform: scale(0.95); }
-        #locStatusIndicator .loc-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            background: #f59e0b;
-            box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
-            transition: all 0.3s;
-            flex-shrink: 0;
-        }
-        #locStatusIndicator .loc-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: #94a3b8;
-            white-space: nowrap;
-            transition: color 0.3s;
-        }
-        #locStatusIndicator.loc-granted .loc-dot {
-            background: #10b981;
-            box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
-            animation: locPulse 2s infinite;
-        }
-        #locStatusIndicator.loc-granted .loc-label { color: #10b981; }
-        #locStatusIndicator.loc-denied .loc-dot {
-            background: #ef4444;
-            box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
-        }
-        #locStatusIndicator.loc-denied .loc-label { color: #ef4444; }
-        #locStatusIndicator.loc-checking .loc-dot {
-            background: #f59e0b;
-            animation: locBlink 1s infinite;
-        }
-        @keyframes locPulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; }
-        }
-        @keyframes locBlink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-    `;
-    document.head.appendChild(style);
-
-    // Kiểm tra trạng thái ban đầu
+    // Check initial status
     updateLocationIndicator('checking', t('locationChecking'));
     
-    // Click vào indicator để xem chi tiết
-    indicator.addEventListener('click', () => {
+    // Click to show status
+    badge.addEventListener('click', () => {
         const isVerified = localStorage.getItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`) === 'true';
         if (isVerified) {
             showToast(t('locationVerified'));
@@ -344,12 +229,17 @@ function createLocationIndicator() {
 }
 
 function updateLocationIndicator(status, label) {
-    const el = document.getElementById('locStatusIndicator');
-    if (!el) return;
-    el.className = ''; // reset
-    el.classList.add(`loc-${status}`);
-    const labelEl = el.querySelector('.loc-label');
-    if (labelEl) labelEl.textContent = label || 'Định vị';
+    const badge = document.getElementById('locStatusBadge');
+    const labelEl = document.getElementById('locStatusText');
+    if (!badge) return;
+    
+    // Reset classes
+    badge.classList.remove('loc-granted', 'loc-denied', 'loc-checking');
+    badge.classList.add(`loc-${status}`);
+    
+    if (labelEl) {
+        labelEl.textContent = label || 'Định vị';
+    }
 }
 
 let locationWatcher = null;
