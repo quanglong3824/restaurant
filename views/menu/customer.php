@@ -587,6 +587,133 @@ function submitOrder() {
     alert('Tính năng đang được cập nhật. Vui lòng liên hệ nhân viên để đặt món.');
 }
 
+// Scroll Spy Navigation - Tự động highlight category khi cuộn
+function initScrollSpy() {
+    const sections = document.querySelectorAll('.menu-section');
+    const navLinks = document.querySelectorAll('.cat-pill');
+    
+    if (sections.length === 0) return;
+    
+    const observerOptions = {
+        root: null,
+        rootMargin: '-100px 0px -60% 0px',
+        threshold: 0
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Remove active from all
+                navLinks.forEach(link => link.classList.remove('active'));
+                
+                // Add active to current section's nav link
+                const id = entry.target.getAttribute('id');
+                const activeLink = document.querySelector(`.cat-pill[data-category="${id.replace('cat-', '')}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                    
+                    // Auto-scroll nav to keep active pill visible
+                    activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            }
+        });
+    }, observerOptions);
+    
+    sections.forEach(section => observer.observe(section));
+}
+
+// Category pill click - smooth scroll
+document.querySelectorAll('.cat-pill').forEach(pill => {
+    pill.addEventListener('click', (e) => {
+        e.preventDefault();
+        const category = pill.dataset.category;
+        
+        // Remove active from all
+        document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        
+        if (category === 'all') {
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            // Scroll to section
+            const section = document.getElementById(`cat-${category}`);
+            if (section) {
+                const headerOffset = 180; // Account for sticky headers
+                const sectionTop = section.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+                window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+            }
+        }
+    });
+});
+
+// Type tab filter with scroll reset
+document.querySelectorAll('.type-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.type-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const type = btn.dataset.type;
+        
+        // Show/hide sections based on type
+        document.querySelectorAll('.menu-section').forEach(sec => {
+            sec.style.display = (type === 'all' || sec.dataset.type === type) ? '' : 'none';
+        });
+        
+        // Show/hide category pills based on type
+        document.querySelectorAll('.cat-pill[data-type]').forEach(pill => {
+            pill.style.display = (type === 'all' || pill.dataset.type === type) ? '' : 'none';
+        });
+        
+        // Re-init scroll spy for visible sections
+        setTimeout(initScrollSpy, 100);
+    });
+});
+
+// Search
+const _searchEl = document.getElementById('menuSearch');
+const _clearBtn = document.getElementById('btnClearSearch');
+if (_searchEl) {
+    _searchEl.addEventListener('input', _filterMenu);
+    function _filterMenu() {
+        const q = _searchEl.value.trim().toLowerCase();
+        _clearBtn.style.display = q ? '' : 'none';
+        let anyVisible = false;
+        document.querySelectorAll('.menu-item-card').forEach(card => {
+            const match = card.dataset.name.includes(q) || card.dataset.nameEn.includes(q);
+            card.style.display = match ? 'flex' : 'none';
+            if (match) anyVisible = true;
+        });
+        document.querySelectorAll('.menu-section').forEach(sec => {
+            const hasVisible = [...sec.querySelectorAll('.menu-item-card')].some(c => c.style.display !== 'none');
+            sec.style.display = hasVisible ? '' : 'none';
+        });
+        document.getElementById('searchNoResult').style.display = (!anyVisible && q) ? '' : 'none';
+    }
+}
+function clearMenuSearch() {
+    if (_searchEl) { _searchEl.value = ''; _filterMenu(); }
+}
+
+// Initialize scroll spy when menu wrapper is shown
+function initMenuNavigation() {
+    setTimeout(initScrollSpy, 300);
+}
+
+// Call init after location verified
+const originalBtnClick = document.getElementById('btnAllowLocation')?.onclick;
+if (originalBtnClick) {
+    document.getElementById('btnAllowLocation').addEventListener('click', () => {
+        setTimeout(initMenuNavigation, 500);
+    });
+} else {
+    // If already verified, init immediately
+    const _tid = <?= (int)$table['id'] ?>;
+    const _key = 'locationVerified_table_' + _tid;
+    if (localStorage.getItem(_key) === 'true') {
+        initMenuNavigation();
+    }
+}
+
 // Location handling
 document.getElementById('btnAllowLocation')?.addEventListener('click', () => {
     if ('geolocation' in navigator) {
