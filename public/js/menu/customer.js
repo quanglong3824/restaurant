@@ -708,8 +708,14 @@ function setupSearch() {
     });
 }
 
+/**
+ * Format currency - European Standard
+ * Format: 1000000 → "1.000.000 VND"
+ */
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount).replace('₫', '₫');
+    const num = parseFloat(amount) || 0;
+    // Format with thousand separator (dot) and add VND suffix
+    return num.toLocaleString('de-DE') + ' VND';
 }
 
 function loadCart() {

@@ -4,11 +4,12 @@
 // ============================================================
 
 /**
- * Format giá tiền VND
+ * Format giá tiền VND - Chuẩn Châu Âu
+ * Format: 1000000 → "1.000.000 VND"
  */
 function formatPrice(int|float|null $amount): string
 {
-    return number_format((float) $amount, 0, ',', '.') . '₫';
+    return number_format((float) $amount, 0, ',', '.') . ' VND';
 }
 
 /**
