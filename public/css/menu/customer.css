@@ -5,6 +5,20 @@
    Accent Font: Playfair Display (Serif, Luxury, Headlines)
    ============================================================ */
 
+/* Prevent double-tap zoom and text selection on mobile */
+* {
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Allow text selection in input/textarea */
+input, textarea, [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
 :root {
     --gold: #c5a059;
     --gold-dark: #a68341;

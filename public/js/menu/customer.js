@@ -315,7 +315,12 @@ function checkLocation() {
     if (localStorage.getItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`) === 'true') {
         if (overlay) overlay.style.display = 'none';
         if (wrapper) wrapper.style.display = 'block';
+        
+        // Show badge in header and start watcher
+        const badge = document.getElementById('locStatusBadge');
+        if (badge) badge.style.display = 'flex';
         updateLocationIndicator('granted', 'Đã xác thực');
+        startLocationWatcher();
         return;
     }
 
