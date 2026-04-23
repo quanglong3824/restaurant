@@ -170,33 +170,21 @@ function _getCookie(name) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-     // Skip location features in DEV_MODE
-     if (CUSTOMER_CONFIG.devMode) {
-         console.log("%c DEV MODE: Location checking disabled ", "background:#10b981;color:#fff;padding:5px;border-radius:5px;font-weight:bold");
-         // Auto-verify location and show menu
-         localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
-         document.getElementById('locationOverlay')?.style.setProperty('display', 'none');
-         document.getElementById('menuWrapper')?.style.setProperty('display', 'block');
-         document.getElementById('frozenOverlay')?.style.setProperty('display', 'none');
-     }
-     
-     createLocationIndicator();
-     // Always initialize location features, but handle dev mode appropriately
-     if (CUSTOMER_CONFIG.devMode) {
-         // In dev mode, bypass location verification but still set up indicators
-         localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
-         document.getElementById('locationOverlay')?.style.setProperty('display', 'none');
-         document.getElementById('menuWrapper')?.style.setProperty('display', 'block');
-         document.getElementById('frozenOverlay')?.style.setProperty('display', 'none');
-         
-         // Show badge in header and start watcher
-         const badge = document.getElementById('locStatusBadge');
-         if (badge) badge.style.display = 'flex';
-         updateLocationIndicator('granted', 'DEV MODE');
-     } else {
-         checkLocation();
-         startLocationWatcher();
-     }
+    // Skip location features in DEV_MODE
+    if (CUSTOMER_CONFIG.devMode) {
+        console.log("%c DEV MODE: Location checking disabled ", "background:#10b981;color:#fff;padding:5px;border-radius:5px;font-weight:bold");
+        // Auto-verify location and show menu
+        localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
+        document.getElementById('locationOverlay')?.style.setProperty('display', 'none');
+        document.getElementById('menuWrapper')?.style.setProperty('display', 'block');
+        document.getElementById('frozenOverlay')?.style.setProperty('display', 'none');
+    }
+    
+    createLocationIndicator();
+    if (!CUSTOMER_CONFIG.devMode) {
+        checkLocation();
+        startLocationWatcher();
+    }
     loadCart();
     setupCategoryNav();
     setupSearch();
@@ -208,38 +196,160 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ── Location Status Badge (in Header) ────────────────────────────
+// ── Location Status Indicator ────────────────────────────
 function createLocationIndicator() {
-    // Use badge in header instead of floating indicator
-    const badge = document.getElementById('locStatusBadge');
-    if (!badge) return;
+    if (document.getElementById('locStatusIndicator')) return;
     
-    // In DEV_MODE, show special status
+    // In DEV_MODE, show a special indicator
     if (CUSTOMER_CONFIG.devMode) {
-        badge.style.display = 'flex';
-        updateLocationIndicator('granted', 'DEV MODE');
-        badge.addEventListener('click', () => {
+        const indicator = document.createElement('div');
+        indicator.id = 'locStatusIndicator';
+        indicator.innerHTML = `
+            <div class="loc-dot" style="background:#8b5cf6;box-shadow:0 0 8px rgba(139,92,246,0.6);"></div>
+            <span class="loc-label" style="color:#8b5cf6;">DEV MODE</span>
+        `;
+        document.body.appendChild(indicator);
+        
+        // Add click to show dev info
+        indicator.addEventListener('click', () => {
             showToast('🔧 DEV MODE: Kiểm tra vị trí đã tắt. Bạn có thể test từ bất kỳ đâu.');
         });
+        
+        // Add dev mode styles
+        const style = document.createElement('style');
+        style.textContent = `
+            #locStatusIndicator {
+                position: fixed;
+                bottom: 90px;
+                left: 12px;
+                z-index: 9998;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                background: rgba(139, 92, 246, 0.15);
+                backdrop-filter: blur(10px);
+                padding: 6px 12px 6px 8px;
+                border-radius: 50px;
+                box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-family: inherit;
+                border: 1px solid rgba(139, 92, 246, 0.4);
+            }
+            #locStatusIndicator:active { transform: scale(0.95); }
+            #locStatusIndicator .loc-dot {
+                width: 10px; height: 10px;
+                border-radius: 50%;
+                animation: devPulse 2s infinite;
+                flex-shrink: 0;
+            }
+            #locStatusIndicator .loc-label {
+                font-size: 0.7rem;
+                font-weight: 800;
+                white-space: nowrap;
+                letter-spacing: 0.5px;
+            }
+            @keyframes devPulse {
+                0%, 100% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.3); opacity: 0.7; }
+            }
+        `;
+        document.head.appendChild(style);
         return;
     }
     
-    // Hide badge initially - will show after verification
-    badge.style.display = 'none';
+    const indicator = document.createElement('div');
+    indicator.id = 'locStatusIndicator';
+    indicator.innerHTML = `
+        <div class="loc-dot"></div>
+        <span class="loc-label">Định vị</span>
+    `;
+    document.body.appendChild(indicator);
+
+    // Add styles
+    const style = document.createElement('style');
+    style.id = 'locIndicatorStyles';
+    style.textContent = `
+        #locStatusIndicator {
+            position: fixed;
+            bottom: 90px;
+            left: 12px;
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 6px 12px 6px 8px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        #locStatusIndicator:active { transform: scale(0.95); }
+        #locStatusIndicator .loc-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #f59e0b;
+            box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        #locStatusIndicator .loc-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #94a3b8;
+            white-space: nowrap;
+            transition: color 0.3s;
+        }
+        #locStatusIndicator.loc-granted .loc-dot {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+            animation: locPulse 2s infinite;
+        }
+        #locStatusIndicator.loc-granted .loc-label { color: #10b981; }
+        #locStatusIndicator.loc-denied .loc-dot {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+        }
+        #locStatusIndicator.loc-denied .loc-label { color: #ef4444; }
+        #locStatusIndicator.loc-checking .loc-dot {
+            background: #f59e0b;
+            animation: locBlink 1s infinite;
+        }
+        @keyframes locPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
+        @keyframes locBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Kiểm tra trạng thái ban đầu
+    updateLocationIndicator('checking', t('locationChecking'));
+    
+    // Click vào indicator để xem chi tiết
+    indicator.addEventListener('click', () => {
+        const isVerified = localStorage.getItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`) === 'true';
+        if (isVerified) {
+            showToast(t('locationVerified'));
+        } else {
+            showToast(t('locationNotVerified'));
+        }
+    });
 }
 
 function updateLocationIndicator(status, label) {
-    const badge = document.getElementById('locStatusBadge');
-    const labelEl = document.getElementById('locStatusText');
-    if (!badge) return;
-    
-    // Reset classes
-    badge.classList.remove('loc-granted', 'loc-denied', 'loc-checking');
-    badge.classList.add(`loc-${status}`);
-    
-    if (labelEl) {
-        labelEl.textContent = label || 'Định vị';
-    }
+    const el = document.getElementById('locStatusIndicator');
+    if (!el) return;
+    el.className = ''; // reset
+    el.classList.add(`loc-${status}`);
+    const labelEl = el.querySelector('.loc-label');
+    if (labelEl) labelEl.textContent = label || 'Định vị';
 }
 
 let locationWatcher = null;
@@ -327,12 +437,7 @@ function checkLocation() {
     if (localStorage.getItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`) === 'true') {
         if (overlay) overlay.style.display = 'none';
         if (wrapper) wrapper.style.display = 'block';
-        
-        // Show badge in header and start watcher
-        const badge = document.getElementById('locStatusBadge');
-        if (badge) badge.style.display = 'flex';
         updateLocationIndicator('granted', 'Đã xác thực');
-        startLocationWatcher();
         return;
     }
 
@@ -429,11 +534,6 @@ function checkLocation() {
                         btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
                     }
                     updateLocationIndicator('granted', `OK (${Math.round(distance)}m)`);
-                    
-                    // Show badge in header
-                    const badge = document.getElementById('locStatusBadge');
-                    if (badge) badge.style.display = 'flex';
-                    
                     startLocationWatcher();
                     setTimeout(() => {
                         if (overlay) {
@@ -1302,129 +1402,15 @@ function initAll() {
         }
     }, 200);
     
-     // Handle location verification button with enhanced debugging
-     const btn = document.getElementById('btnAllowLocation');
-     if (btn) {
-         console.log('Binding click event to btnAllowLocation');
-         btn.addEventListener('click', async () => {
-             console.log('BtnAllowLocation clicked! Starting location verification...');
-             
-             // Request location permission and verify
-             try {
-                 // Show loading state
-                 btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> ĐANG XÁC THỰC...';
-                 btn.disabled = true;
-                 
-                 const position = await new Promise((resolve, reject) => {
-                     if (!navigator.geolocation) {
-                         reject(new Error('Geolocation không được hỗ trợ'));
-                         return;
-                     }
-                     navigator.geolocation.getCurrentPosition(resolve, reject, {
-                         enableHighAccuracy: true,
-                         timeout: 10000,
-                         maximumAge: 60000
-                     });
-                 });
-                 
-                 console.log('Location obtained:', position.coords);
-                 
-                 // Calculate distance to table location
-                 const tableLat = CUSTOMER_CONFIG.tableLocation?.lat;
-                 const tableLng = CUSTOMER_CONFIG.tableLocation?.lng;
-                 
-                 if (tableLat && tableLng) {
-                     const distance = calculateDistance(
-                         position.coords.latitude,
-                         position.coords.longitude,
-                         tableLat,
-                         tableLng
-                     );
-                     
-                     console.log('Calculated distance:', distance, 'meters');
-                     
-                     // Store location data
-                     const locationData = {
-                         lat: position.coords.latitude,
-                         lng: position.coords.longitude,
-                         accuracy: position.coords.accuracy,
-                         timestamp: Date.now(),
-                         distance: distance
-                     };
-                     
-                     localStorage.setItem(`qr_location_${CUSTOMER_CONFIG.tableId}`, JSON.stringify(locationData));
-                     localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
-                     
-                     // Save to server
-                     try {
-                         const response = await fetch(`${BASE_URL}/qr/menu/save-location`, {
-                             method: 'POST',
-                             headers: {
-                                 'Content-Type': 'application/json',
-                             },
-                             body: JSON.stringify({
-                                 table_id: CUSTOMER_CONFIG.tableId,
-                                 location_data: JSON.stringify(locationData)
-                             })
-                         });
-                         console.log('Location saved to server:', response.ok);
-                     } catch (saveError) {
-                         console.error('Failed to save location to server:', saveError);
-                     }
-                 } else {
-                     // If no table location, just mark as verified
-                     console.log('No table location found, marking as verified');
-                     localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
-                 }
-                 
-                 // Hide location overlay and show menu
-                 const overlay = document.getElementById('locationOverlay');
-                 const wrapper = document.getElementById('menuWrapper');
-                 
-                 if (overlay) {
-                     overlay.style.display = 'none';
-                     console.log('Location overlay hidden');
-                 }
-                 if (wrapper) {
-                     wrapper.style.display = 'block';
-                     console.log('Menu wrapper shown');
-                 }
-                 
-                 // Show location status badge
-                 const badge = document.getElementById('locStatusBadge');
-                 if (badge) {
-                     badge.style.display = 'flex';
-                     console.log('Location status badge shown');
-                 }
-                 updateLocationIndicator('granted', 'Verified');
-                 
-                 // Initialize menu components
-                 setTimeout(() => {
-                     initTypeFilter();
-                     initCategoryPillClick();
-                     initMenuNavigation();
-                     console.log('Menu components initialized');
-                 }, 500);
-                 
-                 // Restore button state
-                 btn.innerHTML = '<i class="fas fa-check-circle me-2"></i> XÁC THỰC THÀNH CÔNG!';
-                 btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                 
-             } catch (error) {
-                 console.error('Location verification failed:', error);
-                 const errorDiv = document.getElementById('locationError');
-                 if (errorDiv) {
-                     errorDiv.style.display = 'block';
-                     errorDiv.textContent = error.message || 'Không thể xác nhận vị trí. Vui lòng thử lại.';
-                 }
-                 
-                 // Restore button state
-                 btn.innerHTML = '<i class="fas fa-location-arrow me-2"></i> THỬ LẠI XÁC THỰC';
-                 btn.disabled = false;
-                 btn.style.background = 'linear-gradient(135deg, #d4af37, #b8860b)';
-             }
-         });
-     } else {
-         console.error('btnAllowLocation element not found!');
-     }
+    // Also init on location verify
+    const btn = document.getElementById('btnAllowLocation');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            setTimeout(() => {
+                initTypeFilter();
+                initCategoryPillClick();
+                initMenuNavigation();
+            }, 500);
+        });
+    }
 }

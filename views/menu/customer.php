@@ -80,15 +80,13 @@ if ($hasItems) {
 ═══════════════════════════════════════════════════════ -->
 <script>
 // Send location data to server for persistent storage
-// Note: CUSTOMER_CONFIG chưa được định nghĩa ở đây, dùng PHP trực tiếp
 (function sendLocationToServer() {
-    var tableId = <?= (int)$table['id'] ?>;
-    var locationData = localStorage.getItem('qr_location_' + tableId);
+    var locationData = localStorage.getItem('qr_location_' + CUSTOMER_CONFIG.tableId);
     if (locationData) {
         fetch('<?= BASE_URL ?>/qr/menu/location', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: 'location_data=' + encodeURIComponent(locationData) + '&table_id=' + tableId
+            body: 'location_data=' + encodeURIComponent(locationData) + '&table_id=' + <?= $table['id'] ?>
         }).catch(function(){});
     }
 })();
@@ -118,7 +116,7 @@ if ($hasItems) {
         })();
     </script>
     <div class="loc-card">
-        <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
+u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
         <h3 class="loc-title" data-vi="XÁC NHẬN HIỆN DIỆN / CONFIRM YOUR PRESENCE" data-en="CONFIRM YOUR PRESENCE">XÁC NHẬN HIỆN DIỆN / CONFIRM YOUR PRESENCE</h3>
         <p class="loc-sub">AURORA HOTEL PLAZA</p>
         <div id="liveDistance" class="loc-dist-badge" style="display:none;">
@@ -350,13 +348,6 @@ if ($hasItems) {
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
-                <?php if (!CUSTOMER_CONFIG['devMode']): ?>
-                <!-- Location Status Badge -->
-                <div id="locStatusBadge" class="loc-status-badge loc-checking" onclick="showLocationStatus()" style="display:none;">
-                    <div class="loc-dot"></div>
-                    <span id="locStatusText">Định vị</span>
-                </div>
-                <?php endif; ?>
                 <button id="langToggle" onclick="toggleLanguage()" class="lang-toggle-btn">
                     <i class="fas fa-globe me-1"></i><span id="langText">EN</span>
                 </button>
