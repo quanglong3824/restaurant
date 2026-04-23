@@ -1302,12 +1302,19 @@ function initAll() {
         }
     }, 200);
     
-     // Handle location verification button
+     // Handle location verification button with enhanced debugging
      const btn = document.getElementById('btnAllowLocation');
      if (btn) {
+         console.log('Binding click event to btnAllowLocation');
          btn.addEventListener('click', async () => {
+             console.log('BtnAllowLocation clicked! Starting location verification...');
+             
              // Request location permission and verify
              try {
+                 // Show loading state
+                 btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> ĐANG XÁC THỰC...';
+                 btn.disabled = true;
+                 
                  const position = await new Promise((resolve, reject) => {
                      if (!navigator.geolocation) {
                          reject(new Error('Geolocation không được hỗ trợ'));
@@ -1320,6 +1327,8 @@ function initAll() {
                      });
                  });
                  
+                 console.log('Location obtained:', position.coords);
+                 
                  // Calculate distance to table location
                  const tableLat = CUSTOMER_CONFIG.tableLocation?.lat;
                  const tableLng = CUSTOMER_CONFIG.tableLocation?.lng;
@@ -1331,6 +1340,8 @@ function initAll() {
                          tableLat,
                          tableLng
                      );
+                     
+                     console.log('Calculated distance:', distance, 'meters');
                      
                      // Store location data
                      const locationData = {
@@ -1345,28 +1356,46 @@ function initAll() {
                      localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
                      
                      // Save to server
-                     await fetch(`${BASE_URL}/qr/menu/save-location`, {
-                         method: 'POST',
-                         headers: {
-                             'Content-Type': 'application/json',
-                         },
-                         body: JSON.stringify({
-                             table_id: CUSTOMER_CONFIG.tableId,
-                             location_data: JSON.stringify(locationData)
-                         })
-                     });
+                     try {
+                         const response = await fetch(`${BASE_URL}/qr/menu/save-location`, {
+                             method: 'POST',
+                             headers: {
+                                 'Content-Type': 'application/json',
+                             },
+                             body: JSON.stringify({
+                                 table_id: CUSTOMER_CONFIG.tableId,
+                                 location_data: JSON.stringify(locationData)
+                             })
+                         });
+                         console.log('Location saved to server:', response.ok);
+                     } catch (saveError) {
+                         console.error('Failed to save location to server:', saveError);
+                     }
                  } else {
                      // If no table location, just mark as verified
+                     console.log('No table location found, marking as verified');
                      localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
                  }
                  
                  // Hide location overlay and show menu
-                 document.getElementById('locationOverlay').style.display = 'none';
-                 document.getElementById('menuWrapper').style.display = 'block';
+                 const overlay = document.getElementById('locationOverlay');
+                 const wrapper = document.getElementById('menuWrapper');
+                 
+                 if (overlay) {
+                     overlay.style.display = 'none';
+                     console.log('Location overlay hidden');
+                 }
+                 if (wrapper) {
+                     wrapper.style.display = 'block';
+                     console.log('Menu wrapper shown');
+                 }
                  
                  // Show location status badge
                  const badge = document.getElementById('locStatusBadge');
-                 if (badge) badge.style.display = 'flex';
+                 if (badge) {
+                     badge.style.display = 'flex';
+                     console.log('Location status badge shown');
+                 }
                  updateLocationIndicator('granted', 'Verified');
                  
                  // Initialize menu components
@@ -1374,7 +1403,12 @@ function initAll() {
                      initTypeFilter();
                      initCategoryPillClick();
                      initMenuNavigation();
+                     console.log('Menu components initialized');
                  }, 500);
+                 
+                 // Restore button state
+                 btn.innerHTML = '<i class="fas fa-check-circle me-2"></i> XÁC THỰC THÀNH CÔNG!';
+                 btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
                  
              } catch (error) {
                  console.error('Location verification failed:', error);
@@ -1383,7 +1417,14 @@ function initAll() {
                      errorDiv.style.display = 'block';
                      errorDiv.textContent = error.message || 'Không thể xác nhận vị trí. Vui lòng thử lại.';
                  }
+                 
+                 // Restore button state
+                 btn.innerHTML = '<i class="fas fa-location-arrow me-2"></i> THỬ LẠI XÁC THỰC';
+                 btn.disabled = false;
+                 btn.style.background = 'linear-gradient(135deg, #d4af37, #b8860b)';
              }
          });
+     } else {
+         console.error('btnAllowLocation element not found!');
      }
 }
