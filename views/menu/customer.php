@@ -19,8 +19,52 @@ $grouped = [];
 foreach ($menuItems as $mi) {
     $grouped[$mi['category_id']][] = $mi;
 }
+
 // Chỉ lấy categories có món
 $activeCategories = array_filter($categories, fn($c) => isset($grouped[$c['id']]));
+
+// ════════════════════════════════════════════════════════════════
+// NHÓM "ĐỒ UỐNG" VÀ "TRÁNG MIỆNG" CHUNG VỚI NHAU
+// Áp dụng cho 4 loại menu: Á, Âu, Room, Alacarte
+// ════════════════════════════════════════════════════════════════
+$beverageKeywords = ['đồ uống', 'nước', 'beverage', 'drink'];
+$dessertKeywords = ['tráng miệng', 'dessert', 'bánh ngọt', 'cake'];
+
+function isBeverageCategory($name, $nameEn = '') {
+    global $beverageKeywords;
+    $nameLower = mb_strtolower($name);
+    $nameEnLower = mb_strtolower($nameEn ?? '');
+    foreach ($beverageKeywords as $kw) {
+        if (str_contains($nameLower, $kw) || str_contains($nameEnLower, $kw)) return true;
+    }
+    return false;
+}
+
+function isDessertCategory($name, $nameEn = '') {
+    global $dessertKeywords;
+    $nameLower = mb_strtolower($name);
+    $nameEnLower = mb_strtolower($nameEn ?? '');
+    foreach ($dessertKeywords as $kw) {
+        if (str_contains($nameLower, $kw) || str_contains($nameEnLower, $kw)) return true;
+    }
+    return false;
+}
+
+// Tách categories thành 2 nhóm: Đồ uống & Tráng miệng (nhóm chung) và các nhóm khác
+$beverageDessertCategories = [];
+$otherCategories = [];
+
+foreach ($activeCategories as $cat) {
+    if (isBeverageCategory($cat['name'], $cat['name_en'] ?? '') || 
+        isDessertCategory($cat['name'], $cat['name_en'] ?? '')) {
+        $beverageDessertCategories[] = $cat;
+    } else {
+        $otherCategories[] = $cat;
+    }
+}
+
+// Sắp xếp: Các nhóm khác trước, Đồ uống & Tráng miệng sau cùng
+$sortedCategories = array_merge($otherCategories, $beverageDessertCategories);
 
 // Tổng tiền order hiện tại
 $orderTotal = 0;
@@ -317,7 +361,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 
     <!-- Type tab bar (chỉ sinh ra các menu_type thực sự có trong danh mục của bàn này) -->
     <?php
-    $presentTypes = array_unique(array_column($activeCategories, 'menu_type'));
+    $presentTypes = array_unique(array_column($sortedCategories, 'menu_type'));
     $typeLabels = ['asia'=>'Món Á', 'europe'=>'Món Âu', 'alacarte'=>'Alacarte', 'other'=>'Đ.Uống & Khác'];
     $typeLabelsEn = ['asia'=>'Asian', 'europe'=>'European', 'alacarte'=>'Alacarte', 'other'=>'Beverages & Others'];
     // Chỉ hiển thị tab bar nếu có từ 2 type trở lên
@@ -339,7 +383,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
             <a href="javascript:void(0)" class="cat-pill active" data-category="all">
                 <span class="lang" data-vi="Tất cả / All" data-en="All">Tất cả / All</span>
             </a>
-            <?php foreach ($activeCategories as $cat): ?>
+            <?php foreach ($sortedCategories as $cat): ?>
                 <a href="#cat-<?= $cat['id'] ?>" class="cat-pill"
                    data-category="<?= $cat['id'] ?>" data-type="<?= $cat['menu_type'] ?>">
                     <span class="lang-vi"><?= e($cat['name']) ?></span>
@@ -589,7 +633,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 
     <!-- Menu Sections -->
     <main class="menu-sections" id="menuSections">
-        <?php foreach ($activeCategories as $cat): ?>
+        <?php foreach ($sortedCategories as $cat): ?>
             <?php if (!isset($grouped[$cat['id']])) continue; ?>
             <section class="menu-section" id="cat-<?= $cat['id'] ?>" data-type="<?= $cat['menu_type'] ?>">
                 <div class="section-header">
