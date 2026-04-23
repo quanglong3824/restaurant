@@ -364,187 +364,206 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
         color: #fff !important;
     }
     
-    /* Floating Action Button */
-    .fab-container {
+    /* ════════════════════════════════════════════════════
+       SIDEBAR LEFT NAVIGATION
+       ════════════════════════════════════════════════════ */
+    .sidebar-overlay {
         position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 999;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        align-items: flex-end;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 998;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
     }
     
-    .fab-main {
-        width: 72px;
-        height: 72px;
+    .sidebar-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .sidebar-left {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 280px;
+        height: 100vh;
+        background: linear-gradient(135deg, #fff, #f8fafc);
+        z-index: 999;
+        box-shadow: 4px 0 30px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .sidebar-left.active {
+        transform: translateX(280px);
+    }
+    
+    .sidebar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-light);
+    }
+    
+    .sidebar-header h3 {
+        margin: 0;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gold);
+        letter-spacing: 2px;
+    }
+    
+    .sidebar-close {
+        background: var(--bg);
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--text-med);
+    }
+    
+    .sidebar-close:hover {
+        background: var(--gold-light);
+        color: var(--gold);
+    }
+    
+    .sidebar-nav {
+        flex: 1;
+        padding: 16px 0;
+        overflow-y: auto;
+    }
+    
+    .sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 24px;
+        color: var(--text-dark);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        position: relative;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+    }
+    
+    .sidebar-item:hover {
+        background: var(--gold-light);
+        color: var(--gold);
+    }
+    
+    .sidebar-item i {
+        font-size: 1.2rem;
+        width: 24px;
+        text-align: center;
+        color: var(--gold);
+    }
+    
+    .sidebar-item.has-items {
+        background: rgba(197, 160, 89, 0.08);
+    }
+    
+    .sidebar-badge {
+        position: absolute;
+        right: 24px;
+        width: 8px;
+        height: 8px;
+        background: #ef4444;
+        border-radius: 50%;
+        animation: pulseBadge 1.5s infinite;
+    }
+    
+    @keyframes pulseBadge {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.3); opacity: 0.7; }
+    }
+    
+    .sidebar-footer {
+        padding: 16px 24px;
+        border-top: 1px solid var(--border-light);
+    }
+    
+    .lang-toggle-sidebar {
+        background: var(--gold);
+        color: #fff;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+    
+    .lang-toggle-sidebar:hover {
+        background: var(--gold-dark);
+    }
+    
+    .sidebar-toggle-btn {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 56px;
+        height: 56px;
         border-radius: 50%;
         background: linear-gradient(135deg, var(--gold), var(--gold-dark));
         color: #fff;
         border: none;
-        box-shadow: 0 6px 25px rgba(197, 160, 89, 0.5);
+        box-shadow: 0 6px 20px rgba(197, 160, 89, 0.4);
         cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.6rem;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        position: relative;
-        padding: 0;
-    }
-    
-    .fab-main-label {
-        font-size: 0.7rem;
-        font-weight: 800;
-        letter-spacing: 1.2px;
-        margin-top: -2px;
-        text-transform: uppercase;
-        text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    }
-    
-    .fab-main:hover {
-        transform: scale(1.1);
-        box-shadow: 0 8px 30px rgba(197, 160, 89, 0.6);
-    }
-    
-    .fab-main.active {
-        transform: rotate(45deg);
-    }
-    
-    .fab-menu {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        max-height: 0;
-        overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        opacity: 0;
-    }
-    
-    .fab-menu.show {
-        max-height: 350px;
-        opacity: 1;
-    }
-    
-    .fab-item-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-    }
-    
-    .fab-item {
-        width: 58px;
-        height: 58px;
-        border-radius: 50%;
-        background: #fff;
-        color: var(--gold-dark);
-        border: 2.5px solid var(--gold);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        cursor: pointer;
+        z-index: 997;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.3rem;
-        transition: all 0.2s;
-        position: relative;
+        transition: all 0.3s;
     }
     
-    .fab-item:hover {
-        transform: scale(1.15);
-        background: var(--gold);
-        color: #fff;
-        box-shadow: 0 6px 20px rgba(197, 160, 89, 0.4);
+    .sidebar-toggle-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 30px rgba(197, 160, 89, 0.5);
     }
     
-    .fab-item.has-items {
-        animation: fabPulse 2s infinite;
-    }
-    
-    @keyframes fabPulse {
-        0%, 100% { box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4); }
-        50% { box-shadow: 0 4px 25px rgba(197, 160, 89, 0.7); }
-    }
-    
-    .fab-status-dot {
-        position: absolute;
-        top: 4px;
-        right: 4px;
-        width: 10px;
-        height: 10px;
-        background: #ef4444;
-        border-radius: 50%;
-        border: 2px solid #fff;
-        animation: dotPulse 1.5s infinite;
-    }
-    
-    @keyframes dotPulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.2); opacity: 0.8; }
-    }
-    
-    .fab-label {
-        font-size: 0.75rem;
-        font-weight: 800;
-        color: #1e293b;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        white-space: nowrap;
-        text-shadow: 0 1px 2px rgba(255,255,255,0.8);
-        background: rgba(255,255,255,0.9);
-        padding: 3px 8px;
-        border-radius: 6px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .fab-tooltip {
-        position: absolute;
-        right: 70px;
-        background: rgba(15, 23, 42, 0.95);
-        color: #fff;
-        padding: 8px 14px;
-        border-radius: 10px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        white-space: nowrap;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.2s;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    
-    .fab-item-wrapper:hover .fab-tooltip {
-        opacity: 1;
+    .sidebar-toggle-btn:active {
+        transform: scale(0.95);
     }
     
     /* Responsive */
     @media (max-width: 480px) {
-        .fab-container {
+        .sidebar-left {
+            width: 260px;
+            left: -260px;
+        }
+        
+        .sidebar-left.active {
+            transform: translateX(260px);
+        }
+        
+        .sidebar-toggle-btn {
+            width: 50px;
+            height: 50px;
             bottom: 15px;
-            right: 15px;
-        }
-        
-        .fab-main {
-            width: 64px;
-            height: 64px;
-            font-size: 1.4rem;
-        }
-        
-        .fab-main-label {
-            font-size: 0.6rem;
-        }
-        
-        .fab-item {
-            width: 52px;
-            height: 52px;
+            left: 15px;
             font-size: 1.2rem;
-        }
-        
-        .fab-label {
-            font-size: 0.68rem;
-            padding: 2px 6px;
         }
     }
     </style>
@@ -644,46 +663,46 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     </main>
 </div>
 
-    <!-- ── Floating Action Button ── -->
-    <div class="fab-container">
-        <div class="fab-menu" id="fabMenu">
-            <div class="fab-item-wrapper">
-                <button class="fab-item" onclick="callWaiter('support')" title="Gọi nhân viên">
-                    <i class="fas fa-<?= $isRoomService ? 'concierge-bell' : 'hand-paper' ?>"></i>
-                </button>
-                <span class="fab-label" data-vi="Gọi nhân viên / <?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?>" data-en="<?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?>">Gọi nhân viên / <?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?></span>
-                <span class="fab-tooltip">Gọi nhân viên</span>
-            </div>
-            <div class="fab-item-wrapper">
-                <button class="fab-item <?= $hasItems ? 'has-items' : '' ?>" onclick="<?= $hasItems ? 'showBillTam()' : "callWaiter('payment')" ?>" title="<?= $hasItems ? 'Hoá đơn' : 'Thanh toán' ?>">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                    <?php if ($hasItems): ?>
-                        <span class="fab-status-dot"></span>
-                    <?php endif; ?>
-                </button>
-                <span class="fab-label" data-vi="<?= $hasItems ? 'Hoá đơn / Bill' : 'Thanh toán / Payment' ?>" data-en="<?= $hasItems ? 'Bill' : 'Payment' ?>"><?= $hasItems ? 'Hoá đơn / Bill' : 'Thanh toán / Payment' ?></span>
-                <span class="fab-tooltip"><?= $hasItems ? 'Hoá đơn' : 'Thanh toán' ?></span>
-            </div>
-            <div class="fab-item-wrapper">
-                <button class="fab-item" onclick="window.location.href='<?= BASE_URL ?>/qr/landing'" title="Lịch sử / History">
-                    <i class="fas fa-history"></i>
-                </button>
-                <span class="fab-label" data-vi="Lịch sử / History" data-en="History">Lịch sử / History</span>
-                <span class="fab-tooltip">Lịch sử / History</span>
-            </div>
-            <div class="fab-item-wrapper">
-                <button class="fab-item" onclick="window.location.reload()" title="Làm mới">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-                <span class="fab-label" data-vi="Làm mới / Refresh" data-en="Refresh">Làm mới / Refresh</span>
-                <span class="fab-tooltip">Làm mới</span>
-            </div>
+    <!-- ── Sidebar Left Navigation ── -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <aside class="sidebar-left" id="sidebarLeft">
+        <div class="sidebar-header">
+            <h3 class="playfair">AURORA</h3>
+            <button class="sidebar-close" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
         </div>
-        <button class="fab-main" id="fabMain" onclick="toggleFab()">
-            <i class="fas fa-bars" id="fabIcon"></i>
-            <span class="fab-main-label">MENU</span>
-        </button>
-    </div>
+        <nav class="sidebar-nav">
+            <a href="javascript:void(0)" class="sidebar-item" onclick="callWaiter('support'); toggleSidebar()">
+                <i class="fas fa-<?= $isRoomService ? 'concierge-bell' : 'hand-paper' ?>"></i>
+                <span class="lang" data-vi="Gọi nhân viên / <?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?>" data-en="<?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?>">Gọi nhân viên / <?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?></span>
+            </a>
+            <a href="javascript:void(0)" class="sidebar-item <?= $hasItems ? 'has-items' : '' ?>" onclick="<?= $hasItems ? 'showBillTam()' : "callWaiter('payment')" ?>; toggleSidebar()">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span class="lang" data-vi="<?= $hasItems ? 'Hoá đơn / Bill' : 'Thanh toán / Payment' ?>" data-en="<?= $hasItems ? 'Bill' : 'Payment' ?>"><?= $hasItems ? 'Hoá đơn / Bill' : 'Thanh toán / Payment' ?></span>
+                <?php if ($hasItems): ?>
+                    <span class="sidebar-badge"></span>
+                <?php endif; ?>
+            </a>
+            <a href="<?= BASE_URL ?>/qr/landing" class="sidebar-item">
+                <i class="fas fa-history"></i>
+                <span class="lang" data-vi="Lịch sử / History" data-en="History">Lịch sử / History</span>
+            </a>
+            <a href="javascript:void(0)" class="sidebar-item" onclick="window.location.reload()">
+                <i class="fas fa-sync-alt"></i>
+                <span class="lang" data-vi="Làm mới / Refresh" data-en="Refresh">Làm mới / Refresh</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button id="langToggleSidebar" onclick="toggleLanguage()" class="lang-toggle-sidebar">
+                <i class="fas fa-globe"></i>
+                <span id="langTextSidebar">EN</span>
+            </button>
+        </div>
+    </aside>
+    
+    <!-- Sidebar Toggle Button (Bottom Left) -->
+    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
 
 <!-- ── Floating Cart Bar ── -->
 <div id="cartBar" class="cart-bar hidden">
@@ -901,7 +920,26 @@ function clearMenuSearch() {
     if (_searchEl) { _searchEl.value = ''; _filterMenu(); }
 }
 
-/* ── FAB Toggle ── */
+/* ── Sidebar Toggle ── */
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebarLeft');
+    const overlay = document.getElementById('sidebarOverlay');
+    const toggleBtn = document.getElementById('sidebarToggleBtn');
+    
+    if (sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        toggleBtn.style.opacity = '1';
+        toggleBtn.style.transform = 'translateX(0)';
+    } else {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        toggleBtn.style.opacity = '0';
+        toggleBtn.style.transform = 'translateX(-50px)';
+    }
+}
+
+/* ── FAB Toggle (legacy - kept for compatibility) ── */
 let fabOpen = false;
 function toggleFab() {
     fabOpen = !fabOpen;
@@ -924,7 +962,7 @@ function toggleFab() {
 
 /* ── Bill modal ── */
 function showBillTam() {
-    toggleFab();
+    toggleSidebar();
     document.getElementById('billTamModal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
