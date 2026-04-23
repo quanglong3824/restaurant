@@ -226,16 +226,19 @@ if ($hasItems) {
                     ?>
                         <div class="menu-item-card<?= $isUnavailable ? ' item-unavailable' : '' ?>"
                              data-id="<?= $item['id'] ?>"
-                             data-name="<?= strtolower(e($item['name'])) ?>"
-                             data-name-en="<?= strtolower(e($item['name_en'] ?? '')) ?>"
+                             data-name="<?= htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8') ?>"
+                             data-name-en="<?= htmlspecialchars($item['name_en'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                              data-price="<?= $item['price'] ?>"
                              data-type="<?= $cat['menu_type'] ?>"
                              data-unavailable-text="<?= $isEnglish ? 'UNAVAILABLE' : 'HẾT HÀNG' ?>"
-                             onclick="<?= $isUnavailable ? '' : 'showItemDetail(' . e(json_encode($item)) . ')' ?>">
+                             data-description="<?= htmlspecialchars($item['description'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                             data-description-en="<?= htmlspecialchars($item['description_en'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                             data-image="<?= htmlspecialchars($item['image'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                             onclick="<?= $isUnavailable ? '' : 'showItemDetailById(' . $item['id'] . ')' ?>">
 
                             <div class="item-img-box">
                                 <?php if ($item['image']): ?>
-                                    <img src="<?= BASE_URL ?>/public/uploads/<?= e($item['image']) ?>" alt="<?= e($itemName) ?>" loading="lazy">
+                                    <img src="<?= BASE_URL ?>/public/uploads/<?= htmlspecialchars($item['image'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($itemName, ENT_QUOTES, 'UTF-8') ?>" loading="lazy">
                                 <?php else: ?>
                                     <div class="item-placeholder"><i class="fas fa-utensils"></i></div>
                                 <?php endif; ?>
@@ -252,7 +255,7 @@ if ($hasItems) {
 
                             <div class="item-info">
                                 <div class="item-main-row">
-                                    <h3 class="item-name"><?= e($item['name']) ?></h3>
+                                    <h3 class="item-name"><?= htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8') ?></h3>
                                     <span class="item-price"><?= formatPrice($item['price']) ?></span>
                                 </div>
                                 <?php if ($isEnglish && !empty($item['name_en'])): ?>

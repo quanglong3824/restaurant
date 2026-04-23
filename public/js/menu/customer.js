@@ -748,7 +748,27 @@ function updateCartUI() {
     updateCartModal();
 }
 
-function quickAdd(id, name, price, nameEn = "") {
+function quickAdd(itemId) {
+    // Find the card element to get data attributes
+    const card = document.querySelector(`.menu-item-card[data-id="${itemId}"]`);
+    if (!card) {
+        console.error('Card not found for item:', itemId);
+        return;
+    }
+    
+    // Get data from card
+    const id = parseInt(card.dataset.id);
+    const name = card.dataset.name;
+    const nameEn = card.dataset.nameEn || '';
+    const price = parseFloat(card.dataset.price);
+    
+    // Validate data
+    if (!id || !name || isNaN(price)) {
+        console.error('Invalid item data:', { id, name, price });
+        showToast('Lỗi: Không thể thêm món này');
+        return;
+    }
+    
     const existing = cart.find(item => item.id === id && !item.note);
     if (existing) {
         existing.quantity++;
@@ -818,6 +838,37 @@ function updateIndicatorLang() {
             }
         }
     }
+}
+
+// Show item detail by ID - reads data from DOM card attributes
+function showItemDetailById(itemId) {
+    const card = document.querySelector(`.menu-item-card[data-id="${itemId}"]`);
+    if (!card) {
+        console.error('Card not found for item:', itemId);
+        return;
+    }
+    
+    // Build item object from DOM data attributes
+    const item = {
+        id: parseInt(card.dataset.id),
+        name: card.dataset.name || '',
+        name_en: card.dataset.nameEn || '',
+        price: parseFloat(card.dataset.price),
+        description: card.dataset.description || '',
+        description_en: card.dataset.descriptionEn || '',
+        image: card.dataset.image || '',
+        note_options: '',
+        note_options_en: ''
+    };
+    
+    // Validate item data
+    if (!item.id || isNaN(item.price)) {
+        console.error('Invalid item data:', item);
+        showToast('Lỗi: Không thể xem chi tiết món này');
+        return;
+    }
+    
+    showItemDetail(item);
 }
 
 function showItemDetail(item) {
