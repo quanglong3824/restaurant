@@ -748,26 +748,18 @@ function updateCartUI() {
     updateCartModal();
 }
 
-function quickAdd(itemId) {
-    // Find the card element to get data attributes
-    const card = document.querySelector(`.menu-item-card[data-id="${itemId}"]`);
-    if (!card) {
-        console.error('Card not found for item:', itemId);
-        return;
-    }
-    
-    // Get data from card
-    const id = parseInt(card.dataset.id);
-    const name = card.dataset.name;
-    const nameEn = card.dataset.nameEn || '';
-    const price = parseFloat(card.dataset.price);
-    
+function quickAdd(itemId, itemName, itemPrice, itemNameEn = '') {
     // Validate data
-    if (!id || !name || isNaN(price)) {
-        console.error('Invalid item data:', { id, name, price });
+    if (!itemId || !itemName || isNaN(itemPrice)) {
+        console.error('Invalid item data:', { itemId, itemName, itemPrice });
         showToast('Lỗi: Không thể thêm món này');
         return;
     }
+    
+    const id = parseInt(itemId);
+    const name = itemName;
+    const nameEn = itemNameEn || '';
+    const price = parseFloat(itemPrice);
     
     const existing = cart.find(item => item.id === id && !item.note);
     if (existing) {
