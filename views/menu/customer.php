@@ -363,11 +363,20 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     </div>
 
     <style>
+    /* ════════════════════════════════════════════════════
+       UNIFIED TYPOGRAPHY SYSTEM
+       Font: Outfit (Primary) + Playfair Display (Accents)
+       ════════════════════════════════════════════════════ */
+    
     /* Language toggle styles */
     .lang-toggle-btn:hover {
         background: var(--gold) !important;
         color: #fff !important;
     }
+    
+    /* Typography Classes */
+    .font-primary { font-family: 'Outfit', sans-serif; }
+    .font-display { font-family: 'Playfair Display', serif; }
     
     /* ════════════════════════════════════════════════════
        SIDEBAR LEFT NAVIGATION
@@ -417,10 +426,11 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     .sidebar-header h3 {
         margin: 0;
         font-family: 'Playfair Display', serif;
-        font-size: 1.5rem;
-        font-weight: 700;
+        font-size: 1.4rem;
+        font-weight: 800;
         color: var(--gold);
-        letter-spacing: 2px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
     }
     
     .sidebar-close {
@@ -451,12 +461,13 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     .sidebar-item {
         display: flex;
         align-items: center;
-        gap: 16px;
-        padding: 16px 24px;
+        gap: 14px;
+        padding: 14px 24px;
         color: var(--text-dark);
         text-decoration: none;
-        font-weight: 600;
-        font-size: 0.95rem;
+        font-weight: 500;
+        font-size: 0.9rem;
+        font-family: 'Outfit', sans-serif;
         transition: all 0.2s;
         position: relative;
         border: none;
@@ -464,6 +475,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
         width: 100%;
         text-align: left;
         cursor: pointer;
+        letter-spacing: 0.3px;
     }
     
     .sidebar-item:hover {

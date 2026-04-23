@@ -1,6 +1,8 @@
 /* ============================================================
-   customer.css — Digital Menu (Premium Minimalist Redesign)
-   Aurora Restaurant - GOLD & WHITE LUXURY THEME
+   customer.css — Digital Menu (Unified Typography System)
+   Aurora Restaurant - Modern Premium Design
+   Primary Font: Outfit (Sans-serif, Modern, Clean)
+   Accent Font: Playfair Display (Serif, Luxury, Headlines)
    ============================================================ */
 
 :root {
@@ -31,6 +33,9 @@
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+/* ══════════════════════════════════════════════════════
+   UNIFIED TYPOGRAPHY
+   ══════════════════════════════════════════════════════ */
 body {
     margin: 0;
     font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -38,11 +43,61 @@ body {
     background-attachment: fixed;
     color: var(--text-dark);
     font-size: 15px;
+    font-weight: 400;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-.playfair { font-family: 'Playfair Display', Georgia, serif; }
+/* Display/Accent Font - For headlines, luxury feel */
+.playfair,
+.brand-logo h1,
+.table-number,
+.item-price,
+.cart-total,
+.section-title,
+.sidebar-header h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Primary Font - For all body text, UI elements */
+body,
+.brand-logo span,
+.table-label,
+.type-tab,
+.cat-pill,
+.item-name,
+.item-name-en,
+.item-desc,
+.item-tag,
+.cart-label,
+.bill-name,
+.bill-item-status,
+.modal-header h3,
+.modal-body,
+.sidebar-item,
+.lang-toggle-btn,
+.lang-toggle-sidebar,
+.btn-gold,
+.btn-ghost,
+.btn-submit-order,
+.btn-view-cart,
+.btn-add-circle,
+.loc-card,
+.loc-desc,
+.loc-benefits,
+.loc-hint,
+.loc-privacy,
+.menu-empty-state,
+.bill-total-row span,
+.total-summary span,
+.order-notes-box label,
+.note-input-box input,
+textarea,
+input,
+button {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
 
 .customer-menu-wrapper {
     padding-bottom: 140px;
