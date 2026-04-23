@@ -840,17 +840,17 @@ function showItemDetailById(itemId) {
         return;
     }
     
-    // Build item object from DOM data attributes
+    // Build item object from DOM data attributes (kebab-case)
     const item = {
         id: parseInt(card.dataset.id),
         name: card.dataset.name || '',
-        name_en: card.dataset.nameEn || '',
+        name_en: card.dataset['name-en'] || '',
         price: parseFloat(card.dataset.price),
         description: card.dataset.description || '',
-        description_en: card.dataset.descriptionEn || '',
+        description_en: card.dataset['description-en'] || '',
         image: card.dataset.image || '',
-        note_options: '',
-        note_options_en: ''
+        note_options: card.dataset.options || '',
+        note_options_en: card.dataset['options-en'] || ''
     };
     
     // Validate item data
@@ -871,7 +871,7 @@ function showItemDetail(item) {
     const card = document.querySelector(`.menu-item-card[data-id="${item.id}"]`);
     if (card) {
         if (!rawVi) rawVi = card.dataset.options || '';
-        if (!rawEn) rawEn = card.dataset.optionsEn || '';
+        if (!rawEn) rawEn = card.dataset['options-en'] || '';
     }
 
     const optsVi = rawVi.split(',').map(o => o.trim()).filter(Boolean);
