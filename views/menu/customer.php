@@ -294,9 +294,14 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     <!-- Header - Compact -->
     <header class="menu-header">
         <div class="header-top">
-            <div class="brand-logo">
-                <h1 class="playfair">AURORA</h1>
-                <span><?= $contextLabel ?></span>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button class="sidebar-toggle-btn-header" id="sidebarToggleBtnHeader" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="brand-logo">
+                    <h1 class="playfair">AURORA</h1>
+                    <span><?= $contextLabel ?></span>
+                </div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
                 <button id="langToggle" onclick="toggleLanguage()" class="lang-toggle-btn">
@@ -518,32 +523,33 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
         background: var(--gold-dark);
     }
     
-    .sidebar-toggle-btn {
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-        color: #fff;
-        border: none;
-        box-shadow: 0 6px 20px rgba(197, 160, 89, 0.4);
-        cursor: pointer;
-        z-index: 997;
+    .sidebar-toggle-btn-header {
+        background: var(--gold-light);
+        border: 1px solid rgba(197, 160, 89, 0.3);
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.3rem;
-        transition: all 0.3s;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--gold);
+        flex-shrink: 0;
     }
     
-    .sidebar-toggle-btn:hover {
-        transform: scale(1.1);
-        box-shadow: 0 8px 30px rgba(197, 160, 89, 0.5);
+    .sidebar-toggle-btn-header i {
+        font-size: 1.2rem;
     }
     
-    .sidebar-toggle-btn:active {
+    .sidebar-toggle-btn-header:hover {
+        background: var(--gold);
+        color: #fff;
+        border-color: var(--gold);
+        transform: scale(1.05);
+    }
+    
+    .sidebar-toggle-btn-header:active {
         transform: scale(0.95);
     }
     
@@ -558,12 +564,13 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
             transform: translateX(260px);
         }
         
-        .sidebar-toggle-btn {
-            width: 50px;
-            height: 50px;
-            bottom: 15px;
-            left: 15px;
-            font-size: 1.2rem;
+        .sidebar-toggle-btn-header {
+            width: 38px;
+            height: 38px;
+        }
+        
+        .sidebar-toggle-btn-header i {
+            font-size: 1.1rem;
         }
     }
     </style>
@@ -699,10 +706,6 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
         </div>
     </aside>
     
-    <!-- Sidebar Toggle Button (Bottom Left) -->
-    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
 
 <!-- ── Floating Cart Bar ── -->
 <div id="cartBar" class="cart-bar hidden">
@@ -924,18 +927,15 @@ function clearMenuSearch() {
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebarLeft');
     const overlay = document.getElementById('sidebarOverlay');
-    const toggleBtn = document.getElementById('sidebarToggleBtn');
     
     if (sidebar.classList.contains('active')) {
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
-        toggleBtn.style.opacity = '1';
-        toggleBtn.style.transform = 'translateX(0)';
+        document.body.style.overflow = '';
     } else {
         sidebar.classList.add('active');
         overlay.classList.add('active');
-        toggleBtn.style.opacity = '0';
-        toggleBtn.style.transform = 'translateX(-50px)';
+        document.body.style.overflow = 'hidden';
     }
 }
 
