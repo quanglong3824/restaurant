@@ -80,13 +80,15 @@ if ($hasItems) {
 ═══════════════════════════════════════════════════════ -->
 <script>
 // Send location data to server for persistent storage
+// Note: CUSTOMER_CONFIG chưa được định nghĩa ở đây, dùng PHP trực tiếp
 (function sendLocationToServer() {
-    var locationData = localStorage.getItem('qr_location_' + CUSTOMER_CONFIG.tableId);
+    var tableId = <?= (int)$table['id'] ?>;
+    var locationData = localStorage.getItem('qr_location_' + tableId);
     if (locationData) {
         fetch('<?= BASE_URL ?>/qr/menu/location', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: 'location_data=' + encodeURIComponent(locationData) + '&table_id=' + <?= $table['id'] ?>
+            body: 'location_data=' + encodeURIComponent(locationData) + '&table_id=' + tableId
         }).catch(function(){});
     }
 })();
@@ -116,7 +118,7 @@ if ($hasItems) {
         })();
     </script>
     <div class="loc-card">
-u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
+        <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
         <h3 class="loc-title" data-vi="XÁC NHẬN HIỆN DIỆN / CONFIRM YOUR PRESENCE" data-en="CONFIRM YOUR PRESENCE">XÁC NHẬN HIỆN DIỆN / CONFIRM YOUR PRESENCE</h3>
         <p class="loc-sub">AURORA HOTEL PLAZA</p>
         <div id="liveDistance" class="loc-dist-badge" style="display:none;">
