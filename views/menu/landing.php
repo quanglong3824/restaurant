@@ -453,10 +453,16 @@ $hasHistory = !empty($orders) && count($orders) > 0;
     <!-- History Section -->
     <?php if ($hasHistory): ?>
     <section class="history-section" id="historySection">
-        <h2 class="section-title">
-            <i class="fas fa-history"></i>
-            <span>Lịch Sử Đơn Hàng / Order History</span>
-        </h2>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+            <h2 class="section-title" style="margin:0;">
+                <i class="fas fa-history"></i>
+                <span>Lịch Sử Đơn Hàng / Order History</span>
+            </h2>
+            <a href="<?= BASE_URL ?>/qr/menu" class="btn-hero btn-hero-secondary" style="padding:10px 18px;font-size:0.8rem;">
+                <i class="fas fa-arrow-left"></i>
+                <span>Quay về / Back</span>
+            </a>
+        </div>
         
         <div class="order-cards">
             <?php foreach ($orders as $order): ?>
