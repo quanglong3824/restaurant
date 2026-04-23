@@ -1302,15 +1302,88 @@ function initAll() {
         }
     }, 200);
     
-    // Also init on location verify
-    const btn = document.getElementById('btnAllowLocation');
-    if (btn) {
-        btn.addEventListener('click', () => {
-            setTimeout(() => {
-                initTypeFilter();
-                initCategoryPillClick();
-                initMenuNavigation();
-            }, 500);
-        });
-    }
+     // Handle location verification button
+     const btn = document.getElementById('btnAllowLocation');
+     if (btn) {
+         btn.addEventListener('click', async () => {
+             // Request location permission and verify
+             try {
+                 const position = await new Promise((resolve, reject) => {
+                     if (!navigator.geolocation) {
+                         reject(new Error('Geolocation không được hỗ trợ'));
+                         return;
+                     }
+                     navigator.geolocation.getCurrentPosition(resolve, reject, {
+                         enableHighAccuracy: true,
+                         timeout: 10000,
+                         maximumAge: 60000
+                     });
+                 });
+                 
+                 // Calculate distance to table location
+                 const tableLat = CUSTOMER_CONFIG.tableLocation?.lat;
+                 const tableLng = CUSTOMER_CONFIG.tableLocation?.lng;
+                 
+                 if (tableLat && tableLng) {
+                     const distance = calculateDistance(
+                         position.coords.latitude,
+                         position.coords.longitude,
+                         tableLat,
+                         tableLng
+                     );
+                     
+                     // Store location data
+                     const locationData = {
+                         lat: position.coords.latitude,
+                         lng: position.coords.longitude,
+                         accuracy: position.coords.accuracy,
+                         timestamp: Date.now(),
+                         distance: distance
+                     };
+                     
+                     localStorage.setItem(`qr_location_${CUSTOMER_CONFIG.tableId}`, JSON.stringify(locationData));
+                     localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
+                     
+                     // Save to server
+                     await fetch(`${BASE_URL}/qr/menu/save-location`, {
+                         method: 'POST',
+                         headers: {
+                             'Content-Type': 'application/json',
+                         },
+                         body: JSON.stringify({
+                             table_id: CUSTOMER_CONFIG.tableId,
+                             location_data: JSON.stringify(locationData)
+                         })
+                     });
+                 } else {
+                     // If no table location, just mark as verified
+                     localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
+                 }
+                 
+                 // Hide location overlay and show menu
+                 document.getElementById('locationOverlay').style.display = 'none';
+                 document.getElementById('menuWrapper').style.display = 'block';
+                 
+                 // Show location status badge
+                 const badge = document.getElementById('locStatusBadge');
+                 if (badge) badge.style.display = 'flex';
+                 updateLocationIndicator('granted', 'Verified');
+                 
+                 // Initialize menu components
+                 setTimeout(() => {
+                     initTypeFilter();
+                     initCategoryPillClick();
+                     initMenuNavigation();
+                 }, 500);
+                 
+             } catch (error) {
+                 console.error('Location verification failed:', error);
+                 const errorDiv = document.getElementById('locationError');
+                 if (errorDiv) {
+                     errorDiv.style.display = 'block';
+                     errorDiv.textContent = error.message || 'Không thể xác nhận vị trí. Vui lòng thử lại.';
+                 }
+             }
+         });
+     }
 }
