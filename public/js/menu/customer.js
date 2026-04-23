@@ -1124,3 +1124,244 @@ document.querySelectorAll('.modal-backdrop').forEach(modal => {
         }
     });
 });
+
+// Language Toggle
+function toggleLanguage() {
+    currentLang = currentLang === 'vi' ? 'en' : 'vi';
+    localStorage.setItem('aurora_lang', currentLang);
+    document.cookie = "aurora_lang=" + currentLang + "; path=/; max-age=31536000; SameSite=Lax";
+    location.reload();
+}
+
+// Clear Search
+function clearMenuSearch() {
+    const searchEl = document.getElementById('menuSearch');
+    const clearBtn = document.getElementById('btnClearSearch');
+    if (searchEl) {
+        searchEl.value = '';
+        if (clearBtn) clearBtn.style.display = 'none';
+        // Trigger input event to re-filter
+        searchEl.dispatchEvent(new Event('input'));
+    }
+}
+
+// Close Bill Modal
+function closeBillTam() {
+    document.getElementById('billTamModal').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+// Format Price (alias for formatCurrency)
+function formatPrice(price) {
+    return formatCurrency(price);
+}
+
+// Show Bill
+function showBillTam() {
+    document.getElementById('billTamModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+// Auto-hide Headers on Scroll (Premium UX)
+let lastScrollY = window.scrollY;
+let scrollThreshold = 10;
+let headerHidden = false;
+
+function initHeaderScrollHide() {
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        const scrollDiff = Math.abs(currentScrollY - lastScrollY);
+        
+        // Only trigger if scrolled enough
+        if (scrollDiff < scrollThreshold) return;
+        
+        const headers = document.querySelectorAll('.menu-header-animated');
+        if (headers.length === 0) {
+            lastScrollY = currentScrollY;
+            return;
+        }
+        
+        // Scrolling down and past threshold - hide headers
+        if (currentScrollY > lastScrollY && currentScrollY > 150) {
+            if (!headerHidden) {
+                headers.forEach(header => {
+                    header.style.transform = 'translateY(-100%)';
+                    header.style.opacity = '0';
+                });
+                headerHidden = true;
+            }
+        } 
+        // Scrolling up - show headers
+        else if (currentScrollY < lastScrollY) {
+            if (headerHidden) {
+                headers.forEach(header => {
+                    header.style.transform = 'translateY(0)';
+                    header.style.opacity = '1';
+                });
+                headerHidden = false;
+            }
+        }
+        
+        lastScrollY = currentScrollY;
+    }, { passive: true });
+}
+
+// Add CSS for animated headers
+function addHeaderAnimationStyles() {
+    if (document.getElementById('headerAnimationStyles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'headerAnimationStyles';
+    style.textContent = `
+        .menu-header-animated,
+        .category-nav.menu-header-animated {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
+        }
+        
+        .category-nav.menu-header-animated {
+            transform: translateY(0) !important;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Initialize header scroll hide on DOM ready
+addHeaderAnimationStyles();
+initHeaderScrollHide();
+
+// Scroll Spy for Category Navigation
+function initScrollSpy() {
+    const sections = document.querySelectorAll('.menu-section');
+    const navLinks = document.querySelectorAll('.cat-pill');
+    
+    if (sections.length === 0 || navLinks.length === 0) return;
+    
+    // Remove existing observer if any
+    if (window.scrollSpyObserver) {
+        window.scrollSpyObserver.disconnect();
+    }
+    
+    const observerOptions = {
+        root: null,
+        rootMargin: '-100px 0px -50% 0px',
+        threshold: 0
+    };
+    
+    window.scrollSpyObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.getAttribute('id');
+                if (!id) return;
+                
+                const categoryId = id.replace('cat-', '');
+                
+                navLinks.forEach(link => {
+                    if (link.dataset.category === categoryId) {
+                        link.classList.add('active');
+                        // Auto-scroll nav to keep active pill visible
+                        link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+        });
+    }, observerOptions);
+    
+    sections.forEach(section => {
+        if (section.style.display !== 'none') {
+            window.scrollSpyObserver.observe(section);
+        }
+    });
+}
+
+// Initialize scroll spy when menu is shown
+function initMenuNavigation() {
+    setTimeout(initScrollSpy, 300);
+}
+
+// Type Tab Filter
+function initTypeFilter() {
+    const typeTabs = document.querySelectorAll('.type-tab');
+    typeTabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            typeTabs.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const type = btn.dataset.type;
+            
+            document.querySelectorAll('.menu-section').forEach(sec => {
+                sec.style.display = (type === 'all' || sec.dataset.type === type) ? 'block' : 'none';
+            });
+            
+            document.querySelectorAll('.cat-pill[data-type]').forEach(pill => {
+                pill.style.display = (type === 'all' || pill.dataset.type === type) ? 'inline-block' : 'none';
+            });
+            
+            // Re-init scroll spy for visible sections
+            setTimeout(initScrollSpy, 100);
+        });
+    });
+}
+
+// Category Pill Click - Smooth Scroll
+function initCategoryPillClick() {
+    document.querySelectorAll('.cat-pill').forEach(pill => {
+        pill.addEventListener('click', (e) => {
+            e.preventDefault();
+            const category = pill.dataset.category;
+            
+            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            
+            if (category === 'all') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                const section = document.getElementById(`cat-${category}`);
+                if (section && section.style.display !== 'none') {
+                    const headerOffset = 180;
+                    const sectionTop = section.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+                    window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+                }
+            }
+        });
+    });
+}
+
+// Initialize everything when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+} else {
+    initAll();
+}
+
+function initAll() {
+    // Wait for menu wrapper to be visible
+    const checkMenuVisible = setInterval(() => {
+        const wrapper = document.getElementById('menuWrapper');
+        const isVerified = localStorage.getItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`) === 'true';
+        
+        if (wrapper && (wrapper.style.display === 'block' || isVerified)) {
+            clearInterval(checkMenuVisible);
+            initTypeFilter();
+            initCategoryPillClick();
+            initMenuNavigation();
+        }
+    }, 200);
+    
+    // Also init on location verify
+    const btn = document.getElementById('btnAllowLocation');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            setTimeout(() => {
+                initTypeFilter();
+                initCategoryPillClick();
+                initMenuNavigation();
+            }, 500);
+        });
+    }
+}
