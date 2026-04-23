@@ -195,17 +195,18 @@ class QrMenuController extends Controller
             $orderId = $openOrder ? $openOrder['id'] : 0;
             $orderItems = $orderId ? $this->orderModel->getItems($orderId) : [];
 
-            // Notify staff about QR scan
-            $this->notifModel->create([
-                'order_id' => $orderId ?: null,
-                'table_id' => $tableId,
-                'notification_type' => 'scan_qr',
-                'title' => "Khách xem menu",
-                'message' => "Bàn " . ($table['name'] ?? $tableId) . " vừa quét mã xem thực đơn."
-            ]);
-            
-            // Lấy giá trị dev_mode từ database
-            $devMode = $this->settingModel->getBoolean('dev_mode', false);
+             // Notify staff about QR scan
+             $this->notifModel->create([
+                 'order_id' => $orderId ?: null,
+                 'table_id' => $tableId,
+                 'notification_type' => 'scan_qr',
+                 'title' => "Khách xem menu",
+                 'message' => "Bàn " . ($table['name'] ?? $tableId) . " vừa quét mã xem thực đơn.",
+                 'created_by' => 'system'
+             ]);
+             
+             // Lấy giá trị dev_mode từ database
+             $devMode = $this->settingModel->getBoolean('dev_mode', false);
             
             $this->view('layouts/public', [
                 'view' => 'menu/customer',

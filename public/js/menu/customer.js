@@ -170,21 +170,33 @@ function _getCookie(name) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Skip location features in DEV_MODE
-    if (CUSTOMER_CONFIG.devMode) {
-        console.log("%c DEV MODE: Location checking disabled ", "background:#10b981;color:#fff;padding:5px;border-radius:5px;font-weight:bold");
-        // Auto-verify location and show menu
-        localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
-        document.getElementById('locationOverlay')?.style.setProperty('display', 'none');
-        document.getElementById('menuWrapper')?.style.setProperty('display', 'block');
-        document.getElementById('frozenOverlay')?.style.setProperty('display', 'none');
-    }
-    
-    createLocationIndicator();
-    if (!CUSTOMER_CONFIG.devMode) {
-        checkLocation();
-        startLocationWatcher();
-    }
+     // Skip location features in DEV_MODE
+     if (CUSTOMER_CONFIG.devMode) {
+         console.log("%c DEV MODE: Location checking disabled ", "background:#10b981;color:#fff;padding:5px;border-radius:5px;font-weight:bold");
+         // Auto-verify location and show menu
+         localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
+         document.getElementById('locationOverlay')?.style.setProperty('display', 'none');
+         document.getElementById('menuWrapper')?.style.setProperty('display', 'block');
+         document.getElementById('frozenOverlay')?.style.setProperty('display', 'none');
+     }
+     
+     createLocationIndicator();
+     // Always initialize location features, but handle dev mode appropriately
+     if (CUSTOMER_CONFIG.devMode) {
+         // In dev mode, bypass location verification but still set up indicators
+         localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
+         document.getElementById('locationOverlay')?.style.setProperty('display', 'none');
+         document.getElementById('menuWrapper')?.style.setProperty('display', 'block');
+         document.getElementById('frozenOverlay')?.style.setProperty('display', 'none');
+         
+         // Show badge in header and start watcher
+         const badge = document.getElementById('locStatusBadge');
+         if (badge) badge.style.display = 'flex';
+         updateLocationIndicator('granted', 'DEV MODE');
+     } else {
+         checkLocation();
+         startLocationWatcher();
+     }
     loadCart();
     setupCategoryNav();
     setupSearch();

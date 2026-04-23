@@ -6,17 +6,19 @@
    ============================================================ */
 
 /* Prevent double-tap zoom and text selection on mobile */
-* {
+/* Note: Exclude buttons and interactive elements */
+body {
     touch-action: manipulation;
     -webkit-user-select: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Allow text selection in input/textarea */
-input, textarea, [contenteditable="true"] {
-    -webkit-user-select: text;
-    user-select: text;
+/* Allow text selection in input/textarea and buttons */
+input, textarea, [contenteditable="true"], button, .btn-loc-start, .cat-pill, .type-tab, .lang-toggle-btn, .sidebar-item, .menu-item-card, .qty-control-premium button, .modal-close, .modal-close-circle, .btn-gold, .btn-ghost, .btn-submit-order, .btn-view-cart, .btn-add-circle, .loc-status-badge {
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
 }
 
 :root {
@@ -784,6 +786,17 @@ button {
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
     border: 1px solid rgba(197, 160, 89, 0.2);
     animation: locSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto !important;
+}
+
+/* Ensure all elements inside loc-card can receive pointer events */
+.loc-card * {
+    pointer-events: auto;
+}
+
+.loc-card button {
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(197, 160, 89, 0.3);
 }
 
 @keyframes locSlideUp {
@@ -945,6 +958,9 @@ button {
     align-items: center;
     justify-content: center;
     gap: 10px;
+    pointer-events: auto !important;
+    -webkit-tap-highlight-color: rgba(197, 160, 89, 0.3);
+    touch-action: manipulation;
 }
 
 .btn-loc-start:hover {
