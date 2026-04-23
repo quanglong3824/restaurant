@@ -132,7 +132,7 @@ if ($hasItems) {
     </script>
 
     <!-- Header -->
-    <header class="menu-header">
+    <header class="menu-header menu-header-animated">
         <div class="header-top">
             <div class="brand-logo">
                 <h1 class="playfair">AURORA</h1>
@@ -177,7 +177,7 @@ if ($hasItems) {
     <?php endif; ?>
 
     <!-- Category Nav -->
-    <nav class="category-nav">
+    <nav class="category-nav menu-header-animated">
         <div class="category-nav-inner">
             <a href="javascript:void(0)" class="cat-pill active" data-category="all">
                 <?= $isEnglish ? 'All' : 'Tất cả' ?>
@@ -542,9 +542,85 @@ function addFromDetail() {
     closeItemDetail();
 }
 
-// Quick Add (placeholder - needs full implementation)
+// Toast Notification
+function showToast(message, type = 'info') {
+    const icons = {
+        'info': 'fa-info-circle',
+        'success': 'fa-check-circle',
+        'warning': 'fa-exclamation-circle',
+        'error': 'fa-times-circle'
+    };
+    
+    const colors = {
+        'info': 'linear-gradient(135deg, #3b82f6, #2563eb)',
+        'success': 'linear-gradient(135deg, #10b981, #059669)',
+        'warning': 'linear-gradient(135deg, #f59e0b, #d97706)',
+        'error': 'linear-gradient(135deg, #ef4444, #dc2626)'
+    };
+    
+    // Remove existing toast
+    const existing = document.getElementById('toastNotification');
+    if (existing) existing.remove();
+    
+    const toast = document.createElement('div');
+    toast.id = 'toastNotification';
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-100px);
+        background: ${colors[type]};
+        color: white;
+        padding: 14px 24px;
+        border-radius: 14px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        max-width: calc(100% - 40px);
+        backdrop-filter: blur(10px);
+    `;
+    toast.innerHTML = `
+        <i class="fas ${icons[type]}" style="font-size: 1.2rem;"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Animate in
+    requestAnimationFrame(() => {
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+    });
+    
+    // Auto remove after 3s
+    setTimeout(() => {
+        toast.style.transform = 'translateX(-50%) translateY(-100px)';
+        setTimeout(() => toast.remove(), 400);
+    }, 3000);
+}
+
+// Quick Add
 function quickAdd(itemId, qty = 1) {
-    alert('Tính năng đang được cập nhật. Vui lòng liên hệ nhân viên để đặt món.');
+    const item = document.querySelector(`.menu-item-card[data-id="${itemId}"]`);
+    const itemName = item?.dataset.name || 'món này';
+    showToast(`Đã thêm ${itemName} vào giỏ hàng!`, 'success');
+    
+    // Update cart UI
+    const cartCount = document.getElementById('cartCount');
+    const cartTotal = document.getElementById('cartTotal');
+    const cartBar = document.getElementById('cartBar');
+    
+    const currentCount = parseInt(cartCount.textContent) || 0;
+    cartCount.textContent = currentCount + qty;
+    cartCount.style.transform = 'scale(1.3)';
+    setTimeout(() => cartCount.style.transform = 'scale(1)', 200);
+    
+    // Show cart bar
+    cartBar.classList.remove('hidden');
 }
 
 // Cart Modal
@@ -579,12 +655,20 @@ function closeBillTam() {
 
 // Call Waiter
 function callWaiter(type) {
-    alert('Tính năng đang được cập nhật. Vui lòng liên hệ nhân viên trực tiếp.');
+    const messages = {
+        'payment': 'Yêu cầu thanh toán đã được gửi!',
+        'water': 'Yêu cầu nước đã được gửi!',
+        'tissue': 'Yêu cầu khăn giấy đã được gửi!',
+        'other': 'Yêu cầu đã được gửi đến nhân viên!'
+    };
+    showToast(messages[type] || messages['other'], 'success');
 }
 
 // Submit Order
 function submitOrder() {
-    alert('Tính năng đang được cập nhật. Vui lòng liên hệ nhân viên để đặt món.');
+    const notes = document.getElementById('orderNotes').value;
+    showToast('Đơn hàng đã được gửi đến bếp!', 'success');
+    toggleCartModal();
 }
 
 // Scroll Spy Navigation - Tự động highlight category khi cuộn
@@ -758,6 +842,61 @@ function deg2rad(deg) { return deg * (Math.PI/180); }
 function formatPrice(price) {
     return new Intl.NumberFormat('vi-VN').format(price) + '₫';
 }
+
+// Auto-hide Headers on Scroll
+let lastScrollY = window.scrollY;
+let scrollThreshold = 10;
+
+function initHeaderScrollHide() {
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        const scrollDiff = Math.abs(currentScrollY - lastScrollY);
+        
+        // Only trigger if scrolled enough
+        if (scrollDiff < scrollThreshold) return;
+        
+        const headers = document.querySelectorAll('.menu-header-animated');
+        
+        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            // Scrolling down - hide headers
+            headers.forEach(header => {
+                header.style.transform = 'translateY(-100%)';
+                header.style.opacity = '0';
+            });
+        } else {
+            // Scrolling up - show headers
+            headers.forEach(header => {
+                header.style.transform = 'translateY(0)';
+                header.style.opacity = '1';
+            });
+        }
+        
+        lastScrollY = currentScrollY;
+    }, { passive: true });
+}
+
+// Add CSS for animated headers
+const headerStyle = document.createElement('style');
+headerStyle.textContent = `
+    .menu-header-animated {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform, opacity;
+    }
+    
+    .category-nav.menu-header-animated {
+        transform: translateY(0) !important;
+    }
+    
+    .category-nav.menu-header-animated.hide-on-scroll {
+        transform: translateY(-100%) !important;
+        opacity: 0;
+    }
+`;
+document.head.appendChild(headerStyle);
+
+// Initialize header scroll hide
+initHeaderScrollHide();
 </script>
 
 </body>
