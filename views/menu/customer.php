@@ -155,14 +155,6 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 .btn-loc-start:hover { transform:translateY(-2px);box-shadow:0 10px 24px rgba(212,175,55,.35); }
 .loc-privacy { font-size:.68rem;color:#475569;margin:0; }
 
-/* ── Context banner (room vs restaurant) ── */
-.ctx-banner {
-    display:flex;align-items:center;gap:10px;
-    padding:10px 18px;border-radius:12px;margin:12px 16px 0;
-    font-size:.8rem;font-weight:700;letter-spacing:.5px;border:1.5px solid;
-}
-.ctx-banner i { font-size:1rem; }
-
 /* ── Menu type tab bar ── */
 .type-tab-bar {
     display:flex;gap:6px;padding:10px 16px;overflow-x:auto;
@@ -299,7 +291,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     </style>
     <?php endif; ?>
 
-    <!-- Header -->
+    <!-- Header - Compact -->
     <header class="menu-header">
         <div class="header-top">
             <div class="brand-logo">
@@ -307,7 +299,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                 <span><?= $contextLabel ?></span>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
-                <button id="langToggle" onclick="toggleLanguage()" style="background:var(--gold-light);border:1px solid var(--gold);border-radius:8px;padding:6px 10px;cursor:pointer;font-weight:700;font-size:0.7rem;color:var(--gold-dark);transition:all 0.2s;">
+                <button id="langToggle" onclick="toggleLanguage()" class="lang-toggle-btn">
                     <i class="fas fa-globe me-1"></i><span id="langText">EN</span>
                 </button>
                 <div class="table-info">
@@ -315,33 +307,6 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                     <span class="table-number"><?= e($table['name']) ?></span>
                 </div>
             </div>
-        </div>
-
-        <!-- Context banner -->
-        <div class="ctx-banner" style="color:<?= $contextColor ?>;background:<?= $contextColor ?>15;border-color:<?= $contextColor ?>44;">
-            <i class="fas <?= $contextIcon ?>"></i>
-            <span class="ctx-text"><?= $isRoomService ? 'Thực đơn phục vụ tại phòng — Đặt món sẽ được mang đến tận nơi' : 'Thực đơn nhà hàng — Đặt món ngay tại bàn và chờ phục vụ' ?></span>
-        </div>
-
-        <!-- Action bar - Hidden by default, shown via FAB -->
-        <div class="action-bar" id="actionBar" style="display:none;">
-            <button class="action-btn" onclick="window.location.href='<?= BASE_URL ?>/qr/sessions'">
-                <i class="fas fa-th-list"></i>
-                <span class="lang" data-vi="Bàn của tôi / My Tables" data-en="My Tables">Bàn của tôi / My Tables</span>
-            </button>
-            <button class="action-btn" onclick="callWaiter('support')">
-                <i class="fas fa-<?= $isRoomService ? 'concierge-bell' : 'hand-paper' ?>"></i>
-                <span class="lang" data-vi="Gọi nhân viên / <?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?>" data-en="<?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?>">Gọi nhân viên / <?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?></span>
-            </button>
-            <button class="action-btn <?= $hasItems ? 'glow-payment' : '' ?>"
-                    onclick="<?= $hasItems ? 'showBillTam()' : "callWaiter('payment')" ?>">
-                <i class="fas fa-file-invoice-dollar"></i>
-                <span class="lang" data-vi="<?= $hasItems ? 'Hoá đơn / Bill' : 'Thanh toán / Payment' ?>" data-en="<?= $hasItems ? 'Bill' : 'Payment' ?>"><?= $hasItems ? 'Hoá đơn / Bill' : 'Thanh toán / Payment' ?></span>
-            </button>
-            <button class="action-btn" onclick="window.location.reload()">
-                <i class="fas fa-sync-alt"></i>
-                <span class="lang" data-vi="Làm mới / Refresh" data-en="Refresh">Làm mới / Refresh</span>
-            </button>
         </div>
     </header>
 
