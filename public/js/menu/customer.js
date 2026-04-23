@@ -202,11 +202,9 @@ function createLocationIndicator() {
     const badge = document.getElementById('locStatusBadge');
     if (!badge) return;
     
-    // Show badge
-    badge.style.display = 'flex';
-    
     // In DEV_MODE, show special status
     if (CUSTOMER_CONFIG.devMode) {
+        badge.style.display = 'flex';
         updateLocationIndicator('granted', 'DEV MODE');
         badge.addEventListener('click', () => {
             showToast('🔧 DEV MODE: Kiểm tra vị trí đã tắt. Bạn có thể test từ bất kỳ đâu.');
@@ -214,18 +212,8 @@ function createLocationIndicator() {
         return;
     }
     
-    // Check initial status
-    updateLocationIndicator('checking', t('locationChecking'));
-    
-    // Click to show status
-    badge.addEventListener('click', () => {
-        const isVerified = localStorage.getItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`) === 'true';
-        if (isVerified) {
-            showToast(t('locationVerified'));
-        } else {
-            showToast(t('locationNotVerified'));
-        }
-    });
+    // Hide badge initially - will show after verification
+    badge.style.display = 'none';
 }
 
 function updateLocationIndicator(status, label) {
@@ -424,6 +412,11 @@ function checkLocation() {
                         btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
                     }
                     updateLocationIndicator('granted', `OK (${Math.round(distance)}m)`);
+                    
+                    // Show badge in header
+                    const badge = document.getElementById('locStatusBadge');
+                    if (badge) badge.style.display = 'flex';
+                    
                     startLocationWatcher();
                     setTimeout(() => {
                         if (overlay) {
