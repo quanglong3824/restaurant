@@ -53,7 +53,6 @@ body {
 .playfair,
 .brand-logo h1,
 .table-number,
-.item-price,
 .cart-total,
 .section-title,
 .sidebar-header h3 {
@@ -461,12 +460,13 @@ button {
 }
 
 .item-price {
-    font-weight: 800;
+    font-weight: 700;
     color: var(--gold-dark);
-    font-size: 0.95rem;
+    font-size: 1.15rem;
     white-space: nowrap;
     flex-shrink: 0;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 0.5px;
 }
 
 .item-name-en {
@@ -669,7 +669,7 @@ button {
     }
     
     .item-price {
-        font-size: 0.875rem;
+        font-size: 1.05rem;
     }
     
     .btn-add-circle {
@@ -990,10 +990,11 @@ button {
 }
 
 .cart-total {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     color: #fff;
     font-weight: 800;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 0.5px;
 }
 
 .btn-view-cart {
@@ -1264,7 +1265,9 @@ button {
 .total-summary strong {
     font-size: 1.3rem;
     color: var(--text-dark);
-    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 0.5px;
 }
 
 /* Submit Button */
@@ -1337,10 +1340,11 @@ button {
 }
 
 .bill-price {
-    font-weight: 800;
+    font-weight: 700;
     color: var(--gold-dark);
-    font-size: 0.95rem;
-    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 0.5px;
 }
 
 .bill-item-status {
@@ -1369,9 +1373,11 @@ button {
 }
 
 .bill-total-row strong {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     color: var(--text-dark);
-    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 0.5px;
 }
 
 /* Cart Items Container */
