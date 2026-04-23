@@ -745,7 +745,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                     <span class="sidebar-badge"></span>
                 <?php endif; ?>
             </a>
-            <a href="<?= BASE_URL ?>/qr/landing" class="sidebar-item">
+            <a href="javascript:void(0)" class="sidebar-item" onclick="showHistoryModal(); toggleSidebar()">
                 <i class="fas fa-history"></i>
                 <span class="lang" data-vi="Lịch sử / History" data-en="History">Lịch sử / History</span>
             </a>
@@ -842,6 +842,22 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
             <button class="btn-submit-order w-100" id="btnAddOrder" onclick="addFromDetail()">
                 <i class="fas fa-cart-plus me-2"></i> <span class="lang" data-vi="THÊM VÀO ĐƠN HÀNG / ADD TO ORDER" data-en="ADD TO ORDER">THÊM VÀO ĐƠN HÀNG / ADD TO ORDER</span>
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- ── History Modal ── -->
+<div id="historyModal" class="modal-backdrop hidden">
+    <div class="modal modal-bottom modal-premium">
+        <div class="modal-header">
+            <h3><i class="fas fa-history me-2"></i> <span class="lang" data-vi="Lịch Sử Đơn Hàng / Order History" data-en="Order History">Lịch Sử Đơn Hàng / Order History</span></h3>
+            <button class="modal-close" onclick="closeHistoryModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="historyModalContent">
+            <div style="text-align:center;padding:2rem;color:#94a3b8;">
+                <i class="fas fa-spinner fa-spin" style="font-size:2rem;margin-bottom:1rem;"></i>
+                <p>Đang tải lịch sử...</p>
+            </div>
         </div>
     </div>
 </div>
@@ -1014,6 +1030,73 @@ function toggleFab() {
         icon.classList.add('fa-bars');
         main.classList.remove('active');
     }
+}
+
+/* ── History Modal ── */
+function showHistoryModal() {
+    const modal = document.getElementById('historyModal');
+    const content = document.getElementById('historyModalContent');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    
+    // Fetch history from server
+    fetch('<?= BASE_URL ?>/qr/landing/history-ajax')
+        .then(res => res.json())
+        .then(data => {
+            if (data.orders && data.orders.length > 0) {
+                let html = '<div style="display:flex;flex-direction:column;gap:12px;">';
+                data.orders.forEach(function(order) {
+                    const statusClass = order.status === 'open' ? 'open' : 'closed';
+                    const statusText = order.status === 'open' ? 'ĐANG MỞ / OPEN' : 'ĐÃ THANH TOÁN / PAID';
+                    const statusColor = order.status === 'open' ? '#fef3c7' : '#d1fae5';
+                    const statusTextColor = order.status === 'open' ? '#d97706' : '#059669';
+                    
+                    html += '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">';
+                    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
+                    html += '<div style="display:flex;align-items:center;gap:8px;">';
+                    html += '<span style="font-size:0.7rem;font-weight:700;color:#64748b;text-transform:uppercase;">Đơn #' + order.id + '</span>';
+                    html += '<span style="font-size:0.65rem;font-weight:700;padding:3px 10px;border-radius:10px;background:' + statusColor + ';color:' + statusTextColor + ';">' + statusText + '</span>';
+                    html += '</div>';
+                    html += '<span style="font-size:0.75rem;color:#94a3b8;"><i class="far fa-clock"></i> ' + new Date(order.created_at).toLocaleString('vi-VN') + '</span>';
+                    html += '</div>';
+                    
+                    // Items preview
+                    if (order.items && order.items.length > 0) {
+                        html += '<div style="margin-bottom:10px;">';
+                        order.items.slice(0, 3).forEach(function(item) {
+                            const itemName = currentLang === 'en' && item.item_name_en ? item.item_name_en : item.item_name;
+                            html += '<div style="display:flex;justify-content:space-between;font-size:0.85rem;padding:3px 0;">';
+                            html += '<span><span style="font-weight:700;color:var(--gold-dark);">' + item.quantity + 'x</span> ' + itemName + '</span>';
+                            html += '<span style="color:#64748b;">' + formatPrice(item.item_price * item.quantity) + '</span>';
+                            html += '</div>';
+                        });
+                        if (order.items.length > 3) {
+                            html += '<div style="font-size:0.75rem;color:#94a3b8;font-style:italic;">+ ' + (order.items.length - 3) + ' món khác</div>';
+                        }
+                        html += '</div>';
+                    }
+                    
+                    // Total
+                    html += '<div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px dashed #e2e8f0;">';
+                    html += '<span style="font-size:0.8rem;color:#64748b;">Tổng cộng / Total</span>';
+                    html += '<span style="font-size:1.1rem;font-weight:800;color:var(--gold-dark);">' + formatPrice(order.total) + '</span>';
+                    html += '</div>';
+                    html += '</div>';
+                });
+                html += '</div>';
+                content.innerHTML = html;
+            } else {
+                content.innerHTML = '<div style="text-align:center;padding:2rem;color:#94a3b8;"><i class="fas fa-receipt" style="font-size:3rem;opacity:0.3;margin-bottom:1rem;"></i><p style="font-weight:600;">Chưa có lịch sử đơn hàng / No order history</p></div>';
+            }
+        })
+        .catch(err => {
+            content.innerHTML = '<div style="text-align:center;padding:2rem;color:#ef4444;"><i class="fas fa-exclamation-circle" style="font-size:2rem;margin-bottom:1rem;"></i><p>Lỗi tải lịch sử / Error loading history</p></div>';
+        });
+}
+
+function closeHistoryModal() {
+    document.getElementById('historyModal').classList.add('hidden');
+    document.body.style.overflow = '';
 }
 
 /* ── Bill modal ── */

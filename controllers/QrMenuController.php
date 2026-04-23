@@ -274,6 +274,43 @@ class QrMenuController extends Controller
         ]);
     }
 
+    /** AJAX endpoint to fetch order history */
+    public function historyAjax(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        
+        $visitorToken = $_COOKIE['qr_visitor_token'] ?? '';
+        $orders = [];
+        
+        if (!empty($visitorToken)) {
+            try {
+                $allOrders = $this->orderModel->findAll(
+                    "SELECT o.*, t.name AS table_name, t.type AS table_type, t.status AS table_status,
+                            (SELECT SUM(oi.item_price * oi.quantity) FROM order_items oi 
+                             WHERE oi.order_id = o.id AND oi.status != 'cancelled') AS total
+                     FROM orders o
+                     JOIN tables t ON t.id = o.table_id
+                     WHERE o.session_id = ?
+                     ORDER BY o.created_at DESC
+                     LIMIT 20",
+                    [$visitorToken]
+                );
+                
+                // Enrich orders với items
+                foreach ($allOrders as &$order) {
+                    $order['items'] = $this->orderModel->getItems($order['id']);
+                    $order['total_formatted'] = formatPrice($order['total']);
+                }
+                
+                $orders = $allOrders;
+            } catch (\Throwable $e) {
+                $orders = [];
+            }
+        }
+        
+        $this->json(['orders' => $orders]);
+    }
+
     /** View all active sessions (tables) for this device */
     public function sessions(): void
     {
