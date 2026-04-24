@@ -423,6 +423,7 @@ function openNoteModal(itemId, orderId, opts, itemName, currentNote) {
     // Show modal
     const modal = document.getElementById('modalItemNote');
     if (modal) {
+        modal.classList.add('is-open');
         modal.style.display = 'flex';
         setTimeout(() => {
             const input = document.getElementById('note-custom-text');
@@ -433,7 +434,10 @@ function openNoteModal(itemId, orderId, opts, itemName, currentNote) {
 
 function closeNoteModal() {
     const modal = document.getElementById('modalItemNote');
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+        modal.classList.remove('is-open');
+        modal.style.display = 'none';
+    }
 }
 
 function submitItemNote() {

@@ -148,7 +148,7 @@ if (!empty($items)) {
                                         }
                                         $itemOptsJson = json_encode($combinedOpts, JSON_UNESCAPED_UNICODE);
                                         ?>
-                                        <button class="action-btn edit" onclick="event.stopPropagation(); openNoteModal(<?= $item['id'] ?>, <?= $order['id'] ?>, <?= htmlspecialchars($itemOptsJson) ?>, '<?= addslashes(e($item['item_name'])) ?>', '<?= addslashes(e($item['note'] ?? '')) ?>')" title="Ghi chú">
+                                        <button class="action-btn edit" onclick="event.stopPropagation(); openNoteModal(<?= $item['id'] ?>, <?= $order['id'] ?>, <?= $itemOptsJson ?>, '<?= addslashes(e($item['item_name'])) ?>', '<?= addslashes(e($item['note'] ?? '')) ?>')" title="Ghi chú">
                                             <i class="fas fa-pen"></i>
                                         </button>
                                         <button class="action-btn delete" onclick="event.stopPropagation(); removeItem(<?= $item['id'] ?>, <?= $order['id'] ?>)" title="Xóa">
@@ -231,7 +231,7 @@ if (!empty($items)) {
                                         $itemOptsJson2 = json_encode($combinedOpts2, JSON_UNESCAPED_UNICODE);
                                         ?>
                                         <div class="item-actions">
-                                            <button class="action-btn edit" onclick="event.stopPropagation(); openNoteModal(<?= $item['id'] ?>, <?= $order['id'] ?>, <?= htmlspecialchars($itemOptsJson2) ?>, '<?= addslashes(e($item['item_name'])) ?>', '<?= addslashes(e($item['note'] ?? '')) ?>')" title="Ghi chú">
+                                            <button class="action-btn edit" onclick="event.stopPropagation(); openNoteModal(<?= $item['id'] ?>, <?= $order['id'] ?>, <?= $itemOptsJson2 ?>, '<?= addslashes(e($item['item_name'])) ?>', '<?= addslashes(e($item['note'] ?? '')) ?>')" title="Ghi chú">
                                                 <i class="fas fa-pen"></i>
                                             </button>
                                             <button class="action-btn delete" onclick="event.stopPropagation(); removeItem(<?= $item['id'] ?>, <?= $order['id'] ?>)" title="Xóa">
@@ -307,7 +307,7 @@ if (!empty($items)) {
                                         $itemOptsJson3 = json_encode($combinedOpts3, JSON_UNESCAPED_UNICODE);
                                         ?>
                                         <div class="item-actions">
-                                            <button class="action-btn edit" onclick="event.stopPropagation(); openNoteModal(<?= $item['id'] ?>, <?= $order['id'] ?>, <?= htmlspecialchars($itemOptsJson3) ?>, '<?= addslashes(e($item['item_name'])) ?>', '<?= addslashes(e($item['note'] ?? '')) ?>')" title="Ghi chú">
+                                            <button class="action-btn edit" onclick="event.stopPropagation(); openNoteModal(<?= $item['id'] ?>, <?= $order['id'] ?>, <?= $itemOptsJson3 ?>, '<?= addslashes(e($item['item_name'])) ?>', '<?= addslashes(e($item['note'] ?? '')) ?>')" title="Ghi chú">
                                                 <i class="fas fa-pen"></i>
                                             </button>
                                             <button class="action-btn delete" onclick="event.stopPropagation(); removeItem(<?= $item['id'] ?>, <?= $order['id'] ?>)" title="Xóa">
