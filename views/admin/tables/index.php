@@ -306,7 +306,11 @@
 
             <!-- Footer với actions -->
             <div class="qr-modal-footer no-print">
-                <button type="button" class="qr-action-btn qr-action-primary" onclick="printQR()">
+                <button type="button" class="qr-action-btn qr-action-primary" onclick="openQrLink()">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>Mở link</span>
+                </button>
+                <button type="button" class="qr-action-btn qr-action-secondary" onclick="printQR()">
                     <i class="fas fa-print"></i>
                     <span>In mã QR</span>
                 </button>
@@ -795,6 +799,8 @@
 </style>
 
 <script>
+    let currentQrUrl = '';
+    
     document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('qrModal');
         const qrContainer = document.getElementById('qrcode-canvas');
@@ -826,6 +832,7 @@
                 }
 
                 const fullUrl = `<?= BASE_URL ?>/q?t=${token}`;
+                currentQrUrl = fullUrl;
 
                 qrTitle.innerText = `Mã QR: <?= $type === 'room' ? 'Phòng' : 'Bàn' ?> ${tableName}`;
                 qrTableDisplay.innerText = `<?= $type === 'room' ? 'PHÒNG' : 'BÀN' ?> ${tableName.toUpperCase()}`;
@@ -873,6 +880,12 @@
         link.download = `QR-${document.getElementById('qrTableDisplay').innerText}.png`;
         link.href = img.src;
         link.click();
+    }
+
+    function openQrLink() {
+        if (currentQrUrl) {
+            window.open(currentQrUrl, '_blank');
+        }
     }
 
     function confirmResetQR(tableId, tableName, isPrinted, scanCount, itemsCount) {
