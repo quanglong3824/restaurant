@@ -825,7 +825,7 @@ foreach (array_keys($grouped) as $a) {
 </div>
 
 <script>
-const POS = {
+var POS = {
     baseUrl: '<?= BASE_URL ?>',
     orderId: <?= $orderId ?: 0 ?>,
     tableId: <?= $tableId ?: 0 ?>,
@@ -833,38 +833,40 @@ const POS = {
     selectedGuest: 2,
     selectedGuestUpdate: <?= $order['guest_count'] ?? 2 ?>,
     selectedPayment: 'cash',
-    currentTableId: null
+    currentTableId: null,
+    transferTableId: null,
+    mergeParentId: null
 };
 
-// ── Tab Switching ───────────────────────────────────────────
+var addItemItemId = 0;
+var addItemQtyCount = 1;
+var addItemSelectedOpts = [];
+var splitGuestCount = 2;
+var currentNoteItemId = 0;
+var selectedNoteOptions = [];
+
 function switchTab(tab) {
-    document.querySelectorAll('.pos-tab').forEach(function(t) {
-        t.classList.remove('active');
-    });
+    var tabEls = document.querySelectorAll('.pos-tab');
+    for (var i = 0; i < tabEls.length; i++) {
+        tabEls[i].classList.remove('active');
+    }
     
-    const activeTab = document.querySelector('.pos-tab[data-tab="' + tab + '"]');
+    var activeTab = document.querySelector('.pos-tab[data-tab="' + tab + '"]');
     if (activeTab) {
         activeTab.classList.add('active');
     }
     
-    document.querySelectorAll('.tab-content').forEach(function(c) {
-        c.style.display = 'none';
-    });
+    var contentEls = document.querySelectorAll('.tab-content');
+    for (var j = 0; j < contentEls.length; j++) {
+        contentEls[j].style.display = 'none';
+    }
     
-    const tabId = 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1);
-    const tabContent = document.getElementById(tabId);
+    var tabId = 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1);
+    var tabContent = document.getElementById(tabId);
     if (tabContent) {
         tabContent.style.display = 'block';
     }
 }
-
-document.querySelectorAll('.pos-tab').forEach(function(tabEl) {
-    tabEl.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        switchTab(this.dataset.tab);
-    });
-});
 
 function viewOrder(tableId) {
     window.location.href = POS.baseUrl + '/admin/pos?tab=order&table_id=' + tableId;
@@ -875,46 +877,35 @@ function changeMenuType(type) {
 }
 
 function searchMenu(keyword) {
-    const kw = keyword.toLowerCase().trim();
-    document.querySelectorAll('.menu-item-card').forEach(function(card) {
-        const name = card.dataset.name || '';
-        if (kw === '' || name.includes(kw)) {
-            card.style.display = 'flex';
+    var kw = keyword.toLowerCase().trim();
+    var cards = document.querySelectorAll('.menu-item-card');
+    for (var i = 0; i < cards.length; i++) {
+        var name = cards[i].dataset.name || '';
+        if (kw === '' || name.indexOf(kw) >= 0) {
+            cards[i].style.display = 'flex';
         } else {
-            card.style.display = 'none';
+            cards[i].style.display = 'none';
         }
-    });
+    }
 }
 
 function filterMenuCategory(tabEl) {
-    document.querySelectorAll('.menu-tab').forEach(function(t) {
-        t.classList.remove('active');
-    });
+    var tabs = document.querySelectorAll('.menu-tab');
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+    }
     tabEl.classList.add('active');
     
-    const cat = tabEl.dataset.cat;
-    document.querySelectorAll('.menu-item-card').forEach(function(card) {
-        if (cat === 'all' || card.dataset.cat === cat) {
-            card.style.display = 'flex';
+    var cat = tabEl.dataset.cat;
+    var cards = document.querySelectorAll('.menu-item-card');
+    for (var j = 0; j < cards.length; j++) {
+        if (cat === 'all' || cards[j].dataset.cat === cat) {
+            cards[j].style.display = 'flex';
         } else {
-            card.style.display = 'none';
+            cards[j].style.display = 'none';
         }
-    });
+    }
 }
-
-document.querySelectorAll('.floor-card').forEach(card => {
-    card.addEventListener('click', function() {
-        const table = JSON.parse(this.dataset.table);
-        POS.currentTableId = table.id;
-        
-        if (table.status === 'occupied') {
-            viewOrder(table.id);
-        } else {
-            document.getElementById('openTableName').textContent = table.name;
-            openModal('modalOpenTable');
-        }
-    });
-});
 
 function openModal(id) {
     document.getElementById(id).classList.add('show');
@@ -926,20 +917,26 @@ function closeModal(id) {
 
 function selectGuest(n) {
     POS.selectedGuest = n;
-    document.querySelectorAll('#guestGrid .guest-btn').forEach(b => b.classList.remove('selected'));
+    var btns = document.querySelectorAll('#guestGrid .guest-btn');
+    for (var i = 0; i < btns.length; i++) {
+        btns[i].classList.remove('selected');
+    }
     document.querySelector('#guestGrid .guest-btn:nth-child(' + n + ')').classList.add('selected');
 }
 
 function selectGuestUpdate(n) {
     POS.selectedGuestUpdate = n;
-    document.querySelectorAll('#guestUpdateGrid .guest-btn').forEach(b => b.classList.remove('selected'));
+    var btns = document.querySelectorAll('#guestUpdateGrid .guest-btn');
+    for (var i = 0; i < btns.length; i++) {
+        btns[i].classList.remove('selected');
+    }
     document.querySelector('#guestUpdateGrid .guest-btn:nth-child(' + n + ')').classList.add('selected');
 }
 
 function selectPayment(method) {
     POS.selectedPayment = method;
-    const cash = document.getElementById('payCash');
-    const transfer = document.getElementById('payTransfer');
+    var cash = document.getElementById('payCash');
+    var transfer = document.getElementById('payTransfer');
     if (method === 'cash') {
         cash.style.borderColor = '#d4af37';
         cash.querySelector('i').style.color = '#d4af37';
@@ -959,8 +956,8 @@ function submitOpenTable() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ table_id: POS.currentTableId, guest_count: POS.selectedGuest })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) {
             closeModal('modalOpenTable');
             window.location.href = POS.baseUrl + '/admin/pos?tab=order&table_id=' + d.table_id + '&order_id=' + d.order_id;
@@ -969,11 +966,6 @@ function submitOpenTable() {
         }
     });
 }
-
-// ── Add Item with Note ────────────────────────────────────
-let addItemItemId = 0;
-let addItemQtyCount = 1;
-let addItemSelectedOpts = [];
 
 function openAddItemModal(itemId, itemName, options) {
     addItemItemId = itemId;
@@ -984,28 +976,30 @@ function openAddItemModal(itemId, itemName, options) {
     document.getElementById('addItemQty').textContent = '1';
     document.getElementById('addItemNote').value = '';
     
-    const optsContainer = document.getElementById('addItemOptions');
+    var optsContainer = document.getElementById('addItemOptions');
     optsContainer.innerHTML = '';
     
-    const opts = options ? JSON.parse(options) : [];
-    opts.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.textContent = opt;
-        btn.className = 'guest-btn';
-        btn.style.cssText = 'padding:6px 12px;font-size:0.8rem;';
-        btn.onclick = function() {
-            const idx = addItemSelectedOpts.indexOf(opt);
-            if (idx >= 0) {
-                addItemSelectedOpts.splice(idx, 1);
-                this.classList.remove('selected');
-            } else {
-                addItemSelectedOpts.push(opt);
-                this.classList.add('selected');
-            }
-        };
-        optsContainer.appendChild(btn);
-    });
+    var opts = options ? JSON.parse(options) : [];
+    for (var i = 0; i < opts.length; i++) {
+        (function(opt) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = opt;
+            btn.className = 'guest-btn';
+            btn.style.cssText = 'padding:6px 12px;font-size:0.8rem;';
+            btn.onclick = function() {
+                var idx = addItemSelectedOpts.indexOf(opt);
+                if (idx >= 0) {
+                    addItemSelectedOpts.splice(idx, 1);
+                    this.classList.remove('selected');
+                } else {
+                    addItemSelectedOpts.push(opt);
+                    this.classList.add('selected');
+                }
+            };
+            optsContainer.appendChild(btn);
+        })(opts[i]);
+    }
     
     openModal('modalAddItem');
 }
@@ -1016,18 +1010,18 @@ function changeAddQty(delta) {
 }
 
 function submitAddItem() {
-    const freeNote = document.getElementById('addItemNote').value.trim();
-    const parts = [...addItemSelectedOpts];
+    var freeNote = document.getElementById('addItemNote').value.trim();
+    var parts = addItemSelectedOpts.slice();
     if (freeNote) parts.push(freeNote);
-    const note = parts.join(', ');
+    var note = parts.join(', ');
     
     fetch(POS.baseUrl + '/admin/pos/add-item', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ order_id: POS.orderId, table_id: POS.tableId, menu_item_id: addItemItemId, qty: addItemQtyCount, note: note })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) {
             closeModal('modalAddItem');
             POS.orderId = d.order_id;
@@ -1039,15 +1033,14 @@ function submitAddItem() {
     });
 }
 
-// ── Quick Add (no modal) ───────────────────────────────────
 function addItemToOrder(itemId) {
     fetch(POS.baseUrl + '/admin/pos/add-item', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ order_id: POS.orderId, table_id: POS.tableId, menu_item_id: itemId, qty: 1, note: '' })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) {
             POS.orderId = d.order_id;
             updateCartUI(d);
@@ -1066,8 +1059,8 @@ function updateItemQty(itemId, delta) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ item_id: itemId, order_id: POS.orderId, delta: delta })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) updateCartUI(d);
     });
 }
@@ -1079,46 +1072,47 @@ function removeItem(itemId) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ item_id: itemId, order_id: POS.orderId })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) updateCartUI(d);
     });
 }
 
 function updateCartUI(d) {
     document.getElementById('cartTotal').textContent = d.total_fmt;
-    const body = document.getElementById('cartBody');
-    body.innerHTML = d.items.map(it => `
-        <div class="cart-item" data-item-id="${it.id}">
-            <div class="cart-item-name">${it.item_name}${it.note ? '<span style="font-size:0.65rem;color:#d4af37">(' + it.note + ')</span>' : ''}</div>
-            <div class="cart-item-qty">
-                <button class="cart-qty-btn" onclick="updateItemQty(${it.id}, -1)"><i class="fas fa-minus"></i></button>
-                <span>${it.quantity}</span>
-                <button class="cart-qty-btn" onclick="updateItemQty(${it.id}, 1)"><i class="fas fa-plus"></i></button>
-            </div>
-            <div class="cart-item-price">${it.subtotal_fmt}</div>
-        </div>
-    `).join('');
+    var body = document.getElementById('cartBody');
+    body.innerHTML = d.items.map(function(it) {
+        return '<div class="cart-item" data-item-id="' + it.id + '">' +
+            '<div class="cart-item-name">' + it.item_name + (it.note ? '<span style="font-size:0.65rem;color:#d4af37">(' + it.note + ')</span>' : '') + '</div>' +
+            '<div class="cart-item-qty">' +
+                '<button class="cart-qty-btn" onclick="updateItemQty(' + it.id + ', -1)"><i class="fas fa-minus"></i></button>' +
+                '<span>' + it.quantity + '</span>' +
+                '<button class="cart-qty-btn" onclick="updateItemQty(' + it.id + ', 1)"><i class="fas fa-plus"></i></button>' +
+            '</div>' +
+            '<div class="cart-item-price">' + it.subtotal_fmt + '</div>' +
+        '</div>';
+    }).join('');
     
-    const orderBody = document.querySelector('.order-items');
+    var orderBody = document.querySelector('.order-items');
     if (orderBody) {
-        orderBody.innerHTML = d.items.map(it => `
-            <div class="order-item-row" data-item-id="${it.id}" data-options="${it.note_options || '[]'}">
-                <div class="order-item-name">${it.item_name}${it.note ? '<span style="font-size:0.7rem;color:#d4af37">(' + it.note + ')</span>' : ''}</div>
-                <div class="order-item-qty">
-                    <button class="cart-qty-btn" onclick="updateItemQty(${it.id}, -1)"><i class="fas fa-minus"></i></button>
-                    <span style="font-weight:700">${it.quantity}</span>
-                    <button class="cart-qty-btn" onclick="updateItemQty(${it.id}, 1)"><i class="fas fa-plus"></i></button>
-                </div>
-                <button class="floor-btn floor-btn-ghost" onclick="openItemNoteModal(${it.id}, '${it.item_name.replace(/'/g, "\\'")}', ${it.note_options || '[]'}, '${it.note || ''}')"><i class="fas fa-pen"></i></button>
-                <div class="order-item-price">${it.subtotal_fmt}</div>
-                <span class="order-item-status ${it.status || 'draft'}">${it.status || 'draft'}</span>
-                <button class="floor-btn floor-btn-red" onclick="removeItem(${it.id})"><i class="fas fa-trash"></i></button>
-            </div>
-        `).join('');
+        orderBody.innerHTML = d.items.map(function(it) {
+            return '<div class="order-item-row" data-item-id="' + it.id + '" data-options="' + (it.note_options || '[]') + '">' +
+                '<div class="order-item-name">' + it.item_name + (it.note ? '<span style="font-size:0.7rem;color:#d4af37">(' + it.note + ')</span>' : '') + '</div>' +
+                '<div class="order-item-qty">' +
+                    '<button class="cart-qty-btn" onclick="updateItemQty(' + it.id + ', -1)"><i class="fas fa-minus"></i></button>' +
+                    '<span style="font-weight:700">' + it.quantity + '</span>' +
+                    '<button class="cart-qty-btn" onclick="updateItemQty(' + it.id + ', 1)"><i class="fas fa-plus"></i></button>' +
+                '</div>' +
+                '<button class="floor-btn floor-btn-ghost" onclick="openItemNoteModal(' + it.id + ', \'' + it.item_name.replace(/'/g, "\\'") + '\', ' + (it.note_options || '[]') + ', \'' + (it.note || '') + '\')"><i class="fas fa-pen"></i></button>' +
+                '<div class="order-item-price">' + it.subtotal_fmt + '</div>' +
+                '<span class="order-item-status ' + (it.status || 'draft') + '">' + (it.status || 'draft') + '</span>' +
+                '<button class="floor-btn floor-btn-red" onclick="removeItem(' + it.id + ')"><i class="fas fa-trash"></i></button>' +
+            '</div>';
+        }).join('');
     }
     
-    document.querySelector('.order-total')?.textContent = d.total_fmt;
+    var totalEl = document.querySelector('.order-total');
+    if (totalEl) totalEl.textContent = d.total_fmt;
 }
 
 function confirmOrder() {
@@ -1127,8 +1121,8 @@ function confirmOrder() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ order_id: POS.orderId })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) {
             updateCartUI(d);
             location.reload();
@@ -1148,8 +1142,8 @@ function submitPayment() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ table_id: POS.tableId, order_id: POS.orderId, payment_method: POS.selectedPayment })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) {
             closeModal('modalPayment');
             alert('Thanh toán thành công!');
@@ -1167,8 +1161,8 @@ function cancelOrder() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ table_id: POS.tableId, order_id: POS.orderId })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) {
             window.location.href = POS.baseUrl + '/admin/pos?tab=floor';
         }
@@ -1185,8 +1179,8 @@ function submitGuestUpdate() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ order_id: POS.orderId, guest_count: POS.selectedGuestUpdate })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) {
             closeModal('modalGuest');
             location.reload();
@@ -1196,30 +1190,44 @@ function submitGuestUpdate() {
 
 function refreshRealtime() {
     fetch(POS.baseUrl + '/admin/pos/realtime-data')
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) {
-            const grid = document.getElementById('realtimeGrid');
-            grid.innerHTML = d.data.map(o => `
-                <div class="realtime-card">
-                    <div class="realtime-card-header">
-                        <div class="realtime-table-name">${o.full_name}</div>
-                        <span class="realtime-status ${o.status}">${o.status}</span>
-                    </div>
-                    <div class="realtime-card-body">
-                        ${o.items.map(it => `
-                            <div class="realtime-item">
-                                <div class="realtime-item-name">${it.item_name}</div>
-                                <div class="realtime-item-qty">x${it.quantity}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="realtime-card-footer">
-                        <div class="realtime-total">${o.total_fmt}</div>
-                        <button class="floor-btn floor-btn-gold" onclick="viewOrder(${o.table_id})">Chi tiết</button>
-                    </div>
-                </div>
-            `).join('');
+            var grid = document.getElementById('realtimeGrid');
+            grid.innerHTML = d.data.map(function(o) {
+                var idleBadge = '';
+                if (o.is_idle && o.idle_seconds > 0) {
+                    var remaining = Math.max(0, 300 - o.idle_seconds);
+                    var min = Math.floor(remaining / 60);
+                    var sec = remaining % 60;
+                    var critical = remaining < 60;
+                    idleBadge = '<div class="idle-badge-realtime ' + (critical ? 'critical' : '') + '"><i class="fas fa-clock"></i> ' + min + ':' + (sec < 10 ? '0' + sec : sec) + '</div>';
+                }
+                return '<div class="realtime-card" id="realtime-' + o.id + '">' +
+                    '<div class="realtime-card-header">' +
+                        '<div>' +
+                            '<div class="realtime-table-name">' + o.full_name + '</div>' +
+                            idleBadge +
+                        '</div>' +
+                        '<span class="realtime-status ' + o.status + '">' + o.status + '</span>' +
+                    '</div>' +
+                    '<div class="realtime-card-body">' +
+                        (o.items.length > 0 ? o.items.map(function(it) {
+                            return '<div class="realtime-item">' +
+                                '<div class="realtime-item-name">' + it.item_name + '</div>' +
+                                '<div class="realtime-item-qty">x' + it.quantity + '</div>' +
+                            '</div>';
+                        }).join('') : '<div style="color:#64748b;font-size:0.8rem;text-align:center">Chưa có món</div>') +
+                    '</div>' +
+                    '<div class="realtime-card-footer">' +
+                        '<div class="realtime-total">' + o.total_fmt + '</div>' +
+                        '<div class="realtime-actions">' +
+                            '<button class="floor-btn floor-btn-gold" onclick="viewOrder(' + o.table_id + ')">Chi tiết</button>' +
+                            '<button class="floor-btn floor-btn-blue" onclick="openTransferModal(' + o.table_id + ')">Chuyển</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
         }
     });
 }
@@ -1230,8 +1238,8 @@ function markAllRead() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: 0 })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) location.reload();
     });
 }
@@ -1255,14 +1263,13 @@ function hideCart() {
     document.getElementById('cartPanel').style.display = 'none';
 }
 
-// ── Transfer ──────────────────────────────────────────────
 function openTransferModal(tableId) {
     POS.transferTableId = tableId;
     openModal('modalTransfer');
 }
 
 function submitTransfer() {
-    const targetId = parseInt(document.getElementById('transferTarget').value);
+    var targetId = parseInt(document.getElementById('transferTarget').value);
     if (!targetId) { alert('Chọn bàn đích'); return; }
     
     fetch(POS.baseUrl + '/admin/pos/transfer-table', {
@@ -1270,8 +1277,8 @@ function submitTransfer() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ from_table_id: POS.transferTableId, to_table_id: targetId })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) {
             closeModal('modalTransfer');
             alert('Chuyển bàn thành công!');
@@ -1282,14 +1289,13 @@ function submitTransfer() {
     });
 }
 
-// ── Merge/Unmerge ──────────────────────────────────────────
 function openMergeModal(tableId) {
     POS.mergeParentId = tableId;
     openModal('modalMerge');
 }
 
 function submitMerge() {
-    const childId = parseInt(document.getElementById('mergeTarget').value);
+    var childId = parseInt(document.getElementById('mergeTarget').value);
     if (!childId) { alert('Chọn bàn để ghép'); return; }
     
     fetch(POS.baseUrl + '/admin/pos/merge-table', {
@@ -1297,8 +1303,8 @@ function submitMerge() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ parent_id: POS.mergeParentId, child_id: childId })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) {
             closeModal('modalMerge');
             alert('Ghép bàn thành công!');
@@ -1317,8 +1323,8 @@ function unmergeTable(tableId) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ table_id: tableId })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) {
             alert('Tách bàn thành công!');
             location.reload();
@@ -1328,32 +1334,33 @@ function unmergeTable(tableId) {
     });
 }
 
-// ── Split Order ────────────────────────────────────────────
-let splitGuestCount = 2;
-
 function openSplitModal() {
     openModal('modalSplit');
 }
 
 function selectSplitGuest(n) {
     splitGuestCount = n;
-    document.querySelectorAll('#modalSplit .guest-btn').forEach(b => b.classList.remove('selected'));
+    var btns = document.querySelectorAll('#modalSplit .guest-btn');
+    for (var i = 0; i < btns.length; i++) {
+        btns[i].classList.remove('selected');
+    }
     event.target.classList.add('selected');
 }
 
 function updateSplitCount() {
-    const count = document.querySelectorAll('.split-item-cb:checked').length;
-    document.getElementById('splitSelectedCount').textContent = count;
+    var cbs = document.querySelectorAll('.split-item-cb:checked');
+    document.getElementById('splitSelectedCount').textContent = cbs.length;
 }
 
 function submitSplit() {
-    const targetTableId = parseInt(document.getElementById('splitTargetTable').value);
+    var targetTableId = parseInt(document.getElementById('splitTargetTable').value);
     if (!targetTableId) { alert('Chọn bàn đích'); return; }
     
-    const itemIds = [];
-    document.querySelectorAll('.split-item-cb:checked').forEach(cb => {
-        itemIds.push(parseInt(cb.dataset.itemId));
-    });
+    var itemIds = [];
+    var cbs = document.querySelectorAll('.split-item-cb:checked');
+    for (var i = 0; i < cbs.length; i++) {
+        itemIds.push(parseInt(cbs[i].dataset.itemId));
+    }
     
     if (itemIds.length === 0) { alert('Chọn món cần tách'); return; }
     
@@ -1362,8 +1369,8 @@ function submitSplit() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ order_id: POS.orderId, target_table_id: targetTableId, guest_count: splitGuestCount, item_ids: itemIds })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) {
             closeModal('modalSplit');
             alert('Tách món thành công!');
@@ -1374,14 +1381,9 @@ function submitSplit() {
     });
 }
 
-// ── Print Bill ─────────────────────────────────────────────
 function printBill() {
     window.open(POS.baseUrl + '/orders/print?order_id=' + POS.orderId, '_blank');
 }
-
-// ── Item Note ──────────────────────────────────────────────
-let currentNoteItemId = 0;
-let selectedNoteOptions = [];
 
 function openItemNoteModal(itemId, itemName, options, currentNote) {
     currentNoteItemId = itemId;
@@ -1389,55 +1391,57 @@ function openItemNoteModal(itemId, itemName, options, currentNote) {
     
     document.getElementById('itemNoteName').textContent = itemName;
     
-    const optsContainer = document.getElementById('itemNoteOptions');
+    var optsContainer = document.getElementById('itemNoteOptions');
     optsContainer.innerHTML = '';
     
-    const opts = options ? JSON.parse(options) : [];
-    const currentParts = currentNote ? currentNote.split(',').map(s => s.trim()).filter(Boolean) : [];
+    var opts = options ? JSON.parse(options) : [];
+    var currentParts = currentNote ? currentNote.split(',').map(function(s) { return s.trim(); }).filter(Boolean) : [];
     
-    opts.forEach(opt => {
-        const isActive = currentParts.includes(opt);
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.textContent = opt;
-        btn.style.cssText = `padding:6px 12px;border-radius:20px;font-size:0.8rem;cursor:pointer;border:2px solid ${isActive ? '#d4af37' : '#e2e8f0'};background:${isActive ? 'rgba(212,175,55,0.15)' : '#f8fafc'};color:${isActive ? '#d4af37' : '#64748b'};font-weight:700;`;
-        btn.onclick = function() {
-            const idx = selectedNoteOptions.indexOf(opt);
-            if (idx >= 0) {
-                selectedNoteOptions.splice(idx, 1);
-                this.style.borderColor = '#e2e8f0';
-                this.style.background = '#f8fafc';
-                this.style.color = '#64748b';
-            } else {
-                selectedNoteOptions.push(opt);
-                this.style.borderColor = '#d4af37';
-                this.style.background = 'rgba(212,175,55,0.15)';
-                this.style.color = '#d4af37';
-            }
-        };
-        if (isActive) selectedNoteOptions.push(opt);
-        optsContainer.appendChild(btn);
-    });
+    for (var i = 0; i < opts.length; i++) {
+        (function(opt) {
+            var isActive = currentParts.indexOf(opt) >= 0;
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = opt;
+            btn.style.cssText = 'padding:6px 12px;border-radius:20px;font-size:0.8rem;cursor:pointer;border:2px solid ' + (isActive ? '#d4af37' : '#e2e8f0') + ';background:' + (isActive ? 'rgba(212,175,55,0.15)' : '#f8fafc') + ';color:' + (isActive ? '#d4af37' : '#64748b') + ';font-weight:700;';
+            btn.onclick = function() {
+                var idx = selectedNoteOptions.indexOf(opt);
+                if (idx >= 0) {
+                    selectedNoteOptions.splice(idx, 1);
+                    this.style.borderColor = '#e2e8f0';
+                    this.style.background = '#f8fafc';
+                    this.style.color = '#64748b';
+                } else {
+                    selectedNoteOptions.push(opt);
+                    this.style.borderColor = '#d4af37';
+                    this.style.background = 'rgba(212,175,55,0.15)';
+                    this.style.color = '#d4af37';
+                }
+            };
+            if (isActive) selectedNoteOptions.push(opt);
+            optsContainer.appendChild(btn);
+        })(opts[i]);
+    }
     
-    const freeText = currentParts.filter(p => !opts.includes(p)).join(', ');
+    var freeText = currentParts.filter(function(p) { return opts.indexOf(p) < 0; }).join(', ');
     document.getElementById('itemNoteText').value = freeText;
     
     openModal('modalItemNote');
 }
 
 function submitItemNote() {
-    const freeText = document.getElementById('itemNoteText').value.trim();
-    const parts = [...selectedNoteOptions];
+    var freeText = document.getElementById('itemNoteText').value.trim();
+    var parts = selectedNoteOptions.slice();
     if (freeText) parts.push(freeText);
-    const note = parts.join(', ');
+    var note = parts.join(', ');
     
     fetch(POS.baseUrl + '/admin/pos/update-item-note', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ item_id: currentNoteItemId, order_id: POS.orderId, note: note })
     })
-    .then(r => r.json())
-    .then(d => {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
         if (d.ok) {
             closeModal('modalItemNote');
             updateCartUI(d);
@@ -1447,74 +1451,56 @@ function submitItemNote() {
     });
 }
 
-// ── Add note button to order items ──────────────────────────
-document.querySelectorAll('.order-item-row').forEach(row => {
-    const nameDiv = row.querySelector('.order-item-name');
-    if (nameDiv) {
-        const noteBtn = document.createElement('button');
-        noteBtn.className = 'floor-btn floor-btn-ghost';
-        noteBtn.innerHTML = '<i class="fas fa-pen"></i>';
-        noteBtn.style.marginLeft = '4px';
-        noteBtn.onclick = function(e) {
-            e.stopPropagation();
-            const itemData = row.dataset;
-            openItemNoteModal(
-                parseInt(itemData?.itemId || row.querySelector('.cart-qty-btn')?.onclick?.toString().match(/\d+/)?.[0] || 0),
-                nameDiv.textContent.split('(')[0].trim(),
-                itemData?.options || '[]',
-                nameDiv.querySelector('span')?.textContent?.replace(/[()]/g, '') || ''
-            );
-        };
-        row.querySelector('.order-item-qty')?.after(noteBtn);
+document.addEventListener('DOMContentLoaded', function() {
+    var posTabs = document.querySelectorAll('.pos-tab');
+    for (var i = 0; i < posTabs.length; i++) {
+        posTabs[i].addEventListener('click', function(e) {
+            e.preventDefault();
+            var tabName = this.getAttribute('data-tab');
+            switchTab(tabName);
+        });
     }
+    
+    var floorCards = document.querySelectorAll('.floor-card');
+    for (var j = 0; j < floorCards.length; j++) {
+        floorCards[j].addEventListener('click', function() {
+            var table = JSON.parse(this.dataset.table);
+            POS.currentTableId = table.id;
+            
+            if (table.status === 'occupied') {
+                viewOrder(table.id);
+            } else {
+                document.getElementById('openTableName').textContent = table.name;
+                openModal('modalOpenTable');
+            }
+        });
+    }
+    
+    var orderRows = document.querySelectorAll('.order-item-row');
+    for (var k = 0; k < orderRows.length; k++) {
+        (function(row) {
+            var nameDiv = row.querySelector('.order-item-name');
+            if (nameDiv) {
+                var noteBtn = document.createElement('button');
+                noteBtn.className = 'floor-btn floor-btn-ghost';
+                noteBtn.innerHTML = '<i class="fas fa-pen"></i>';
+                noteBtn.style.marginLeft = '4px';
+                noteBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    var itemData = row.dataset;
+                    openItemNoteModal(
+                        parseInt(itemData.itemId || 0),
+                        nameDiv.textContent.split('(')[0].trim(),
+                        itemData.options || '[]',
+                        nameDiv.querySelector('span') ? nameDiv.querySelector('span').textContent.replace(/[()]/g, '') : ''
+                    );
+                };
+                var qtyEl = row.querySelector('.order-item-qty');
+                if (qtyEl) qtyEl.after(noteBtn);
+            }
+        })(orderRows[k]);
+    }
+    
+    setInterval(refreshRealtime, 10000);
 });
-
-// ── Realtime with idle timer ───────────────────────────────
-function refreshRealtime() {
-    fetch(POS.baseUrl + '/admin/pos/realtime-data')
-    .then(r => r.json())
-    .then(d => {
-        if (d.ok) {
-            const grid = document.getElementById('realtimeGrid');
-            grid.innerHTML = d.data.map(o => {
-                let idleBadge = '';
-                if (o.is_idle && o.idle_seconds > 0) {
-                    const remaining = Math.max(0, 300 - o.idle_seconds);
-                    const min = Math.floor(remaining / 60);
-                    const sec = remaining % 60;
-                    const critical = remaining < 60;
-                    idleBadge = `<div class="idle-badge ${critical ? 'critical' : ''}"><i class="fas fa-clock"></i> ${min}:${sec < 10 ? '0' + sec : sec}</div>`;
-                }
-                return `
-                <div class="realtime-card" id="realtime-${o.id}">
-                    <div class="realtime-card-header">
-                        <div>
-                            <div class="realtime-table-name">${o.full_name}</div>
-                            ${idleBadge}
-                        </div>
-                        <span class="realtime-status ${o.status}">${o.status}</span>
-                    </div>
-                    <div class="realtime-card-body">
-                        ${o.items.length > 0 ? o.items.map(it => `
-                            <div class="realtime-item">
-                                <div class="realtime-item-name">${it.item_name}</div>
-                                <div class="realtime-item-qty">x${it.quantity}</div>
-                            </div>
-                        `).join('') : '<div style="color:#64748b;font-size:0.8rem;text-align:center">Chưa có món</div>'}
-                    </div>
-                    <div class="realtime-card-footer">
-                        <div class="realtime-total">${o.total_fmt}</div>
-                        <div class="realtime-actions">
-                            <button class="floor-btn floor-btn-gold" onclick="viewOrder(${o.table_id})">Chi tiết</button>
-                            <button class="floor-btn floor-btn-blue" onclick="openTransferModal(${o.table_id})">Chuyển</button>
-                        </div>
-                    </div>
-                </div>
-                `;
-            }).join('');
-        }
-    });
-}
-
-setInterval(refreshRealtime, 10000);
 </script>
