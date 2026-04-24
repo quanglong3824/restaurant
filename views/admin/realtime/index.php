@@ -1041,12 +1041,12 @@ function renderPOSGrid(orders) {
                 const min = Math.floor(remaining / 60);
                 const sec = remaining % 60;
                 const color = remaining < 60 ? 'var(--pos-danger)' : 'var(--pos-warning)';
-            idleBadge = `<div style="color:${color}; font-weight:800; font-size:0.75rem; margin-top:8px;">
-                <i class="fas fa-clock"></i> HUỶ SAU: ${min}:${sec < 10 ? '0'+sec : sec}
-            </div>`;
-        }
+                idleBadge = `<div style="color:${color}; font-weight:800; font-size:0.75rem; margin-top:8px;">
+                    <i class="fas fa-clock"></i> HUỶ SAU: ${min}:${sec < 10 ? '0'+sec : sec}
+                </div>`;
+            }
 
-        let rows = '';
+            let rows = '';
         (order.items || []).forEach(it => {
             rows += `
                 <tr>
