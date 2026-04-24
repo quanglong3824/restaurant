@@ -34,7 +34,7 @@ $t = [
     <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/orders/status.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -85,7 +85,16 @@ $t = [
                                 <div class="item-left">
                                     <span class="item-qty"><?= $t['qty'] ?><?= $it['quantity'] ?></span>
                                     <div class="item-info">
-                                        <span class="item-name"><?= $isEn && !empty($it['item_name_en']) ? e($it['item_name_en']) : e($it['item_name']) ?></span>
+                                        <?php 
+                                        // Ưu tiên tiếng Anh, tiếng Việt nhỏ dưới
+                                        $hasEn = !empty($it['item_name_en']);
+                                        $displayName = $hasEn ? e($it['item_name_en']) : e($it['item_name']);
+                                        $displayViName = $hasEn ? e($it['item_name']) : '';
+                                        ?>
+                                        <span class="item-name"><?= $displayName ?></span>
+                                        <?php if ($hasEn && $displayViName !== $displayName): ?>
+                                            <span class="item-name-vi" style="font-size:0.75rem;color:#94a3b8;display:block;margin-top:2px;"><?= $displayViName ?></span>
+                                        <?php endif; ?>
                                         <?php if (!empty($it['note'])): ?>
                                             <span class="item-note"><i class="fas fa-pen"></i> <?= e($it['note']) ?></span>
                                         <?php endif; ?>
