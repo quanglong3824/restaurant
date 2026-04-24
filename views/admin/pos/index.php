@@ -1218,11 +1218,15 @@ function submitPayment() {
     .then(function(d) {
         if (d.ok) {
             closeModal('modalPayment');
-            alert('Thanh toán thành công!');
-            window.location.href = POS.baseUrl + '/admin/pos?tab=floor';
+            POS.orderId = 0;
+            POS.tableId = 0;
+            window.location.href = POS.baseUrl + '/admin/pos?tab=floor&paid=1';
         } else {
             alert(d.message || 'Lỗi thanh toán');
         }
+    })
+    .catch(function(e) {
+        alert('Lỗi kết nối: ' + e.message);
     });
 }
 
@@ -1640,10 +1644,27 @@ function showSetDetail(set) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('paid') === '1') {
+        var toast = document.createElement('div');
+        toast.innerHTML = '<i class="fas fa-check-circle"></i> Thanh toán thành công!';
+        toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#10b981;color:white;padding:12px 24px;border-radius:10px;font-weight:700;z-index:9999;animation:fadeInOut 3s';
+        document.body.appendChild(toast);
+        setTimeout(function() { toast.remove(); }, 3000);
+        
+        var style = document.createElement('style');
+        style.textContent = '@keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-20px)}20%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1}100%{opacity:0}}';
+        document.head.appendChild(style);
+        
+        urlParams.delete('paid');
+        window.history.replaceState({}, '', window.location.pathname + '?' + urlParams.toString());
+    }
+    
     var posTabs = document.querySelectorAll('.pos-tab');
     for (var i = 0; i < posTabs.length; i++) {
         posTabs[i].addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             var tabName = this.getAttribute('data-tab');
             switchTab(tabName);
         });
@@ -1687,6 +1708,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (qtyEl) qtyEl.after(noteBtn);
             }
         })(orderRows[k]);
+    }
+    
+    var tabParam = urlParams.get('tab');
+    if (tabParam) {
+        switchTab(tabParam);
     }
     
     setInterval(refreshRealtime, 10000);
