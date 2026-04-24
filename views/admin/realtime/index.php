@@ -1130,6 +1130,10 @@ function renderPOSGrid(orders) {
     });
     
     container.innerHTML = html;
+    } catch (err) {
+        console.error('Lỗi renderPOSGrid:', err);
+        container.innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi hiển thị</h3><p>${err.message}</p></div>`;
+    }
 }
 
 async function dismissOrder(id) {
