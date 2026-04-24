@@ -3,6 +3,8 @@
 // Table Model — Aurora Restaurant
 // ============================================================
 
+require_once BASE_PATH . '/models/ActivityLog.php';
+
 class Table extends Model
 {
     protected string $table = 'tables';
