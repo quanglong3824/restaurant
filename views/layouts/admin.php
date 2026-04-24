@@ -56,6 +56,13 @@
 
         <!-- Sidebar Nav -->
         <nav class="sidebar-nav">
+            
+            <!-- Debug: Show role -->
+            <?php 
+            $userRole = Auth::role();
+            $isAdminView = Auth::isAdmin();
+            ?>
+            <!-- DEBUG: Role=<?= e($userRole) ?>, isAdmin=<?= $isAdminView ? 'YES' : 'NO' ?> -->
 
             <?php if (Auth::isAdmin()): ?>
                 <div class="nav-section">
