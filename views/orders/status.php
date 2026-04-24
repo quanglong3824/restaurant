@@ -38,18 +38,13 @@ $TEXT = [
     'order_notes_en' => 'Note',
 ];
 
-// Helper function - trả về text trực tiếp
-function t($key) {
-    global $TEXT;
-    return isset($TEXT[$key]) ? $TEXT[$key] : '';
-}
 ?>
 <!DOCTYPE html>
 <html lang="<?= $isEn ? 'en' : 'vi' ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= t('order_sent_' . $currentLang) ?> - Aurora Restaurant</title>
+    <title><?= $TEXT['order_sent_' . $currentLang] ?? '' ?> - Aurora Restaurant</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/orders/status.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -163,21 +158,21 @@ function t($key) {
                 
                 <!-- Bilingual Title -->
                 <h1 class="success-title bilingual-text">
-                    <span class="vi-text"><?= t('thank_you_vi') ?></span>
-                    <span class="en-text"><?= t('thank_you_en') ?></span>
+                    <span class="vi-text"><?= $TEXT['thank_you_vi'] ?? '' ?></span>
+                    <span class="en-text"><?= $TEXT['thank_you_en'] ?? '' ?></span>
                 </h1>
                 
                 <!-- Bilingual Subtitle -->
                 <p class="success-subtitle bilingual-text">
-                    <span class="vi-text"><?= t('preparing_vi') ?></span>
-                    <span class="en-text"><?= t('preparing_en') ?></span>
+                    <span class="vi-text"><?= $TEXT['preparing_vi'] ?? '' ?></span>
+                    <span class="en-text"><?= $TEXT['preparing_en'] ?? '' ?></span>
                 </p>
                 
                 <!-- Order Number Badge -->
                 <div class="order-number-badge">
                     <span class="badge-label bilingual-text">
-                        <span class="vi-text"><?= t('order_number_vi') ?></span>
-                        <span class="en-text"><?= t('order_number_en') ?></span>
+                        <span class="vi-text"><?= $TEXT['order_number_vi'] ?? '' ?></span>
+                        <span class="en-text"><?= $TEXT['order_number_en'] ?? '' ?></span>
                     </span>
                     <span class="badge-number">#<?= e($order['id']) ?></span>
                 </div>
@@ -191,8 +186,8 @@ function t($key) {
                             <i class="fas fa-receipt"></i>
                         </div>
                         <h3 class="bilingual-text">
-                            <span class="vi-text"><?= t('order_details_vi') ?></span>
-                            <span class="en-text"><?= t('order_details_en') ?></span>
+                            <span class="vi-text"><?= $TEXT['order_details_vi'] ?? '' ?></span>
+                            <span class="en-text"><?= $TEXT['order_details_en'] ?? '' ?></span>
                         </h3>
                     </div>
                     <span class="order-id">#<?= e($order['id']) ?></span>
@@ -220,8 +215,8 @@ function t($key) {
                                             <span class="item-note">
                                                 <i class="fas fa-pen"></i>
                                                 <span class="bilingual-text">
-                                                    <span class="vi-text"><?= t('order_notes_vi') ?>:</span>
-                                                    <span class="en-text"><?= t('order_notes_en') ?>:</span>
+                                                    <span class="vi-text"><?= $TEXT['order_notes_vi'] ?? '' ?>:</span>
+                                                    <span class="en-text"><?= $TEXT['order_notes_en'] ?? '' ?>:</span>
                                                 </span>
                                                 <?= e($it['note']) ?>
                                             </span>
@@ -230,8 +225,8 @@ function t($key) {
                                         <span class="item-status status-<?= $it['status'] ?>">
                                             <i class="fas fa-<?= $it['status'] === 'confirmed' ? 'check-circle' : ($it['status'] === 'cooking' ? 'fire' : ($it['status'] === 'served' ? 'check' : ($it['status'] === 'cancelled' ? 'times-circle' : 'clock'))) ?>"></i>
                                             <span class="bilingual-text">
-                                                <span class="vi-text"><?= t($it['status'] . '_vi') ?></span>
-                                                <span class="en-text"><?= t($it['status'] . '_en') ?></span>
+                                                <span class="vi-text"><?= $TEXT[$it['status'] . '_vi'] ?? '' ?></span>
+                                                <span class="en-text"><?= $TEXT[$it['status'] . '_en'] ?? '' ?></span>
                                             </span>
                                         </span>
                                     </div>
@@ -246,8 +241,8 @@ function t($key) {
                 <div class="card-footer">
                     <div class="total-row">
                         <span class="total-label bilingual-text">
-                            <span class="vi-text"><?= t('subtotal_vi') ?></span>
-                            <span class="en-text"><?= t('subtotal_en') ?></span>
+                            <span class="vi-text"><?= $TEXT['subtotal_vi'] ?? '' ?></span>
+                            <span class="en-text"><?= $TEXT['subtotal_en'] ?? '' ?></span>
                         </span>
                         <span class="total-amount"><?= formatPrice($total) ?></span>
                     </div>
@@ -259,15 +254,15 @@ function t($key) {
                 <a href="<?= BASE_URL ?>/qr/menu?table_id=<?= $order['table_id'] ?>&token=<?= $_SESSION['qr_token'] ?? '' ?>" class="btn btn-primary">
                     <i class="fas fa-plus-circle"></i>
                     <span class="btn-text">
-                        <span class="primary"><?= t('add_more_' . $currentLang) ?></span>
-                        <span class="secondary"><?= $isEn ? t('add_more_vi') : t('add_more_en') ?></span>
+                        <span class="primary"><?= $TEXT['add_more_' . $currentLang] ?? '' ?></span>
+                        <span class="secondary"><?= $isEn ? ($TEXT['add_more_vi'] ?? '') : ($TEXT['add_more_en'] ?? '') ?></span>
                     </span>
                 </a>
                 <a href="<?= BASE_URL ?>/qr/menu?table_id=<?= $order['table_id'] ?>&token=<?= $_SESSION['qr_token'] ?? '' ?>&show_bill=1" class="btn btn-secondary">
                     <i class="fas fa-file-invoice-dollar"></i>
                     <span class="btn-text">
-                        <span class="primary"><?= t('check_bill_' . $currentLang) ?></span>
-                        <span class="secondary"><?= $isEn ? t('check_bill_vi') : t('check_bill_en') ?></span>
+                        <span class="primary"><?= $TEXT['check_bill_' . $currentLang] ?? '' ?></span>
+                        <span class="secondary"><?= $isEn ? ($TEXT['check_bill_vi'] ?? '') : ($TEXT['check_bill_en'] ?? '') ?></span>
                     </span>
                 </a>
             </div>
@@ -285,8 +280,8 @@ function t($key) {
         <div id="locStatusIndicator" class="loc-indicator">
             <div class="loc-dot"></div>
             <span class="loc-text bilingual-text">
-                <span class="vi-text"><?= t('verified_vi') ?></span>
-                <span class="en-text"><?= t('verified_en') ?></span>
+                <span class="vi-text"><?= $TEXT['verified_vi'] ?? '' ?></span>
+                <span class="en-text"><?= $TEXT['verified_en'] ?? '' ?></span>
             </span>
         </div>
     </div>
