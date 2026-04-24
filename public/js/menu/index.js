@@ -104,6 +104,155 @@ function updateCartUI(data) {
                 </div>`;
             if (btnContainer) btnContainer.innerHTML = `<button disabled class="cart-action-btn ghost w-100">BÀN CHƯA CÓ MÓN</button>`;
         } else {
+            // Categorize items first
+            const drafts = [];
+            const pending = [];
+            const confirmed = [];
+            
+            data.items.forEach(it => {
+                const status = String(it.status || 'draft').toLowerCase().trim();
+                if (status === 'cancelled') return;
+                
+                if (status === 'draft') drafts.push(it);
+                else if (status === 'pending') pending.push(it);
+                else if (['confirmed', 'cooking', 'served'].includes(status)) confirmed.push(it);
+            });
+            
+            // Build HTML for each category
+            const draftsHtml = buildItemsHtml(drafts, true);
+            const pendingHtml = buildItemsHtml(pending, false);
+            const confirmedHtml = buildItemsHtml(confirmed, false);
+            
+            // Build final HTML with sections
+            let finalHtml = '';
+            if (draftsHtml) {
+                finalHtml += `<div class="cart-section draft-section"><div class="section-label"><i class="fas fa-edit"></i> Món đang chọn (Nháp)</div>${draftsHtml}</div>`;
+            }
+            if (pendingHtml) {
+                finalHtml += `<div class="cart-section pending-section"><div class="section-label" style="color:#f59e0b"><i class="fas fa-clock"></i> Chờ xác nhận (QR khách gửi)</div>${pendingHtml}</div>`;
+            }
+            if (confirmedHtml) {
+                finalHtml += `<div class="cart-section confirmed-section-wrapper"><div class="section-label"><i class="fas fa-check-circle" style="color:#10b981"></i> Đã xác nhận (Đang làm)</div><div class="confirmed-items">${confirmedHtml}</div></div>`;
+            }
+            
+            // Apply with fade animation
+            body.style.opacity = '0.7';
+            body.innerHTML = finalHtml;
+            setTimeout(() => body.style.opacity = '1', 50);
+
+            // Update buttons
+            if (btnContainer) {
+                const currentOrderId = MENU_CONFIG.orderId;
+                const draftCount = drafts.length;
+                let btnsHtml = '';
+                
+                if (draftCount > 0) {
+                    btnsHtml += `<button type="button" onclick="confirmOrderAjax(${currentOrderId})" class="cart-action-btn gold w-100 mb-2"><i class="fas fa-check-circle"></i> XÁC NHẬN MÓN (${draftCount} món)</button>`;
+                } else if (data.items.length > 0) {
+                    btnsHtml += `<a href="${MENU_CONFIG.baseUrl}/orders?table_id=${MENU_CONFIG.tableId}&order_id=${currentOrderId}" class="cart-action-btn success w-100 mb-2"><i class="fas fa-check-circle"></i> XEM BILL</a>`;
+                } else {
+                    btnsHtml += `<button disabled class="cart-action-btn ghost w-100 mb-2">BÀN CHƯA CÓ MÓN</button>`;
+                }
+                
+                btnsHtml += `<button type="button" id="splitTableBtn" onclick="openSplitModal()" class="cart-action-btn" style="background:#dc3545; color:white; display:none; border:none; width:100%;"><i class="fas fa-cut"></i> TÁCH BÀN (<span id="selectedCount">0</span>)</button>`;
+                
+                btnContainer.innerHTML = btnsHtml;
+            }
+        }
+    }
+}
+
+function buildItemsHtml(items, isDraftSection) {
+    if (!items.length) return '';
+    
+    return items.map(it => {
+        const status = String(it.status || 'draft').toLowerCase().trim();
+        const isDraft = status === 'draft';
+        const isPending = status === 'pending';
+        const isConfirmed = status === 'confirmed';
+        const isCooking = status === 'cooking';
+        const isServed = status === 'served';
+        const isProcessing = isConfirmed || isCooking || isServed;
+        
+        const noteParts = (it.note || '').split(',').map(s => s.trim()).filter(Boolean);
+        const noteHtml = noteParts.length
+            ? `<div style="display:flex;flex-wrap:wrap;gap:.3rem;margin:.2rem 0;">${noteParts.map(n => `<span style="background:rgba(212,175,55,.13);color:var(--gold-dark,#785e0a);border-radius:12px;padding:.1rem .45rem;font-size:.68rem;font-weight:700;">${n}</span>`).join('')}</div>`
+            : '';
+        
+        const opts = JSON.stringify(it.item_options || []);
+        const currentNote = (it.note || '').replace(/'/g, "\\'");
+        
+        let statusBadgeHtml = '';
+        if (isConfirmed) statusBadgeHtml = '<i class="fas fa-check-circle" style="color:#10b981;"></i> Đã xác nhận';
+        else if (isPending) statusBadgeHtml = '<i class="fas fa-clock" style="color:#f59e0b;"></i> Chờ xác nhận';
+        else if (isCooking) statusBadgeHtml = '<i class="fas fa-fire" style="color:#ef4444;"></i> Đang nấu';
+        else if (isServed) statusBadgeHtml = '<i class="fas fa-check" style="color:#10b981;"></i> Đã phục vụ';
+        else statusBadgeHtml = '<i class="fas fa-edit" style="color:#94a3b8;"></i> Nháp';
+
+        return `<div class="cart-item-row" data-item-id="${it.id}">
+            <div style="display:flex; align-items:center; gap:0.5rem; flex:1;">
+                ${isProcessing ? `
+                <input type="checkbox" class="item-select-cb" 
+                        data-item-id="${it.id}" 
+                        onchange="toggleSplitButton()"
+                        onclick="event.stopPropagation()">
+                ` : ''}
+                <div style="flex:1;">
+                    <div class="cart-item-name" style="font-weight:700; font-size:0.95rem; margin-bottom:4px;">${it.item_name}</div>
+                    ${noteHtml}
+                    <div style="display:flex; align-items:center; gap:0.75rem;">
+                        <span class="cart-item-price" style="font-size:0.85rem; color:var(--gold-dark); font-weight:700;">${it.price_fmt}</span>
+                        ${isDraft ? `
+                        <div class="qty-control" style="display:inline-flex; align-items:center; background:var(--surface-2); border-radius:20px; padding:2px 8px;">
+                            <button onclick="event.stopPropagation(); changeCartQty(${it.id}, -1)" style="border:none; background:none; padding:4px; cursor:pointer;"><i class="fas fa-minus" style="font-size:0.7rem;"></i></button>
+                            <span style="width:24px; text-align:center; font-weight:800; font-size:0.85rem;">${it.quantity}</span>
+                            <button onclick="event.stopPropagation(); changeCartQty(${it.id}, 1)" style="border:none; background:none; padding:4px; cursor:pointer;"><i class="fas fa-plus" style="font-size:0.7rem;"></i></button>
+                        </div>
+                        ` : `
+                        <span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">x${it.quantity}</span>
+                        `}
+                    </div>
+                </div>
+            </div>
+            <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                <div style="font-weight:800; font-size:0.95rem;">${it.subtotal_fmt}</div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    ${isDraft ? `
+                        <button onclick="event.stopPropagation(); openCartNoteModal(${it.id}, ${opts}, '${currentNote}')" style="border:none;background:none;color:var(--gold,#d4af37);padding:3px;cursor:pointer;font-size:.9rem;" title="Ghi chú">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); removeCartItem(${it.id})" style="border:none; background:none; color:var(--danger); padding:4px; cursor:pointer; font-size:0.9rem;" title="Xóa món">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    ` : ''}
+                    <span class="cart-item-status ${status}" style="font-size:0.7rem; padding:2px 8px; border-radius:6px; font-weight:700;">
+                        ${statusBadgeHtml}
+                    </span>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+    const body = document.querySelector('.cart-body');
+    const totalEl = document.getElementById('orderTotal');
+    const btnContainer = document.getElementById('cartActionBtn');
+    const headerSub = document.querySelector('.cart-header small');
+
+    if (totalEl) totalEl.textContent = data.total_fmt;
+    if (headerSub && data.items && data.items.length > 0) {
+        headerSub.textContent = 'Có món đang chọn';
+    }
+
+    if (body) {
+        if (!data.items || data.items.length === 0) {
+            body.innerHTML = `
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-basket"></i>
+                    <p>Bàn chưa có món</p>
+                    <p class="text-muted small">Chọn món để bắt đầu order</p>
+                </div>`;
+            if (btnContainer) btnContainer.innerHTML = `<button disabled class="cart-action-btn ghost w-100">BÀN CHƯA CÓ MÓN</button>`;
+        } else {
             let draftsHtml = '';
             let pendingHtml = '';
             let confirmedHtml = '';
