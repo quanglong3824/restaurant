@@ -32,9 +32,13 @@ foreach (array_keys($grouped) as $a) {
 .pos-dashboard { display: flex; flex-direction: column; height: auto; min-height: calc(100vh - 120px); overflow: visible; }
 .pos-sidebar { width: 100%; background: #1e293b; border-bottom: 1px solid #334155; display: flex; flex-direction: row; padding: 8px; overflow-x: auto; position: sticky; top: 0; z-index: 100; }
 .pos-tabs { display: flex; flex-direction: row; gap: 4px; }
-.pos-tab { padding: 10px 14px; color: #94a3b8; cursor: pointer; border-bottom: 2px solid transparent; border-left: none; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.8rem; transition: all 0.2s; white-space: nowrap; position: relative; z-index: 101; }
+.pos-tab { padding: 10px 14px; color: #94a3b8; cursor: pointer; border-bottom: 2px solid transparent; border-left: none; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.8rem; transition: all 0.2s; white-space: nowrap; }
 .pos-tab:hover { background: rgba(212,175,55,0.1); color: #d4af37; }
 .pos-tab.active { background: rgba(212,175,55,0.15); border-bottom-color: #d4af37; color: #d4af37; }
+.pos-content { flex: 1; overflow-y: auto; background: #f8fafc; padding: 16px; position: relative; z-index: 50; }
+
+.modal-backdrop { display: none !important; }
+.modal-backdrop.is-open { display: flex !important; z-index: 1500; }
 .pos-tab i { width: 18px; text-align: center; }
 .pos-content { flex: 1; overflow-y: auto; background: #f8fafc; padding: 16px; }
 .pos-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 12px 16px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; }
@@ -159,9 +163,26 @@ foreach (array_keys($grouped) as $a) {
 <div class="pos-dashboard">
     <div class="pos-sidebar">
         <div class="pos-tabs">
-            <div class="pos-tab <?= $tab === 'floor' ? 'active' : '' ?>" data-tab="floor">
+            <div class="pos-tab <?= $tab === 'floor' ? 'active' : '' ?>" data-tab="floor" onclick="switchTab('floor')">
                 <i class="fas fa-chair"></i> Sơ đồ bàn
             </div>
+            <div class="pos-tab <?= $tab === 'menu' ? 'active' : '' ?>" data-tab="menu" onclick="switchTab('menu')">
+                <i class="fas fa-utensils"></i> Menu
+            </div>
+            <div class="pos-tab <?= $tab === 'order' ? 'active' : '' ?>" data-tab="order" onclick="switchTab('order')">
+                <i class="fas fa-receipt"></i> Order
+            </div>
+            <div class="pos-tab <?= $tab === 'notif' ? 'active' : '' ?>" data-tab="notif" onclick="switchTab('notif')">
+                <i class="fas fa-bell"></i> Thông báo
+                <?php if ($notifStats['unread'] > 0): ?>
+                    <span style="background:#ef4444;color:white;padding:2px 6px;border-radius:10px;font-size:0.65rem"><?= $notifStats['unread'] ?></span>
+                <?php endif; ?>
+            </div>
+            <div class="pos-tab <?= $tab === 'realtime' ? 'active' : '' ?>" data-tab="realtime" onclick="switchTab('realtime')">
+                <i class="fas fa-satellite-dish"></i> Realtime
+            </div>
+        </div>
+    </div>
             <div class="pos-tab <?= $tab === 'menu' ? 'active' : '' ?>" data-tab="menu">
                 <i class="fas fa-utensils"></i> Menu
             </div>
@@ -211,7 +232,7 @@ foreach (array_keys($grouped) as $a) {
                         <?php foreach ($tables as $t): ?>
                             <?php $isOccupied = $t['status'] === 'occupied'; ?>
                             <?php $isChild = !empty($t['parent_id']); ?>
-                            <div class="floor-card <?= $isOccupied ? 'occupied' : 'available' ?> <?= $isChild ? 'merged-child' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
+                            <div class="floor-card <?= $isOccupied ? 'occupied' : 'available' ?> <?= $isChild ? 'merged-child' : '' ?>" onclick="handleFloorCard(<?= $t['id'] ?>, <?= $isOccupied ? 1 : 0 ?>, '<?= e($t['name']) ?>')">
                                 <div class="floor-card-icon">
                                     <i class="fas <?= $isOccupied ? 'fa-user' : 'fa-chair' ?>"></i>
                                 </div>
@@ -254,7 +275,7 @@ foreach (array_keys($grouped) as $a) {
                         <?php foreach (array_merge($vip1, $vip2) as $t): ?>
                             <?php $isOccupiedVIP = $t['status'] === 'occupied'; ?>
                             <?php $isChildVIP = !empty($t['parent_id']); ?>
-                            <div class="floor-card <?= $isOccupiedVIP ? 'occupied' : 'available' ?> <?= $isChildVIP ? 'merged-child' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
+                            <div class="floor-card <?= $isOccupiedVIP ? 'occupied' : 'available' ?> <?= $isChildVIP ? 'merged-child' : '' ?>" onclick="handleFloorCard(<?= $t['id'] ?>, <?= $isOccupiedVIP ? 1 : 0 ?>, '<?= e($t['name']) ?>')">
                                 <div class="floor-card-icon"><i class="fas <?= $isOccupiedVIP ? 'fa-crown' : 'fa-chair' ?>"></i></div>
                                 <div class="floor-card-name"><?= e($t['name']) ?></div>
                                 <div class="floor-card-status"><?= $isOccupiedVIP ? 'VIP - Có khách' : 'VIP - Trống' ?><?php if ($isChildVIP): ?><span style="color:#8b5cf6">(Ghép)</span><?php endif; ?></div>
@@ -277,7 +298,7 @@ foreach (array_keys($grouped) as $a) {
                         <?php foreach (array_merge($vip3, $vip4) as $t): ?>
                             <?php $isOccupiedVIP34 = $t['status'] === 'occupied'; ?>
                             <?php $isChildVIP34 = !empty($t['parent_id']); ?>
-                            <div class="floor-card <?= $isOccupiedVIP34 ? 'occupied' : 'available' ?> <?= $isChildVIP34 ? 'merged-child' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
+                            <div class="floor-card <?= $isOccupiedVIP34 ? 'occupied' : 'available' ?> <?= $isChildVIP34 ? 'merged-child' : '' ?>" onclick="handleFloorCard(<?= $t['id'] ?>, <?= $isOccupiedVIP34 ? 1 : 0 ?>, '<?= e($t['name']) ?>')">
                                 <div class="floor-card-icon"><i class="fas <?= $isOccupiedVIP34 ? 'fa-crown' : 'fa-chair' ?>"></i></div>
                                 <div class="floor-card-name"><?= e($t['name']) ?></div>
                                 <div class="floor-card-status"><?= $isOccupiedVIP34 ? 'VIP - Có khách' : 'VIP - Trống' ?><?php if ($isChildVIP34): ?><span style="color:#8b5cf6">(Ghép)</span><?php endif; ?></div>
@@ -942,6 +963,17 @@ function switchTab(tab) {
 
 function viewOrder(tableId) {
     window.location.href = POS.baseUrl + '/admin/pos?tab=order&table_id=' + tableId;
+}
+
+function handleFloorCard(tableId, isOccupied, tableName) {
+    POS.currentTableId = tableId;
+    
+    if (isOccupied) {
+        viewOrder(tableId);
+    } else {
+        document.getElementById('openTableName').textContent = tableName;
+        openModal('modalOpenTable');
+    }
 }
 
 function changeMenuType(type) {
@@ -1705,31 +1737,6 @@ document.addEventListener('DOMContentLoaded', function() {
     var tabParam = urlParams.get('tab');
     if (tabParam) {
         switchTab(tabParam);
-    }
-    
-    var posTabs = document.querySelectorAll('.pos-tab');
-    for (var i = 0; i < posTabs.length; i++) {
-        posTabs[i].addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var tabName = this.getAttribute('data-tab');
-            switchTab(tabName);
-        });
-    }
-    
-    var floorCards = document.querySelectorAll('.floor-card');
-    for (var j = 0; j < floorCards.length; j++) {
-        floorCards[j].addEventListener('click', function() {
-            var table = JSON.parse(this.dataset.table);
-            POS.currentTableId = table.id;
-            
-            if (table.status === 'occupied') {
-                viewOrder(table.id);
-            } else {
-                document.getElementById('openTableName').textContent = table.name;
-                openModal('modalOpenTable');
-            }
-        });
     }
     
     var orderRows = document.querySelectorAll('.order-item-row');
