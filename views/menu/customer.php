@@ -322,16 +322,11 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
         })();
     </script>
 
-    <!-- DEV MODE Banner -->
+    <!-- DEV MODE Dot -->
     <?php if (!empty($devMode)): ?>
-    <div style="position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(90deg,#7c3aed,#8b5cf6);color:#fff;text-align:center;padding:8px 16px;font-size:0.75rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;box-shadow:0 2px 10px rgba(124,58,237,0.4);">
-        <i class="fas fa-wrench me-2"></i> DEV MODE — Kiểm tra vị trí đã tắt <i class="fas fa-code ms-2"></i>
+    <div class="dev-mode-dot" title="DEV MODE - Location check disabled">
+        <span class="dev-dot"></span>
     </div>
-    <style>
-        /* Adjust header padding for dev banner */
-        .menu-header { padding-top: 40px !important; }
-        .menu-header.header-hidden { padding-top: 0 !important; }
-    </style>
     <?php endif; ?>
 
     <!-- Header - Compact -->
