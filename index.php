@@ -68,6 +68,27 @@ $router->post('/support/request', 'SupportController', 'makeRequest');
 $router->get('/support/pending', 'SupportController', 'getPending');
 $router->post('/support/resolve', 'SupportController', 'resolve');
 
+// ── Admin: POS Dashboard (Unified) ─────────────────────────
+$router->get('/admin/pos', 'AdminPosController', 'index');
+$router->get('/admin/pos/floor-data', 'AdminPosController', 'floorData');
+$router->get('/admin/pos/menu-data', 'AdminPosController', 'menuData');
+$router->get('/admin/pos/order-data', 'AdminPosController', 'orderData');
+$router->get('/admin/pos/realtime-data', 'AdminPosController', 'realtimeData');
+$router->get('/admin/pos/notif-data', 'AdminPosController', 'notifData');
+$router->post('/admin/pos/open-table', 'AdminPosController', 'openTable');
+$router->post('/admin/pos/add-item', 'AdminPosController', 'addItem');
+$router->post('/admin/pos/update-item-qty', 'AdminPosController', 'updateItemQty');
+$router->post('/admin/pos/remove-item', 'AdminPosController', 'removeItem');
+$router->post('/admin/pos/confirm-order', 'AdminPosController', 'confirmOrder');
+$router->post('/admin/pos/payment', 'AdminPosController', 'payment');
+$router->post('/admin/pos/update-guest', 'AdminPosController', 'updateGuest');
+$router->post('/admin/pos/transfer-table', 'AdminPosController', 'transferTable');
+$router->post('/admin/pos/merge-table', 'AdminPosController', 'mergeTable');
+$router->post('/admin/pos/unmerge-table', 'AdminPosController', 'unmergeTable');
+$router->post('/admin/pos/split-order', 'AdminPosController', 'splitOrder');
+$router->post('/admin/pos/update-item-note', 'AdminPosController', 'updateItemNote');
+$router->post('/admin/pos/mark-notif-read', 'AdminPosController', 'markNotifRead');
+
 // ── Admin: Real-time Monitoring ──────────────────────────
 $router->get('/admin/realtime', 'AdminRealtimeController', 'index');
 $router->get('/admin/realtime/data', 'AdminRealtimeController', 'data');

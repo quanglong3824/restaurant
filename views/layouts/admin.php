@@ -81,6 +81,10 @@
             <?php if (Auth::isAdmin()): ?>
                 <div class="nav-section">
                     <div class="nav-section-title">VẬN HÀNH</div>
+                    <a href="<?= BASE_URL ?>/admin/pos" class="nav-item <?= activeClass('/admin/pos') ?>">
+                        <i class="fas fa-desktop"></i>
+                        <span>POS Dashboard</span>
+                    </a>
                     <a href="<?= BASE_URL ?>/admin/realtime" class="nav-item <?= activeClass('/admin/realtime') ?>">
                         <i class="fas fa-satellite-dish"></i>
                         <span>Giám sát trực tiếp</span>
