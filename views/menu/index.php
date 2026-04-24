@@ -207,10 +207,6 @@
                         ?>
                             <div class="cart-item-row" data-item-id="<?= $it['id'] ?>">
                                 <div style="display:flex; align-items:center; gap:0.5rem; flex:1;">
-                                    <input type="checkbox" class="item-select-cb" 
-                                            data-item-id="<?= $it['id'] ?>" 
-                                            onchange="toggleSplitButton()"
-                                            onclick="event.stopPropagation()">
                                     <div style="flex:1;">
                                         <div class="cart-item-name"><?= e($it['item_name']) ?></div>
                                         <?php if ($itNote && !preg_match('/^Set:\s*.+$/', $itNote)): ?>

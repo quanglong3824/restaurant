@@ -122,10 +122,12 @@ function updateCartUI(data) {
 
                 const itemHtml = `<div class="cart-item-row" data-item-id="${it.id}">
                     <div style="display:flex; align-items:center; gap:0.5rem; flex:1;">
+                        ${(isConfirmed || isCooking || isServed) ? `
                         <input type="checkbox" class="item-select-cb" 
                                 data-item-id="${it.id}" 
                                 onchange="toggleSplitButton()"
                                 onclick="event.stopPropagation()">
+                        ` : ''}
                         <div style="flex:1;">
                             <div class="cart-item-name" style="font-weight:700; font-size:0.95rem; margin-bottom:4px;">${it.item_name}</div>
                             ${noteHtml}
