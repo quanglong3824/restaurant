@@ -363,7 +363,7 @@ foreach (array_keys($grouped) as $a) {
                             }
                             $itemOptsJson = json_encode($combinedOpts, JSON_UNESCAPED_UNICODE);
                             ?>
-                            <div class="menu-item-card" data-cat="<?= e($catName) ?>" data-name="<?= strtolower(e($item['name'])) ?>" data-item="<?= e(json_encode($item)) ?>">
+                            <div class="menu-item-card" data-cat="<?= e($catName) ?>" data-name="<?= strtolower(e($item['name'])) ?>" data-item="<?= e(json_encode($item)) ?>" onclick="showItemDetail(<?= e(json_encode($item)) ?>)">
                                 <div class="menu-item-img">
                                     <?php if ($item['image']): ?>
                                         <img src="<?= BASE_URL ?>/public/uploads/<?= e($item['image']) ?>" alt="<?= e($item['name']) ?>">
@@ -492,25 +492,45 @@ foreach (array_keys($grouped) as $a) {
             <div class="pos-header">
                 <h2><i class="fas fa-bell"></i> Thông báo</h2>
                 <div class="pos-header-actions">
+                    <select id="notifFilter" onchange="filterNotifications(this.value)" style="padding:6px 10px;font-size:0.75rem;border-radius:8px">
+                        <option value="all">Tất cả</option>
+                        <option value="payment_request">Thanh toán</option>
+                        <option value="new_order">Order mới</option>
+                        <option value="support_request">Support</option>
+                    </select>
                     <button class="btn btn-ghost" onclick="markAllRead()" style="padding:6px 10px;font-size:0.75rem">
-                        <i class="fas fa-check-double"></i> Đánh dấu đã đọc
+                        <i class="fas fa-check-double"></i> Đã đọc tất cả
                     </button>
                 </div>
             </div>
 
-            <div class="notif-list">
+            <div class="notif-tabs" style="display:flex;gap:8px;margin-bottom:12px">
+                <div class="notif-stat-box" style="background:#fef3c7;padding:8px 12px;border-radius:8px;cursor:pointer" onclick="filterNotifications('payment_request')">
+                    <i class="fas fa-credit-card" style="color:#d97706"></i>
+                    <span style="font-weight:700"><?= $notifStats['payment'] ?></span> Thanh toán
+                </div>
+                <div class="notif-stat-box" style="background:#dcfce7;padding:8px 12px;border-radius:8px;cursor:pointer" onclick="filterNotifications('new_order')">
+                    <i class="fas fa-utensils" style="color:#16a34a"></i>
+                    <span style="font-weight:700"><?= $notifStats['order'] ?></span> Order
+                </div>
+                <div class="notif-stat-box" style="background:#fee2e2;padding:8px 12px;border-radius:8px;cursor:pointer" onclick="filterNotifications('support_request')">
+                    <i class="fas fa-hand-paper" style="color:#dc2626"></i>
+                    <span style="font-weight:700"><?= $notifStats['support'] ?></span> Support
+                </div>
+            </div>
+
+            <div class="notif-list" id="notifList">
                 <?php if (empty($notifications)): ?>
                     <div style="text-align:center;padding:30px;color:#64748b">Không có thông báo mới</div>
                 <?php else: ?>
                     <?php foreach ($notifications as $notif): ?>
-                        <div class="notif-item <?= $notif['is_read'] ? '' : 'unread' ?>" onclick="handleNotif(<?= e(json_encode($notif)) ?>)">
+                        <div class="notif-item <?= $notif['is_read'] ? '' : 'unread' ?>" data-type="<?= $notif['type'] ?>" onclick="handleNotif(<?= e(json_encode($notif)) ?>)">
                             <div class="notif-type">
-                                <i class="fas <?= match($notif['type']) {
-                                    'payment_request' => 'fa-credit-card',
-                                    'new_order' => 'fa-utensils',
-                                    'support_request' => 'fa-hand-paper',
-                                    default => 'fa-bell'
-                                } ?>"></i>
+                                <i class="fas <?php
+                                    echo $notif['type'] === 'payment_request' ? 'fa-credit-card' :
+                                         ($notif['type'] === 'new_order' ? 'fa-utensils' :
+                                         ($notif['type'] === 'support_request' ? 'fa-hand-paper' : 'fa-bell'));
+                                ?>"></i>
                                 <?= ucfirst(str_replace('_', ' ', $notif['type'])) ?>
                             </div>
                             <div class="notif-message"><?= e($notif['message']) ?></div>
@@ -518,6 +538,10 @@ foreach (array_keys($grouped) as $a) {
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
+            </div>
+
+            <div id="notifPagination" style="display:flex;justify-content:center;gap:8px;margin-top:12px">
+                <button class="btn btn-ghost" onclick="loadNotifPage(1)" style="padding:6px 12px;font-size:0.75rem">Trang 1</button>
             </div>
         </div>
 
@@ -820,6 +844,29 @@ foreach (array_keys($grouped) as $a) {
         <div class="modal-footer">
             <button class="btn btn-ghost" onclick="closeModal('modalAddItem')">Hủy</button>
             <button class="btn btn-gold" onclick="submitAddItem()"><i class="fas fa-plus"></i> Thêm</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="modalItemDetail">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title" id="itemDetailName">Chi tiết món</div>
+            <button class="modal-close" onclick="closeModal('modalItemDetail')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div id="itemDetailImg" style="width:100%;height:150px;background:#f8fafc;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+                <i class="fas fa-utensils" style="font-size:3rem;color:#d4af37;opacity:0.3"></i>
+            </div>
+            <div id="itemDetailPrice" style="font-size:1.2rem;font-weight:800;color:#d4af37;text-align:center;margin-bottom:12px"></div>
+            <div id="itemDetailDesc" style="font-size:0.85rem;color:#64748b;text-align:center;margin-bottom:12px"></div>
+            <div id="itemDetailOptions" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>
+        </div>
+        <div class="modal-footer">
+            <?php if ($orderId > 0): ?>
+                <button class="btn btn-gold" id="itemDetailAddBtn" onclick="addItemFromDetail()"><i class="fas fa-plus"></i> Thêm vào order</button>
+            <?php endif; ?>
+            <button class="btn btn-ghost" onclick="closeModal('modalItemDetail')">Đóng</button>
         </div>
     </div>
 </div>
@@ -1449,6 +1496,122 @@ function submitItemNote() {
             alert('Lỗi lưu ghi chú');
         }
     });
+}
+
+var currentDetailItemId = 0;
+
+function showItemDetail(item) {
+    currentDetailItemId = item.id;
+    
+    document.getElementById('itemDetailName').textContent = item.name || 'Món ăn';
+    document.getElementById('itemDetailPrice').textContent = formatPrice(item.price);
+    document.getElementById('itemDetailDesc').textContent = item.description || '';
+    
+    var imgContainer = document.getElementById('itemDetailImg');
+    if (item.image) {
+        imgContainer.innerHTML = '<img src="' + POS.baseUrl + '/public/uploads/' + item.image + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px">';
+    } else {
+        imgContainer.innerHTML = '<i class="fas fa-utensils" style="font-size:3rem;color:#d4af37;opacity:0.3"></i>';
+    }
+    
+    var optsContainer = document.getElementById('itemDetailOptions');
+    optsContainer.innerHTML = '';
+    
+    var optsStr = item.note_options || '';
+    var optsEnStr = item.note_options_en || '';
+    var optsArr = optsStr.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+    var optsEnArr = optsEnStr.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+    
+    for (var i = 0; i < optsArr.length; i++) {
+        var opt = optsArr[i];
+        var en = optsEnArr[i] || '';
+        var label = en ? opt + ' / ' + en : opt;
+        var span = document.createElement('span');
+        span.textContent = label;
+        span.style.cssText = 'background:#f8fafc;padding:4px 8px;border-radius:6px;font-size:0.75rem;color:#64748b';
+        optsContainer.appendChild(span);
+    }
+    
+    openModal('modalItemDetail');
+}
+
+function addItemFromDetail() {
+    openAddItemModal(currentDetailItemId, document.getElementById('itemDetailName').textContent, '[]');
+    closeModal('modalItemDetail');
+}
+
+function formatPrice(price) {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price || 0);
+}
+
+function filterNotifications(type) {
+    var items = document.querySelectorAll('.notif-item');
+    for (var i = 0; i < items.length; i++) {
+        if (type === 'all' || items[i].dataset.type === type) {
+            items[i].style.display = 'flex';
+        } else {
+            items[i].style.display = 'none';
+        }
+    }
+    
+    var filterSelect = document.getElementById('notifFilter');
+    if (filterSelect) filterSelect.value = type;
+}
+
+var notifCurrentPage = 1;
+
+function loadNotifPage(page) {
+    notifCurrentPage = page;
+    
+    fetch(POS.baseUrl + '/admin/pos/notif-data?page=' + page)
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+        if (d.ok) {
+            var list = document.getElementById('notifList');
+            list.innerHTML = d.notifications.map(function(n) {
+                var icon = n.type === 'payment_request' ? 'fa-credit-card' :
+                           n.type === 'new_order' ? 'fa-utensils' :
+                           n.type === 'support_request' ? 'fa-hand-paper' : 'fa-bell';
+                return '<div class="notif-item ' + (n.is_read ? '' : 'unread') + '" data-type="' + n.type + '" onclick="handleNotif(' + JSON.stringify(n) + ')">' +
+                    '<div class="notif-type"><i class="fas ' + icon + '"></i> ' + n.type.replace('_', ' ') + '</div>' +
+                    '<div class="notif-message">' + n.message + '</div>' +
+                    '<div class="notif-time">' + new Date(n.created_at).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) + '</div>' +
+                '</div>';
+            }).join('');
+            
+            filterNotifications(document.getElementById('notifFilter')?.value || 'all');
+        }
+    });
+}
+
+function showSetDetail(set) {
+    document.getElementById('itemDetailName').textContent = set.name || 'Set menu';
+    document.getElementById('itemDetailPrice').textContent = formatPrice(set.price);
+    document.getElementById('itemDetailDesc').textContent = set.description || '';
+    
+    var imgContainer = document.getElementById('itemDetailImg');
+    if (set.image) {
+        imgContainer.innerHTML = '<img src="' + POS.baseUrl + '/public/uploads/' + set.image + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px">';
+    } else {
+        imgContainer.innerHTML = '<i class="fas fa-box-open" style="font-size:3rem;color:#d4af37;opacity:0.3"></i>';
+    }
+    
+    var optsContainer = document.getElementById('itemDetailOptions');
+    optsContainer.innerHTML = '';
+    
+    if (set.items && set.items.length > 0) {
+        optsContainer.innerHTML = '<div style="font-size:0.75rem;color:#64748b;margin-bottom:8px">Bao gồm:</div>';
+        for (var i = 0; i < set.items.length; i++) {
+            var it = set.items[i];
+            var span = document.createElement('span');
+            span.textContent = it.item_name + ' (x' + it.quantity + ')';
+            span.style.cssText = 'background:#f8fafc;padding:4px 8px;border-radius:6px;font-size:0.75rem;color:#64748b;margin:2px';
+            optsContainer.appendChild(span);
+        }
+    }
+    
+    currentDetailItemId = set.id;
+    openModal('modalItemDetail');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
