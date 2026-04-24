@@ -52,6 +52,32 @@ $TEXT = [
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Additional inline styles for bilingual display */
+        .bilingual-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .bilingual-header .vi-text {
+            color: var(--text-dark);
+            font-size: 1rem;
+        }
+        .bilingual-header .en-text {
+            color: var(--text-light);
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+        .lang-en .bilingual-header .vi-text {
+            color: var(--text-light);
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+        .lang-en .bilingual-header .en-text {
+            color: var(--text-dark);
+            font-size: 1rem;
+            font-style: normal;
+        }
+        
         .bilingual-text {
             display: inline;
         }
@@ -157,13 +183,13 @@ $TEXT = [
                 </div>
                 
                 <!-- Bilingual Title -->
-                <h1 class="success-title bilingual-text">
+                <h1 class="success-title bilingual-header">
                     <span class="vi-text"><?= $TEXT['thank_you_vi'] ?? '' ?></span>
                     <span class="en-text"><?= $TEXT['thank_you_en'] ?? '' ?></span>
                 </h1>
                 
                 <!-- Bilingual Subtitle -->
-                <p class="success-subtitle bilingual-text">
+                <p class="success-subtitle bilingual-header">
                     <span class="vi-text"><?= $TEXT['preparing_vi'] ?? '' ?></span>
                     <span class="en-text"><?= $TEXT['preparing_en'] ?? '' ?></span>
                 </p>
