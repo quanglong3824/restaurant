@@ -955,11 +955,11 @@ function filterMenuCategory(tabEl) {
 }
 
 function openModal(id) {
-    document.getElementById(id).classList.add('show');
+    document.getElementById(id).classList.add('is-open');
 }
 
 function closeModal(id) {
-    document.getElementById(id).classList.remove('show');
+    document.getElementById(id).classList.remove('is-open');
 }
 
 function selectGuest(n) {
