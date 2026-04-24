@@ -8,7 +8,7 @@ $hasHistory = !empty($orders) && count($orders) > 0;
 ?>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -439,12 +439,12 @@ $hasHistory = !empty($orders) && count($orders) > 0;
         <div class="hero-cta">
             <a href="<?= BASE_URL ?>/qr/menu" class="btn-hero btn-hero-primary">
                 <i class="fas fa-utensils"></i>
-                <span>ĐẶT MÓN NGAY / ORDER NOW</span>
+                <span>ORDER NOW</span>
             </a>
             <?php if ($hasHistory): ?>
             <button onclick="scrollToHistory()" class="btn-hero btn-hero-secondary">
                 <i class="fas fa-history"></i>
-                <span>XEM LỊCH SỬ / VIEW HISTORY</span>
+                <span>VIEW HISTORY</span>
             </button>
             <?php endif; ?>
         </div>
@@ -456,11 +456,11 @@ $hasHistory = !empty($orders) && count($orders) > 0;
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
             <h2 class="section-title" style="margin:0;">
                 <i class="fas fa-history"></i>
-                <span>Lịch Sử Đơn Hàng / Order History</span>
+                <span>Order History</span>
             </h2>
             <a href="<?= BASE_URL ?>/qr/menu" class="btn-hero btn-hero-secondary" style="padding:10px 18px;font-size:0.8rem;">
                 <i class="fas fa-arrow-left"></i>
-                <span>Quay về / Back</span>
+                <span>Back</span>
             </a>
         </div>
         
@@ -469,8 +469,8 @@ $hasHistory = !empty($orders) && count($orders) > 0;
             <div class="order-card" onclick="showOrderDetail(<?= htmlspecialchars(json_encode($order)) ?>)">
                 <div class="order-card-header">
                     <div class="order-id">
-                        <span class="label">Đơn / Order #<?= $order['id'] ?></span>
-                        <span class="status-badge <?= $order['status'] ?>"><?= $order['status'] === 'open' ? 'ĐANG MỞ / OPEN' : 'ĐÃ THANH TOÁN / PAID' ?></span>
+                        <span class="label">Order #<?= $order['id'] ?></span>
+                        <span class="status-badge <?= $order['status'] ?>"><?= $order['status'] === 'open' ? 'OPEN' : 'PAID' ?></span>
                     </div>
                     <div class="order-time">
                         <i class="far fa-clock"></i>
@@ -492,14 +492,14 @@ $hasHistory = !empty($orders) && count($orders) > 0;
                     <?php endfor; ?>
                     <?php if ($itemCount > 3): ?>
                         <div class="preview-item" style="font-style: italic; color: var(--text-light);">
-                            +<?= $itemCount - 3 ?> món khác / other items
+                            +<?= $itemCount - 3 ?> other items
                         </div>
                     <?php endif; ?>
                 </div>
                 
                 <div class="order-card-footer">
                     <div class="order-total">
-                        <span class="label">Tổng cộng / Total</span>
+                        <span class="label">Total</span>
                         <span class="amount"><?= formatPrice($order['total']) ?></span>
                     </div>
                     <div class="view-btn">
@@ -514,11 +514,11 @@ $hasHistory = !empty($orders) && count($orders) > 0;
     <section class="history-section" id="historySection">
         <div class="empty-state">
             <i class="fas fa-receipt"></i>
-            <h3>Chưa có lịch sử đơn hàng / No order history</h3>
-            <p>Quý khách chưa có đơn hàng nào. Hãy đặt món ngay! / You have no orders yet. Order now!</p>
+            <h3>No order history</h3>
+            <p>You have no orders yet. Order now!</p>
             <a href="<?= BASE_URL ?>/qr/menu" class="btn-hero btn-hero-primary">
                 <i class="fas fa-utensils"></i>
-                <span>ĐẶT MÓN NGAY / ORDER NOW</span>
+                <span>ORDER NOW</span>
             </a>
         </div>
     </section>
@@ -528,10 +528,10 @@ $hasHistory = !empty($orders) && count($orders) > 0;
     <section class="history-section">
         <div class="info-box">
             <i class="fas fa-qrcode"></i>
-            <h3>Đặt Món Tại Bàn / Order at Table</h3>
+            <h3>Order at Table</h3>
             <p>
-                Để đặt món, quý khách vui lòng đến nhà hàng và quét mã QR trên bàn.<br>To order, please visit the restaurant and scan the QR code on the table.<br>
-                Hệ thống sẽ tự động nhận diện bàn và phục vụ quý khách tốt nhất. / The system will automatically identify the table to serve you.
+                To order, please visit the restaurant and scan the QR code on the table.<br>
+                The system will automatically identify your table to serve you best.
             </p>
         </div>
     </section>
@@ -540,7 +540,7 @@ $hasHistory = !empty($orders) && count($orders) > 0;
     <div class="modal-backdrop" id="orderDetailModal">
         <div class="modal">
             <div class="modal-header">
-                <h3><i class="fas fa-file-invoice me-2"></i> Chi tiết đơn hàng / Order Details</h3>
+                <h3><i class="fas fa-file-invoice me-2"></i> Order Details</h3>
                 <button class="modal-close" onclick="closeOrderDetail()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body" id="orderDetailContent">
@@ -563,17 +563,17 @@ $hasHistory = !empty($orders) && count($orders) > 0;
             // Order info
             html += '<div style="background:#f8fafc;padding:12px;border-radius:12px;margin-bottom:1rem;">';
             html += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;">';
-            html += '<span style="color:#64748b;font-size:0.8rem;">Thời gian</span>';
+            html += '<span style="color:#64748b;font-size:0.8rem;">Time</span>';
             html += '<span style="font-weight:600;">' + new Date(order.created_at).toLocaleString('vi-VN') + '</span>';
             html += '</div>';
             html += '<div style="display:flex;justify-content:space-between;">';
-            html += '<span style="color:#64748b;font-size:0.8rem;">Tổng cộng / Total</span>';
+            html += '<span style="color:#64748b;font-size:0.8rem;">Total</span>';
             html += '<span style="font-weight:700;color:var(--gold);font-size:1.1rem;">' + formatPrice(order.total) + '</span>';
             html += '</div>';
             html += '</div>';
             
             // Items
-            html += '<h4 style="margin-bottom:1rem;font-size:0.9rem;color:#64748b;text-transform:uppercase;">Danh sách món</h4>';
+            html += '<h4 style="margin-bottom:1rem;font-size:0.9rem;color:#64748b;text-transform:uppercase;">Items</h4>';
             
             if (order.items && order.items.length > 0) {
                 order.items.forEach(function(item) {
@@ -589,7 +589,7 @@ $hasHistory = !empty($orders) && count($orders) > 0;
                     html += '</div>';
                 });
             } else {
-                html += '<p style="text-align:center;color:#94a3b8;padding:2rem;">Không có món nào</p>';
+                html += '<p style="text-align:center;color:#94a3b8;padding:2rem;">No items</p>';
             }
             
             html += '</div>';

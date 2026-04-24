@@ -96,12 +96,12 @@ if ($hasItems) {
         <div class="loc-icon-ring" style="color:#ef4444;">
             <i class="fas fa-map-marker-alt"></i>
         </div>
-        <h3 style="color:#ef4444;">BẠN ĐÃ RỜI KHỎI KHU VỰC</h3>
-        <p class="loc-sub">Thực đơn tạm thời bị khoá để bảo mật đơn hàng</p>
+        <h3 style="color:#ef4444;">YOU HAVE LEFT THE AREA</h3>
+        <p class="loc-sub">Menu is temporarily locked for order security</p>
         <div class="loc-dist-badge err">
-            <i class="fas fa-walking"></i> Khoảng cách: <span id="frozenDistVal">...</span>m
+            <i class="fas fa-walking"></i> Distance: <span id="frozenDistVal">...</span>m
         </div>
-        <p class="loc-hint">Vui lòng quay lại khu vực để tiếp tục</p>
+        <p class="loc-hint">Please return to the area to continue</p>
     </div>
 </div>
 
@@ -117,24 +117,22 @@ if ($hasItems) {
     </script>
     <div class="loc-card">
 u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
-        <h3 class="loc-title" data-vi="XÁC NHẬN HIỆN DIỆN / CONFIRM YOUR PRESENCE" data-en="CONFIRM YOUR PRESENCE">XÁC NHẬN HIỆN DIỆN / CONFIRM YOUR PRESENCE</h3>
+        <h3 class="loc-title">CONFIRM YOUR PRESENCE</h3>
         <p class="loc-sub">AURORA HOTEL PLAZA</p>
         <div id="liveDistance" class="loc-dist-badge" style="display:none;">
             <i class="fas fa-map-marker-alt"></i> <span id="distVal">...</span>m
         </div>
-        <p class="loc-desc" data-vi="Để bảo mật đơn hàng và tốc độ phục vụ tối ưu, vui lòng xác nhận vị trí của bạn. / For order security and optimal service speed, please confirm your location." data-en="For order security and optimal service speed, please confirm your location.">
-            Để bảo mật đơn hàng và tốc độ phục vụ tối ưu, vui lòng xác nhận vị trí của bạn. / For order security and optimal service speed, please confirm your location.
-        </p>
+        <p class="loc-desc">For order security and optimal service speed, please confirm your location.</p>
         <ul class="loc-benefits">
-            <li><i class="fas fa-check-circle"></i> <span data-vi="Đơn hàng xác nhận ngay lập tức / Instant order confirmation" data-en="Instant order confirmation">Đơn hàng xác nhận ngay lập tức / Instant order confirmation</span></li>
-            <li><i class="fas fa-lock"></i> <span data-vi="Không lưu lịch sử vị trí / No location history stored" data-en="No location history stored">Không lưu lịch sử vị trí / No location history stored</span></li>
-            <li><i class="fas fa-history"></i> <span data-vi="Tự động xoá khi rời đi / Auto-delete when leaving" data-en="Auto-delete when leaving">Tự động xoá khi rời đi / Auto-delete when leaving</span></li>
+            <li><i class="fas fa-check-circle"></i> <span>Instant order confirmation</span></li>
+            <li><i class="fas fa-lock"></i> <span>No location history stored</span></li>
+            <li><i class="fas fa-history"></i> <span>Auto-delete when leaving</span></li>
         </ul>
         <div id="locationError" class="loc-error" style="display:none;"></div>
         <button id="btnAllowLocation" class="btn-loc-start">
-            <i class="fas fa-location-arrow"></i> <span data-vi="BẮT ĐẦU TRẢI NGHIỆM / START EXPERIENCE" data-en="START EXPERIENCE">BẮT ĐẦU TRẢI NGHIỆM / START EXPERIENCE</span>
+            <i class="fas fa-location-arrow"></i> <span>START EXPERIENCE</span>
         </button>
-        <p class="loc-privacy" data-vi="Bằng cách tiếp tục, bạn đồng ý với chính sách bảo mật của chúng tôi. / By continuing, you agree to our privacy policy." data-en="By continuing, you agree to our privacy policy.">Bằng cách tiếp tục, bạn đồng ý với chính sách bảo mật của chúng tôi. / By continuing, you agree to our privacy policy.</p>
+        <p class="loc-privacy">By continuing, you agree to our privacy policy.</p>
     </div>
 </div>
 
