@@ -30,9 +30,9 @@ foreach (array_keys($grouped) as $a) {
 ?>
 <style>
 .pos-dashboard { display: flex; flex-direction: column; height: auto; min-height: calc(100vh - 120px); overflow: visible; }
-.pos-sidebar { width: 100%; background: #1e293b; border-bottom: 1px solid #334155; display: flex; flex-direction: row; padding: 8px; overflow-x: auto; }
+.pos-sidebar { width: 100%; background: #1e293b; border-bottom: 1px solid #334155; display: flex; flex-direction: row; padding: 8px; overflow-x: auto; position: sticky; top: 0; z-index: 100; }
 .pos-tabs { display: flex; flex-direction: row; gap: 4px; }
-.pos-tab { padding: 10px 14px; color: #94a3b8; cursor: pointer; border-bottom: 2px solid transparent; border-left: none; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.8rem; transition: all 0.2s; white-space: nowrap; }
+.pos-tab { padding: 10px 14px; color: #94a3b8; cursor: pointer; border-bottom: 2px solid transparent; border-left: none; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.8rem; transition: all 0.2s; white-space: nowrap; position: relative; z-index: 101; }
 .pos-tab:hover { background: rgba(212,175,55,0.1); color: #d4af37; }
 .pos-tab.active { background: rgba(212,175,55,0.15); border-bottom-color: #d4af37; color: #d4af37; }
 .pos-tab i { width: 18px; text-align: center; }
@@ -980,11 +980,20 @@ function filterMenuCategory(tabEl) {
 }
 
 function openModal(id) {
-    document.getElementById(id).classList.add('is-open');
+    var modal = document.getElementById(id);
+    if (modal) modal.classList.add('is-open');
 }
 
 function closeModal(id) {
-    document.getElementById(id).classList.remove('is-open');
+    var modal = document.getElementById(id);
+    if (modal) modal.classList.remove('is-open');
+}
+
+function closeAllModals() {
+    var modals = document.querySelectorAll('.modal-backdrop');
+    for (var i = 0; i < modals.length; i++) {
+        modals[i].classList.remove('is-open');
+    }
 }
 
 function selectGuest(n) {
@@ -1196,8 +1205,7 @@ function confirmOrder() {
     .then(function(r) { return r.json(); })
     .then(function(d) {
         if (d.ok) {
-            updateCartUI(d);
-            location.reload();
+            window.location.replace(POS.baseUrl + '/admin/pos?tab=order&table_id=' + POS.tableId + '&msg=confirm');
         } else {
             alert(d.message || 'Lỗi xác nhận');
         }
@@ -1217,10 +1225,10 @@ function submitPayment() {
     .then(function(r) { return r.json(); })
     .then(function(d) {
         if (d.ok) {
-            closeModal('modalPayment');
+            closeAllModals();
             POS.orderId = 0;
             POS.tableId = 0;
-            window.location.href = POS.baseUrl + '/admin/pos?tab=floor&paid=1';
+            window.location.replace(POS.baseUrl + '/admin/pos?tab=floor&paid=1');
         } else {
             alert(d.message || 'Lỗi thanh toán');
         }
@@ -1240,7 +1248,10 @@ function cancelOrder() {
     .then(function(r) { return r.json(); })
     .then(function(d) {
         if (d.ok) {
-            window.location.href = POS.baseUrl + '/admin/pos?tab=floor';
+            closeAllModals();
+            POS.orderId = 0;
+            POS.tableId = 0;
+            window.location.replace(POS.baseUrl + '/admin/pos?tab=floor&msg=cancel');
         }
     });
 }
@@ -1258,8 +1269,8 @@ function submitGuestUpdate() {
     .then(function(r) { return r.json(); })
     .then(function(d) {
         if (d.ok) {
-            closeModal('modalGuest');
-            location.reload();
+            closeAllModals();
+            window.location.replace(POS.baseUrl + '/admin/pos?tab=order&table_id=' + POS.tableId + '&msg=guest');
         }
     });
 }
@@ -1356,9 +1367,8 @@ function submitTransfer() {
     .then(function(r) { return r.json(); })
     .then(function(d) {
         if (d.ok) {
-            closeModal('modalTransfer');
-            alert('Chuyển bàn thành công!');
-            window.location.href = POS.baseUrl + '/admin/pos?tab=floor';
+            closeAllModals();
+            window.location.replace(POS.baseUrl + '/admin/pos?tab=floor&msg=transfer');
         } else {
             alert(d.message || 'Lỗi chuyển bàn');
         }
@@ -1382,12 +1392,13 @@ function submitMerge() {
     .then(function(r) { return r.json(); })
     .then(function(d) {
         if (d.ok) {
-            closeModal('modalMerge');
-            alert('Ghép bàn thành công!');
-            location.reload();
+            closeAllModals();
+            window.location.replace(POS.baseUrl + '/admin/pos?tab=floor&msg=merge');
         } else {
             alert(d.message || 'Lỗi ghép bàn');
         }
+    });
+}
     });
 }
 
@@ -1402,8 +1413,8 @@ function unmergeTable(tableId) {
     .then(function(r) { return r.json(); })
     .then(function(d) {
         if (d.ok) {
-            alert('Tách bàn thành công!');
-            location.reload();
+            closeAllModals();
+            window.location.replace(POS.baseUrl + '/admin/pos?tab=floor&msg=unmerge');
         } else {
             alert(d.message || 'Lỗi tách bàn');
         }
@@ -1448,9 +1459,8 @@ function submitSplit() {
     .then(function(r) { return r.json(); })
     .then(function(d) {
         if (d.ok) {
-            closeModal('modalSplit');
-            alert('Tách món thành công!');
-            location.reload();
+            closeAllModals();
+            window.location.replace(POS.baseUrl + '/admin/pos?tab=order&table_id=' + POS.tableId + '&msg=split');
         } else {
             alert(d.message || 'Lỗi tách món');
         }
@@ -1644,20 +1654,57 @@ function showSetDetail(set) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    closeAllModals();
+    
     var urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('paid') === '1') {
-        var toast = document.createElement('div');
-        toast.innerHTML = '<i class="fas fa-check-circle"></i> Thanh toán thành công!';
-        toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#10b981;color:white;padding:12px 24px;border-radius:10px;font-weight:700;z-index:9999;animation:fadeInOut 3s';
-        document.body.appendChild(toast);
-        setTimeout(function() { toast.remove(); }, 3000);
+    var msg = urlParams.get('msg');
+    var paid = urlParams.get('paid');
+    
+    if (paid === '1' || msg) {
+        var toastMsg = '';
+        var toastIcon = 'fa-check-circle';
+        var toastColor = '#10b981';
         
-        var style = document.createElement('style');
-        style.textContent = '@keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-20px)}20%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1}100%{opacity:0}}';
-        document.head.appendChild(style);
+        if (paid === '1') {
+            toastMsg = 'Thanh toán thành công!';
+        } else if (msg === 'transfer') {
+            toastMsg = 'Chuyển bàn thành công!';
+        } else if (msg === 'merge') {
+            toastMsg = 'Ghép bàn thành công!';
+        } else if (msg === 'unmerge') {
+            toastMsg = 'Tách bàn thành công!';
+        } else if (msg === 'split') {
+            toastMsg = 'Tách món thành công!';
+        } else if (msg === 'cancel') {
+            toastMsg = 'Hủy bàn thành công!';
+            toastColor = '#ef4444';
+        } else if (msg === 'guest') {
+            toastMsg = 'Cập nhật số khách!';
+        } else if (msg === 'confirm') {
+            toastMsg = 'Xác nhận order thành công!';
+        }
         
-        urlParams.delete('paid');
-        window.history.replaceState({}, '', window.location.pathname + '?' + urlParams.toString());
+        if (toastMsg) {
+            var toast = document.createElement('div');
+            toast.innerHTML = '<i class="fas ' + toastIcon + '"></i> ' + toastMsg;
+            toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:' + toastColor + ';color:white;padding:12px 24px;border-radius:10px;font-weight:700;z-index:1500;animation:fadeInOut 3s;box-shadow:0 4px 20px rgba(0,0,0,0.3)';
+            document.body.appendChild(toast);
+            setTimeout(function() { toast.remove(); }, 3000);
+            
+            var style = document.createElement('style');
+            style.textContent = '@keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-20px)}20%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1}100%{opacity:0}}';
+            document.head.appendChild(style);
+            
+            urlParams.delete('paid');
+            urlParams.delete('msg');
+            var newUrl = urlParams.toString() ? (window.location.pathname + '?' + urlParams.toString()) : window.location.pathname;
+            window.history.replaceState({}, '', newUrl);
+        }
+    }
+    
+    var tabParam = urlParams.get('tab');
+    if (tabParam) {
+        switchTab(tabParam);
     }
     
     var posTabs = document.querySelectorAll('.pos-tab');
@@ -1708,11 +1755,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (qtyEl) qtyEl.after(noteBtn);
             }
         })(orderRows[k]);
-    }
-    
-    var tabParam = urlParams.get('tab');
-    if (tabParam) {
-        switchTab(tabParam);
     }
     
     setInterval(refreshRealtime, 10000);
