@@ -283,3 +283,75 @@
         padding: 0.75rem;
     }
 }
+
+/* Notification Badges */
+.notification-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.25rem;
+}
+
+.notif-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    animation: pulse-badge 2s ease-in-out infinite;
+}
+
+.notif-badge i {
+    font-size: 0.65rem;
+}
+
+.badge-count {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 0.05rem 0.3rem;
+    border-radius: 3px;
+    font-size: 0.55rem;
+    margin-left: 0.15rem;
+}
+
+/* Gọi NV - Cam */
+.notif-badge.badge-call {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
+}
+
+/* Thanh toán - Xanh lá */
+.notif-badge.badge-payment {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+/* Đơn QR - Tím */
+.notif-badge.badge-qr {
+    background: linear-gradient(135deg, #a855f7, #9333ea);
+    color: white;
+    box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+}
+
+/* Default */
+.notif-badge.badge-default {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
+    box-shadow: 0 2px 8px rgba(107, 114, 128, 0.4);
+}
+
+@keyframes pulse-badge {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.85;
+        transform: scale(1.02);
+    }
+}

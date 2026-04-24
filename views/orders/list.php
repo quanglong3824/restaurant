@@ -47,8 +47,35 @@
                                 <?= e($o['table_name']) ?>
                                 <span class="badge-order-id">#<?= $o['id'] ?></span>
                             </h3>
+                            <?php 
+                            // Hiển thị notification badges nếu có
+                            $tableId = $o['table_id'];
+                            $hasNotifications = !empty($notificationsByTable[$tableId]);
+                            if ($hasNotifications): 
+                            ?>
+                                <div class="notification-badges">
+                                    <?php foreach ($notificationsByTable[$tableId] as $notif): 
+                                        $type = $notif['type'];
+                                        $count = $notif['count'];
+                                        $badgeConfig = [
+                                            'call_staff' => ['icon' => 'fa-bell', 'label' => 'Gọi NV', 'class' => 'badge-call'],
+                                            'request_payment' => ['icon' => 'fa-credit-card', 'label' => 'Thanh toán', 'class' => 'badge-payment'],
+                                            'new_qr_order' => ['icon' => 'fa-qrcode', 'label' => 'Đơn QR', 'class' => 'badge-qr'],
+                                        ];
+                                        $config = $badgeConfig[$type] ?? ['icon' => 'fa-bell', 'label' => $type, 'class' => 'badge-default'];
+                                    ?>
+                                        <span class="notif-badge <?= $config['class'] ?>">
+                                            <i class="fas <?= $config['icon'] ?>"></i>
+                                            <?= $config['label'] ?>
+                                            <?php if ($count > 1): ?>
+                                                <span class="badge-count"><?= $count ?></span>
+                                            <?php endif; ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
                             <?php if (!empty($o['note'])): ?>
-                                <div style="font-size: 0.7rem; color: var(--gold-dark); margin-top: -2px; margin-bottom: 4px;">
+                                <div style="font-size: 0.7rem; color: var(--gold-dark); margin-top: <?= $hasNotifications ? '2px' : '-2px' ?>; margin-bottom: 4px;">
                                     <i class="fas fa-info-circle"></i> <?= e($o['note']) ?>
                                 </div>
                             <?php endif; ?>

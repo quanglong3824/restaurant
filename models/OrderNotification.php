@@ -154,4 +154,36 @@ class OrderNotification extends Model
              )"
         );
     }
+
+    /** Lấy thông báo chưa đọc theo danh sách table_id */
+    public function getUnreadByTableIds(array $tableIds): array
+    {
+        if (empty($tableIds)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($tableIds), '?'));
+        $rows = $this->findAll(
+            "SELECT table_id, notification_type, COUNT(*) as count
+             FROM order_notifications
+             WHERE table_id IN ({$placeholders}) AND is_read = 0
+             GROUP BY table_id, notification_type",
+            $tableIds
+        );
+
+        // Group by table_id
+        $result = [];
+        foreach ($rows as $row) {
+            $tid = $row['table_id'];
+            if (!isset($result[$tid])) {
+                $result[$tid] = [];
+            }
+            $result[$tid][] = [
+                'type' => $row['notification_type'],
+                'count' => (int) $row['count']
+            ];
+        }
+
+        return $result;
+    }
 }

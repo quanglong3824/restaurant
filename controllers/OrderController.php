@@ -8,6 +8,7 @@ require_once BASE_PATH . '/models/Table.php';
 require_once BASE_PATH . '/models/MenuItem.php';
 require_once BASE_PATH . '/models/MenuSet.php';
 require_once BASE_PATH . '/models/ActivityLog.php';
+require_once BASE_PATH . '/models/OrderNotification.php';
 
 class OrderController extends Controller
 {
@@ -15,8 +16,8 @@ class OrderController extends Controller
     private Table $tableModel;
     private MenuItem $menuModel;
     private MenuSet $setModel;
-
     private ActivityLog $activityLog;
+    private OrderNotification $notificationModel;
 
     public function __construct()
     {
@@ -25,6 +26,7 @@ class OrderController extends Controller
         $this->menuModel  = new MenuItem();
         $this->setModel   = new MenuSet();
         $this->activityLog = new ActivityLog();
+        $this->notificationModel = new OrderNotification();
     }
 
     /** Parse menu_tags -> item_options array và format giá cho JS */
@@ -56,11 +58,16 @@ class OrderController extends Controller
             $allAreas = array_unique(array_filter(array_column($allTables, 'area')));
             sort($allAreas);
 
+            // Lấy pending notifications cho tất cả bàn đang mở
+            $tableIds = array_column($openOrders, 'table_id');
+            $notificationsByTable = $this->notificationModel->getUnreadByTableIds($tableIds);
+
             $this->view('layouts/waiter', [
                 'view' => 'orders/list',
                 'pageTitle' => 'Danh sách Bàn Đang Order',
                 'orders' => $openOrders,
-                'areas' => $allAreas
+                'areas' => $allAreas,
+                'notificationsByTable' => $notificationsByTable
             ]);
             return;
         }
