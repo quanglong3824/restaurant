@@ -694,9 +694,10 @@ function updateCartUI() {
         
         container.innerHTML = html;
     } catch (err) {
-        console.error('Render error:', err);
+        console.error('Render POS Grid error:', err);
         container.innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi hiển thị</h3><p>${err.message}</p></div>`;
     }
+}
 }
 
 function changeCartItemQty(id, delta) {
@@ -951,15 +952,21 @@ async function refreshData() {
     if (isRefreshing) return;
     isRefreshing = true;
 
+    const container = document.getElementById('realtimeListContainer');
     const btn = document.querySelector('.refresh-circle-btn');
+    
+    console.log('refreshData called, container:', container); // Debug
+    
     if (btn) btn.innerHTML = '<i class="fas fa-sync fa-spin"></i>';
 
     try {
         const res = await fetch(BASE_URL + '/admin/realtime/data?t=' + Date.now());
         
+        console.log('Fetch response:', res.status); // Debug
+        
         if (!res.ok) {
             console.error('HTTP Error:', res.status, res.statusText);
-            container.innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi kết nối (${res.status})</h3><p>Vui lòng kiểm tra lại.</p></div>`;
+            if (container) container.innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi kết nối (${res.status})</h3><p>Vui lòng kiểm tra lại.</p></div>`;
             return;
         }
         
@@ -971,11 +978,11 @@ async function refreshData() {
             renderPOSGrid(data.data);
         } else {
             console.error('Invalid data format:', data);
-            document.getElementById('realtimeListContainer').innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi dữ liệu</h3><p>${data?.message || 'Không thể tải dữ liệu'}</p></div>`;
+            if (container) container.innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi dữ liệu</h3><p>${data?.message || 'Không thể tải dữ liệu'}</p></div>`;
         }
     } catch (err) {
         console.error('Lỗi POS Sync:', err);
-        document.getElementById('realtimeListContainer').innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi kết nối</h3><p>${err.message || 'Không thể kết nối server'}</p></div>`;
+        if (container) container.innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi kết nối</h3><p>${err.message || 'Không thể kết nối server'}</p></div>`;
     } finally {
         if (btn) btn.innerHTML = '<i class="fas fa-sync-alt"></i>';
         isRefreshing = false;
