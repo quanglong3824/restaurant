@@ -4,35 +4,44 @@
 $currentLang = $_COOKIE['aurora_lang'] ?? $_SESSION['lang'] ?? 'vi';
 $isEn = $currentLang === 'en';
 
-// Text translations - Song ngữ Việt/Anh
-$t = [
-    'order_sent' => ['vi' => 'Đã gửi đơn hàng!', 'en' => 'Order Sent!'],
-    'wait_message' => ['vi' => 'Vui lòng đợi nhân viên xác nhận và phục vụ.', 'en' => 'Please wait for staff confirmation and service.'],
-    'order_details' => ['vi' => 'Chi tiết đơn hàng', 'en' => 'Order Details'],
-    'order_number' => ['vi' => 'Đơn hàng #', 'en' => 'Order #'],
-    'qty' => ['vi' => '', 'en' => ''], // Qty prefix empty, chỉ hiển thị số
-    'total' => ['vi' => 'Tổng cộng', 'en' => 'Total'],
-    'subtotal' => ['vi' => 'Tổng tiền món', 'en' => 'Subtotal'],
-    'add_more' => ['vi' => 'TIẾP TỤC ĐẶT MÓN', 'en' => 'ORDER MORE'],
-    'check_bill' => ['vi' => 'XEM HOÁ ĐƠN', 'en' => 'CHECK BILL'],
-    'pending' => ['vi' => 'Chờ xác nhận', 'en' => 'Pending'],
-    'confirmed' => ['vi' => 'Đã xác nhận', 'en' => 'Confirmed'],
-    'cooking' => ['vi' => 'Đang nấu', 'en' => 'Cooking'],
-    'served' => ['vi' => 'Đã phục vụ', 'en' => 'Served'],
-    'cancelled' => ['vi' => 'Đã hủy', 'en' => 'Cancelled'],
-    'thank_you' => ['vi' => 'Cảm ơn bạn đã đặt món!', 'en' => 'Thank you for your order!'],
-    'preparing' => ['vi' => 'Bếp đang chuẩn bị món của bạn', 'en' => 'Our kitchen is preparing your dishes'],
-    'estimated_time' => ['vi' => 'Thời gian dự kiến', 'en' => 'Estimated Time'],
-    'minutes' => ['vi' => 'phút', 'en' => 'min'],
-    'verified' => ['vi' => 'Đã xác minh', 'en' => 'Verified'],
-    'order_notes' => ['vi' => 'Ghi chú', 'en' => 'Note'],
-    'bilingual_qty' => ['vi' => 'SL', 'en' => 'Qty'],
+// Text translations - Song ngữ Việt/Anh (hardcoded để tránh lộ key)
+$TEXT = [
+    'order_sent_vi' => 'Đã gửi đơn hàng!',
+    'order_sent_en' => 'Order Sent!',
+    'order_details_vi' => 'Chi tiết đơn hàng',
+    'order_details_en' => 'Order Details',
+    'order_number_vi' => 'Đơn hàng #',
+    'order_number_en' => 'Order #',
+    'subtotal_vi' => 'Tổng tiền món',
+    'subtotal_en' => 'Subtotal',
+    'add_more_vi' => 'TIẾP TỤC ĐẶT MÓN',
+    'add_more_en' => 'ORDER MORE',
+    'check_bill_vi' => 'XEM HOÁ ĐƠN',
+    'check_bill_en' => 'CHECK BILL',
+    'pending_vi' => 'Chờ xác nhận',
+    'pending_en' => 'Pending',
+    'confirmed_vi' => 'Đã xác nhận',
+    'confirmed_en' => 'Confirmed',
+    'cooking_vi' => 'Đang nấu',
+    'cooking_en' => 'Cooking',
+    'served_vi' => 'Đã phục vụ',
+    'served_en' => 'Served',
+    'cancelled_vi' => 'Đã hủy',
+    'cancelled_en' => 'Cancelled',
+    'thank_you_vi' => 'Cảm ơn bạn đã đặt món!',
+    'thank_you_en' => 'Thank you for your order!',
+    'preparing_vi' => 'Bếp đang chuẩn bị món của bạn',
+    'preparing_en' => 'Our kitchen is preparing your dishes',
+    'verified_vi' => 'Đã xác minh',
+    'verified_en' => 'Verified',
+    'order_notes_vi' => 'Ghi chú',
+    'order_notes_en' => 'Note',
 ];
 
-// Helper function
-function tt($key, $lang = 'vi') {
-    global $t;
-    return isset($t[$key][$lang]) ? $t[$key][$lang] : $key;
+// Helper function - trả về text trực tiếp
+function t($key) {
+    global $TEXT;
+    return isset($TEXT[$key]) ? $TEXT[$key] : '';
 }
 ?>
 <!DOCTYPE html>
@@ -40,7 +49,7 @@ function tt($key, $lang = 'vi') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= tt('order_sent', $currentLang) ?> - Aurora Restaurant</title>
+    <title><?= t('order_sent_' . $currentLang) ?> - Aurora Restaurant</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/orders/status.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -154,21 +163,21 @@ function tt($key, $lang = 'vi') {
                 
                 <!-- Bilingual Title -->
                 <h1 class="success-title bilingual-text">
-                    <span class="vi-text"><?= tt('thank_you', 'vi') ?></span>
-                    <span class="en-text"><?= tt('thank_you', 'en') ?></span>
+                    <span class="vi-text"><?= t('thank_you_vi') ?></span>
+                    <span class="en-text"><?= t('thank_you_en') ?></span>
                 </h1>
                 
                 <!-- Bilingual Subtitle -->
                 <p class="success-subtitle bilingual-text">
-                    <span class="vi-text"><?= tt('preparing', 'vi') ?></span>
-                    <span class="en-text"><?= tt('preparing', 'en') ?></span>
+                    <span class="vi-text"><?= t('preparing_vi') ?></span>
+                    <span class="en-text"><?= t('preparing_en') ?></span>
                 </p>
                 
                 <!-- Order Number Badge -->
                 <div class="order-number-badge">
                     <span class="badge-label bilingual-text">
-                        <span class="vi-text"><?= tt('order_number', 'vi') ?></span>
-                        <span class="en-text"><?= tt('order_number', 'en') ?></span>
+                        <span class="vi-text"><?= t('order_number_vi') ?></span>
+                        <span class="en-text"><?= t('order_number_en') ?></span>
                     </span>
                     <span class="badge-number">#<?= e($order['id']) ?></span>
                 </div>
@@ -182,8 +191,8 @@ function tt($key, $lang = 'vi') {
                             <i class="fas fa-receipt"></i>
                         </div>
                         <h3 class="bilingual-text">
-                            <span class="vi-text"><?= tt('order_details', 'vi') ?></span>
-                            <span class="en-text"><?= tt('order_details', 'en') ?></span>
+                            <span class="vi-text"><?= t('order_details_vi') ?></span>
+                            <span class="en-text"><?= t('order_details_en') ?></span>
                         </h3>
                     </div>
                     <span class="order-id">#<?= e($order['id']) ?></span>
@@ -211,8 +220,8 @@ function tt($key, $lang = 'vi') {
                                             <span class="item-note">
                                                 <i class="fas fa-pen"></i>
                                                 <span class="bilingual-text">
-                                                    <span class="vi-text"><?= tt('order_notes', 'vi') ?>:</span>
-                                                    <span class="en-text"><?= tt('order_notes', 'en') ?>:</span>
+                                                    <span class="vi-text"><?= t('order_notes_vi') ?>:</span>
+                                                    <span class="en-text"><?= t('order_notes_en') ?>:</span>
                                                 </span>
                                                 <?= e($it['note']) ?>
                                             </span>
@@ -221,8 +230,8 @@ function tt($key, $lang = 'vi') {
                                         <span class="item-status status-<?= $it['status'] ?>">
                                             <i class="fas fa-<?= $it['status'] === 'confirmed' ? 'check-circle' : ($it['status'] === 'cooking' ? 'fire' : ($it['status'] === 'served' ? 'check' : ($it['status'] === 'cancelled' ? 'times-circle' : 'clock'))) ?>"></i>
                                             <span class="bilingual-text">
-                                                <span class="vi-text"><?= tt($it['status'], 'vi') ?></span>
-                                                <span class="en-text"><?= tt($it['status'], 'en') ?></span>
+                                                <span class="vi-text"><?= t($it['status'] . '_vi') ?></span>
+                                                <span class="en-text"><?= t($it['status'] . '_en') ?></span>
                                             </span>
                                         </span>
                                     </div>
@@ -237,8 +246,8 @@ function tt($key, $lang = 'vi') {
                 <div class="card-footer">
                     <div class="total-row">
                         <span class="total-label bilingual-text">
-                            <span class="vi-text"><?= tt('subtotal', 'vi') ?></span>
-                            <span class="en-text"><?= tt('subtotal', 'en') ?></span>
+                            <span class="vi-text"><?= t('subtotal_vi') ?></span>
+                            <span class="en-text"><?= t('subtotal_en') ?></span>
                         </span>
                         <span class="total-amount"><?= formatPrice($total) ?></span>
                     </div>
@@ -250,15 +259,15 @@ function tt($key, $lang = 'vi') {
                 <a href="<?= BASE_URL ?>/qr/menu?table_id=<?= $order['table_id'] ?>&token=<?= $_SESSION['qr_token'] ?? '' ?>" class="btn btn-primary">
                     <i class="fas fa-plus-circle"></i>
                     <span class="btn-text">
-                        <span class="primary"><?= tt('add_more', $currentLang) ?></span>
-                        <span class="secondary"><?= $isEn ? tt('add_more', 'vi') : tt('add_more', 'en') ?></span>
+                        <span class="primary"><?= t('add_more_' . $currentLang) ?></span>
+                        <span class="secondary"><?= $isEn ? t('add_more_vi') : t('add_more_en') ?></span>
                     </span>
                 </a>
                 <a href="<?= BASE_URL ?>/qr/menu?table_id=<?= $order['table_id'] ?>&token=<?= $_SESSION['qr_token'] ?? '' ?>&show_bill=1" class="btn btn-secondary">
                     <i class="fas fa-file-invoice-dollar"></i>
                     <span class="btn-text">
-                        <span class="primary"><?= tt('check_bill', $currentLang) ?></span>
-                        <span class="secondary"><?= $isEn ? tt('check_bill', 'vi') : tt('check_bill', 'en') ?></span>
+                        <span class="primary"><?= t('check_bill_' . $currentLang) ?></span>
+                        <span class="secondary"><?= $isEn ? t('check_bill_vi') : t('check_bill_en') ?></span>
                     </span>
                 </a>
             </div>
@@ -276,8 +285,8 @@ function tt($key, $lang = 'vi') {
         <div id="locStatusIndicator" class="loc-indicator">
             <div class="loc-dot"></div>
             <span class="loc-text bilingual-text">
-                <span class="vi-text"><?= tt('verified', 'vi') ?></span>
-                <span class="en-text"><?= tt('verified', 'en') ?></span>
+                <span class="vi-text"><?= t('verified_vi') ?></span>
+                <span class="en-text"><?= t('verified_en') ?></span>
             </span>
         </div>
     </div>
