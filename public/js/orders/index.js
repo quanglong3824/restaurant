@@ -198,8 +198,8 @@ function toggleSplitItem(itemId) {
     const chk = document.getElementById('chk-' + itemId);
     if (chk) {
         chk.checked = !chk.checked;
-        const plate = chk.closest('.item-plate');
-        plate.classList.toggle('selected-for-split', chk.checked);
+        const plate = chk.closest('.item-row') || chk.closest('.item-plate');
+        if (plate) plate.classList.toggle('selected-for-split', chk.checked);
         updateSplitCount();
     }
 }
@@ -212,8 +212,8 @@ function updateSplitCount() {
     
     // Update visual state for all plates based on checkbox
     document.querySelectorAll('input[name="split_items[]"]').forEach(chk => {
-        const plate = chk.closest('.item-plate');
-        plate.classList.toggle('selected-for-split', chk.checked);
+        const plate = chk.closest('.item-row') || chk.closest('.item-plate');
+        if (plate) plate.classList.toggle('selected-for-split', chk.checked);
     });
 }
 
@@ -351,3 +351,135 @@ function showAlert(message, type) {
         }, 400);
     }, 3000);
 }
+
+// ── Note Modal Functions ─────────────────────────────────────
+let _noteItemId = 0;
+let _noteOrderId = 0;
+let _noteOpts = [];
+let _noteSelectedOpts = [];
+
+function openNoteModal(itemId, orderId, opts, itemName, currentNote) {
+    _noteItemId = itemId;
+    _noteOrderId = orderId;
+    _noteOpts = opts || [];
+    _noteSelectedOpts = [];
+
+    document.getElementById('note-item-name').textContent = itemName;
+
+    // Parse current note into parts
+    const currentParts = currentNote ? currentNote.split(',').map(s => s.trim()).filter(Boolean) : [];
+    
+    // Split into selected options and free text
+    const selectedOpts = currentParts.filter(p => _noteOpts.includes(p));
+    const freeText = currentParts.filter(p => !_noteOpts.includes(p)).join(', ');
+
+    _noteSelectedOpts = [...selectedOpts];
+    document.getElementById('note-custom-text').value = freeText;
+
+    // Render chip options
+    const container = document.getElementById('note-opts-container');
+    container.innerHTML = '';
+    
+    if (_noteOpts.length > 0) {
+        _noteOpts.forEach(opt => {
+            const isActive = selectedOpts.includes(opt);
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.textContent = opt;
+            chip.className = 'note-chip' + (isActive ? ' active' : '');
+            chip.style.cssText = `
+                padding: 8px 14px;
+                background: ${isActive ? 'var(--gold)' : '#f8fafc'};
+                border: 2px solid ${isActive ? 'var(--gold)' : '#e5e5e5'};
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: ${isActive ? '#fff' : 'var(--text)'};
+                cursor: pointer;
+                transition: all 0.15s;
+            `;
+            
+            chip.onclick = () => {
+                const idx = _noteSelectedOpts.indexOf(opt);
+                if (idx >= 0) {
+                    _noteSelectedOpts.splice(idx, 1);
+                    chip.style.background = '#f8fafc';
+                    chip.style.borderColor = '#e5e5e5';
+                    chip.style.color = 'var(--text)';
+                    chip.classList.remove('active');
+                } else {
+                    _noteSelectedOpts.push(opt);
+                    chip.style.background = 'var(--gold)';
+                    chip.style.borderColor = 'var(--gold)';
+                    chip.style.color = '#fff';
+                    chip.classList.add('active');
+                }
+            };
+            
+            container.appendChild(chip);
+        });
+    }
+
+    // Show modal
+    const modal = document.getElementById('modalItemNote');
+    if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            const input = document.getElementById('note-custom-text');
+            if (input) input.focus();
+        }, 150);
+    }
+}
+
+function closeNoteModal() {
+    const modal = document.getElementById('modalItemNote');
+    if (modal) modal.style.display = 'none';
+}
+
+function submitItemNote() {
+    const freeText = document.getElementById('note-custom-text').value.trim();
+    const parts = [..._noteSelectedOpts];
+    if (freeText) parts.push(freeText);
+    const note = parts.join(', ');
+
+    const btn = document.getElementById('btn-save-note');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+
+    fetch(ORDERS_CONFIG.baseUrl + '/orders/update-note', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            item_id: _noteItemId,
+            order_id: _noteOrderId,
+            note: note
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.ok) {
+            closeNoteModal();
+            showAlert('Đã lưu ghi chú!', 'success');
+            setTimeout(() => location.reload(), 800);
+        } else {
+            showAlert(data.message || 'Lỗi lưu ghi chú', 'danger');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> LƯU';
+        }
+    })
+    .catch(() => {
+        showAlert('Lỗi kết nối!', 'danger');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check"></i> LƯU';
+    });
+}
+
+// Close modal on backdrop click
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('modalItemNote');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) closeNoteModal();
+        });
+    }
+});
