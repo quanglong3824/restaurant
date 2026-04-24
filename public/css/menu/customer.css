@@ -1531,12 +1531,13 @@ button {
 .bill-qty {
     background: linear-gradient(135deg, var(--gold), var(--gold-dark));
     color: #fff;
-    font-size: 0.75rem;
-    font-weight: 800;
-    padding: 4px 10px;
-    border-radius: 8px;
-    min-width: 36px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 10px;
+    min-width: 40px;
     text-align: center;
+    box-shadow: 0 2px 8px rgba(197, 160, 89, 0.3);
 }
 
 .bill-name {
