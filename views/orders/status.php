@@ -4,29 +4,29 @@
 $currentLang = $_COOKIE['aurora_lang'] ?? $_SESSION['lang'] ?? 'vi';
 $isEn = $currentLang === 'en';
 
-// Text translations - Song ngữ Anh-Việt
+// Text translations - English only
 $t = [
-    'order_sent' => $isEn ? 'Order Sent!' : 'Đơn hàng đã được gửi! / Order Sent!',
-    'wait_message' => $isEn ? 'Please wait for staff confirmation and service.' : 'Vui lòng đợi nhân viên xác nhận và phục vụ. / Please wait for confirmation.',
-    'order_details' => $isEn ? 'Order Details' : 'Chi tiết đơn hàng / Order Details',
-    'order_number' => $isEn ? 'Order #' : 'Đơn hàng / Order #',
-    'qty' => $isEn ? 'Qty' : 'SL / Qty',
-    'total' => $isEn ? 'Total' : 'Tổng cộng / Total',
-    'add_more' => $isEn ? 'ORDER MORE' : 'GỌI THÊM MÓN / ORDER MORE',
-    'check_bill' => $isEn ? 'CHECK BILL' : 'KIỂM TRA HÓA ĐƠN / CHECK BILL',
-    'pending' => $isEn ? 'Pending' : 'Chờ xác nhận / Pending',
-    'confirmed' => $isEn ? 'Confirmed' : 'Đã xác nhận / Confirmed',
-    'cooking' => $isEn ? 'Cooking' : 'Đang chế biến / Cooking',
-    'served' => $isEn ? 'Served' : 'Đã phục vụ / Served',
-    'cancelled' => $isEn ? 'Cancelled' : 'Đã hủy / Cancelled',
-    'thank_you' => $isEn ? 'Thank you for your order!' : 'Cảm ơn bạn đã đặt món! / Thank you for your order!',
-    'preparing' => $isEn ? 'Our kitchen is preparing your dishes' : 'Bếp đang chuẩn bị món cho bạn / Our kitchen is preparing your dishes',
-    'estimated_time' => $isEn ? 'Estimated Time' : 'Thời gian dự kiến / Estimated Time',
-    'minutes' => $isEn ? 'min' : 'phút / min',
+    'order_sent' => 'Order Sent!',
+    'wait_message' => 'Please wait for staff confirmation and service.',
+    'order_details' => 'Order Details',
+    'order_number' => 'Order #',
+    'qty' => 'Qty',
+    'total' => 'Total',
+    'add_more' => 'ORDER MORE',
+    'check_bill' => 'CHECK BILL',
+    'pending' => 'Pending',
+    'confirmed' => 'Confirmed',
+    'cooking' => 'Cooking',
+    'served' => 'Served',
+    'cancelled' => 'Cancelled',
+    'thank_you' => 'Thank you for your order!',
+    'preparing' => 'Our kitchen is preparing your dishes',
+    'estimated_time' => 'Estimated Time',
+    'minutes' => 'min',
 ];
 ?>
 <!DOCTYPE html>
-<html lang="<?= $currentLang ?>">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -126,7 +126,7 @@ $t = [
             <div class="lang-switcher-wrapper">
                 <button onclick="toggleStatusLang()" class="lang-btn">
                     <i class="fas fa-globe"></i>
-                    <span><?= $isEn ? 'TIẾNG VIỆT' : 'ENGLISH' ?></span>
+                    <span>VI / EN</span>
                 </button>
             </div>
         </div>
@@ -134,7 +134,7 @@ $t = [
         <!-- Location Status Indicator -->
         <div id="locStatusIndicator" class="loc-indicator">
             <div class="loc-dot"></div>
-            <span class="loc-text"><?= $isEn ? 'Verified' : 'Đã xác thực / Verified' ?></span>
+            <span class="loc-text">Verified</span>
         </div>
     </div>
 
