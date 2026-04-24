@@ -1,5 +1,5 @@
 <?php
-// views/admin/realtime/index.php — Professional Light POS-Style Monitoring
+// views/admin/realtime/index.php — Professional POS-Style Monitoring with Inline Actions
 ?>
 
 <div class="pos-monitor light-theme">
@@ -28,10 +28,10 @@
         </div>
 
         <div class="command-actions">
-            <a href="<?= BASE_URL ?>/tables" class="cmd-btn primary">
+            <button onclick="openModalOpenTable()" class="cmd-btn primary">
                 <i class="fas fa-door-open"></i>
                 <span>MỞ BÀN MỚI</span>
-            </a>
+            </button>
             <div class="sync-box">
                 <div class="sync-timer">
                     <span id="reloadCount">8</span>s
@@ -45,7 +45,6 @@
 
     <!-- Monitoring Grid -->
     <div id="realtimeListContainer" class="pos-grid">
-        <!-- Loader -->
         <div class="pos-loader">
             <div class="spinner-border spinner-border-sm text-primary"></div>
             <span>Đang cập nhật dữ liệu từ các bàn...</span>
@@ -53,8 +52,145 @@
     </div>
 </div>
 
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<!-- MODAL: OPEN NEW TABLE -->
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<div class="pos-modal-backdrop" id="modalOpenTable">
+    <div class="pos-modal">
+        <div class="pos-modal-header">
+            <h3><i class="fas fa-door-open"></i> Mở bàn mới</h3>
+            <button class="pos-modal-close" onclick="closeModalOpenTable()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="pos-modal-body">
+            <div class="pos-field">
+                <label class="pos-label">Chọn bàn</label>
+                <select id="openTableId" class="pos-select">
+                    <option value="">-- Bàn trống --</option>
+                    <?php 
+                    $groupedTables = [];
+                    foreach ($availableTables as $t) {
+                        $area = $t['area'] ?? 'Chung';
+                        $groupedTables[$area][] = $t;
+                    }
+                    foreach ($groupedTables as $area => $tables): 
+                    ?>
+                        <optgroup label="<?= e($area) ?>">
+                            <?php foreach ($tables as $t): ?>
+                                <option value="<?= $t['id'] ?>"><?= e($t['name']) ?> (<?= $t['capacity'] ?> chỗ)</option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="pos-field">
+                <label class="pos-label">Số khách</label>
+                <div class="pos-guest-grid">
+                    <?php for ($i = 1; $i <= 8; $i++): ?>
+                        <button type="button" class="pos-guest-btn <?= $i === 2 ? 'active' : '' ?>" data-guest="<?= $i ?>" onclick="selectGuest(<?= $i ?>)">
+                            <?= $i ?>
+                        </button>
+                    <?php endfor; ?>
+                </div>
+            </div>
+        </div>
+        <div class="pos-modal-footer">
+            <button class="pos-btn-secondary" onclick="closeModalOpenTable()">Hủy</button>
+            <button class="pos-btn-primary" onclick="submitOpenTable()">
+                <i class="fas fa-check"></i> MỞ BÀN
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<!-- MODAL: ADD ITEMS -->
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<div class="pos-modal-backdrop" id="modalAddItems">
+    <div class="pos-modal pos-modal-lg">
+        <div class="pos-modal-header">
+            <h3><i class="fas fa-plus"></i> Thêm món - <span id="addItemsTableName"></span></h3>
+            <button class="pos-modal-close" onclick="closeModalAddItems()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="pos-modal-body">
+            <div class="pos-search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="menuSearchInput" placeholder="Tìm món..." onkeyup="filterMenuItems()">
+            </div>
+            <div class="pos-menu-grid" id="posMenuGrid">
+                <?php foreach ($menuItems as $item): ?>
+                    <div class="pos-menu-item" data-name="<?= e(strtolower($item['name'])) ?>" onclick="addItemToCart(<?= $item['id'] ?>, '<?= e($item['name']) ?>', <?= $item['price'] ?>)">
+                        <div class="pos-menu-item-name"><?= e($item['name']) ?></div>
+                        <div class="pos-menu-item-price"><?= formatPrice($item['price']) ?></div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <div class="pos-cart-section">
+                <div class="pos-cart-header">
+                    <span>Món đã chọn</span>
+                    <span id="cartItemCount">0 món</span>
+                </div>
+                <div class="pos-cart-items" id="posCartItems">
+                    <div class="pos-cart-empty">Chưa có món nào</div>
+                </div>
+            </div>
+        </div>
+        <div class="pos-modal-footer">
+            <button class="pos-btn-secondary" onclick="closeModalAddItems()">Hủy</button>
+            <button class="pos-btn-primary" onclick="submitAddItems()">
+                <i class="fas fa-check"></i> THÊM MÓN
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<!-- MODAL: PAYMENT -->
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<div class="pos-modal-backdrop" id="modalPayment">
+    <div class="pos-modal">
+        <div class="pos-modal-header">
+            <h3><i class="fas fa-credit-card"></i> Thanh toán - <span id="paymentTableName"></span></h3>
+            <button class="pos-modal-close" onclick="closeModalPayment()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="pos-modal-body">
+            <div class="pos-payment-total">
+                <span class="pos-payment-label">TỔNG CỘNG</span>
+                <span class="pos-payment-amount" id="paymentAmount">0đ</span>
+            </div>
+            <div class="pos-field">
+                <label class="pos-label">Phương thức thanh toán</label>
+                <div class="pos-method-grid">
+                    <button type="button" class="pos-method-btn active" data-method="cash" onclick="selectPaymentMethod('cash')">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>TIỀN MẶT</span>
+                    </button>
+                    <button type="button" class="pos-method-btn" data-method="transfer" onclick="selectPaymentMethod('transfer')">
+                        <i class="fas fa-university"></i>
+                        <span>CHUYỂN KHOẢN</span>
+                    </button>
+                </div>
+            </div>
+            <div class="pos-checkbox-row" onclick="togglePaymentCheckbox('paymentConfirmed')">
+                <div class="pos-checkbox-box" id="paymentConfirmedBox">
+                    <i class="fas fa-check"></i>
+                </div>
+                <span>Đã nhận đủ tiền</span>
+                <input type="checkbox" id="paymentConfirmed" style="display:none">
+            </div>
+        </div>
+        <div class="pos-modal-footer">
+            <button class="pos-btn-secondary" onclick="closeModalPayment()">Hủy</button>
+            <button class="pos-btn-primary" onclick="submitPayment()">
+                <i class="fas fa-check-circle"></i> HOÀN TẤT
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<!-- STYLES -->
+<!-- ─────────────────────────────────────────────────────────────────── -->
 <style>
-    /* ── Root & Variables (Light Mode) ────────────────────────── */
     :root {
         --pos-bg: #f8fafc;
         --pos-card: #ffffff;
@@ -95,9 +231,7 @@
         padding: 10px 18px; border-radius: 10px; font-size: 0.75rem; font-weight: 800;
         cursor: pointer; transition: all 0.2s; border: none; text-decoration: none;
     }
-    .cmd-btn.primary {
-        background: var(--pos-accent); color: #ffffff;
-    }
+    .cmd-btn.primary { background: var(--pos-accent); color: #ffffff; }
     .cmd-btn.primary:hover { box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3); transform: translateY(-1px); }
     
     .sync-timer { 
@@ -182,186 +316,570 @@
     .btn-pos-outline { background: transparent; color: var(--pos-text); border: 2px solid var(--pos-border); }
     .btn-pos-outline:hover { background: var(--pos-bg); border-color: var(--pos-text); }
     
+    /* ── POS Modal ────────────────────────────────────────────── */
+    .pos-modal-backdrop {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);
+        display: none; align-items: center; justify-content: center;
+        z-index: 10000; padding: 20px;
+    }
+    .pos-modal-backdrop.is-open { display: flex; }
+    
+    .pos-modal {
+        background: var(--pos-card); border-radius: 16px;
+        width: 100%; max-width: 400px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        animation: modalSlideIn 0.3s ease-out;
+    }
+    .pos-modal-lg { max-width: 600px; }
+    
+    @keyframes modalSlideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .pos-modal-header {
+        padding: 20px; border-bottom: 1px solid var(--pos-border);
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .pos-modal-header h3 { font-size: 1.1rem; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 10px; }
+    .pos-modal-header h3 i { color: var(--pos-accent); }
+    .pos-modal-close {
+        width: 36px; height: 36px; border-radius: 50%;
+        background: var(--pos-bg); border: none; color: var(--pos-text-muted);
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
+        transition: all 0.2s;
+    }
+    .pos-modal-close:hover { background: var(--pos-border); color: var(--pos-text); }
+    
+    .pos-modal-body { padding: 20px; }
+    .pos-modal-footer {
+        padding: 20px; border-top: 1px solid var(--pos-border);
+        display: flex; gap: 12px; justify-content: flex-end;
+    }
+    
+    .pos-field { margin-bottom: 20px; }
+    .pos-label { font-size: 0.75rem; font-weight: 800; color: var(--pos-text-muted); text-transform: uppercase; margin-bottom: 10px; display: block; }
+    .pos-select {
+        width: 100%; padding: 12px 16px; border: 2px solid var(--pos-border);
+        border-radius: 8px; font-size: 0.9rem; background: var(--pos-bg);
+    }
+    .pos-select:focus { border-color: var(--pos-accent); outline: none; }
+    
+    .pos-guest-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+    .pos-guest-btn {
+        padding: 12px; background: var(--pos-bg); border: 2px solid var(--pos-border);
+        border-radius: 8px; font-size: 0.9rem; font-weight: 800; cursor: pointer;
+        transition: all 0.2s;
+    }
+    .pos-guest-btn:hover { border-color: var(--pos-accent); }
+    .pos-guest-btn.active { background: var(--pos-accent); color: white; border-color: var(--pos-accent); }
+    
+    .pos-btn-primary {
+        padding: 12px 24px; background: var(--pos-accent); color: white;
+        border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 800; cursor: pointer;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .pos-btn-primary:hover { box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3); }
+    
+    .pos-btn-secondary {
+        padding: 12px 24px; background: var(--pos-bg); color: var(--pos-text);
+        border: 2px solid var(--pos-border); border-radius: 8px; font-size: 0.85rem; font-weight: 800; cursor: pointer;
+    }
+    .pos-btn-secondary:hover { background: var(--pos-border); }
+    
+    /* ── Add Items Modal ────────────────────────────────────────────── */
+    .pos-search-box {
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px 16px; background: var(--pos-bg); border: 2px solid var(--pos-border);
+        border-radius: 8px; margin-bottom: 20px;
+    }
+    .pos-search-box i { color: var(--pos-text-muted); }
+    .pos-search-box input {
+        flex: 1; border: none; background: transparent; font-size: 0.9rem;
+    }
+    .pos-search-box input:focus { outline: none; }
+    
+    .pos-menu-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px; max-height: 200px; overflow-y: auto; margin-bottom: 20px;
+    }
+    .pos-menu-item {
+        padding: 12px; background: var(--pos-bg); border: 2px solid var(--pos-border);
+        border-radius: 8px; cursor: pointer; transition: all 0.2s;
+    }
+    .pos-menu-item:hover { border-color: var(--pos-accent); background: rgba(184, 134, 11, 0.05); }
+    .pos-menu-item-name { font-size: 0.85rem; font-weight: 700; color: var(--pos-text); }
+    .pos-menu-item-price { font-size: 0.75rem; color: var(--pos-accent); font-weight: 800; margin-top: 4px; }
+    
+    .pos-cart-section {
+        background: var(--pos-bg); border-radius: 8px; padding: 16px;
+    }
+    .pos-cart-header {
+        display: flex; justify-content: space-between; align-items: center;
+        font-size: 0.8rem; font-weight: 800; color: var(--pos-text-muted); margin-bottom: 12px;
+    }
+    .pos-cart-items { max-height: 150px; overflow-y: auto; }
+    .pos-cart-empty { text-align: center; color: var(--pos-text-muted); font-size: 0.85rem; padding: 20px; }
+    
+    .pos-cart-item {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 8px 0; border-bottom: 1px solid var(--pos-border);
+    }
+    .pos-cart-item:last-child { border-bottom: none; }
+    .pos-cart-item-name { font-size: 0.85rem; font-weight: 700; flex: 1; }
+    .pos-cart-item-qty {
+        display: flex; align-items: center; gap: 8px;
+    }
+    .pos-cart-qty-btn {
+        width: 28px; height: 28px; border-radius: 4px;
+        background: var(--pos-card); border: 1px solid var(--pos-border);
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .pos-cart-qty-btn:hover { background: var(--pos-accent); color: white; border-color: var(--pos-accent); }
+    .pos-cart-qty-num { font-size: 0.9rem; font-weight: 800; min-width: 30px; text-align: center; }
+    
+    /* ── Payment Modal ────────────────────────────────────────────── */
+    .pos-payment-total {
+        text-align: center; padding: 20px; background: var(--pos-bg);
+        border-radius: 8px; margin-bottom: 20px;
+    }
+    .pos-payment-label { font-size: 0.65rem; font-weight: 800; color: var(--pos-text-muted); text-transform: uppercase; }
+    .pos-payment-amount { font-size: 1.8rem; font-weight: 900; color: var(--pos-accent); margin-top: 8px; }
+    
+    .pos-method-grid { display: flex; gap: 12px; }
+    .pos-method-btn {
+        flex: 1; padding: 16px; background: var(--pos-bg); border: 2px solid var(--pos-border);
+        border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 8px;
+        cursor: pointer; transition: all 0.2s;
+    }
+    .pos-method-btn i { font-size: 1.2rem; color: var(--pos-text-muted); }
+    .pos-method-btn span { font-size: 0.75rem; font-weight: 800; color: var(--pos-text); }
+    .pos-method-btn:hover { border-color: var(--pos-accent); }
+    .pos-method-btn.active { background: rgba(184, 134, 11, 0.1); border-color: var(--pos-accent); }
+    .pos-method-btn.active i, .pos-method-btn.active span { color: var(--pos-accent); }
+    
+    .pos-checkbox-row {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px; background: var(--pos-bg); border-radius: 8px; cursor: pointer;
+        margin-top: 16px;
+    }
+    .pos-checkbox-box {
+        width: 24px; height: 24px; border-radius: 4px;
+        background: var(--pos-card); border: 2px solid var(--pos-border);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--pos-text-muted); transition: all 0.2s;
+    }
+    .pos-checkbox-row.checked .pos-checkbox-box { background: var(--pos-success); border-color: var(--pos-success); color: white; }
+    
+    /* ── Responsive ────────────────────────────────────────────── */
     @media (max-width: 768px) {
         .system-stats { display: none; }
         .pos-grid { grid-template-columns: 1fr; padding: 15px; }
         .command-bar { padding: 10px 20px; flex-wrap: wrap; gap: 12px; }
         .command-actions { order: 3; width: 100%; justify-content: center; }
         .action-row { flex-wrap: wrap; }
+        .pos-modal { max-width: 100%; margin: 10px; }
+        .pos-menu-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+        .pos-guest-grid { grid-template-columns: repeat(4, 1fr); }
     }
 
-    /* Custom Scrollbar for Light Theme */
     .card-body-pos::-webkit-scrollbar { width: 5px; }
     .card-body-pos::-webkit-scrollbar-track { background: transparent; }
     .card-body-pos::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-    .card-body-pos::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
 </style>
 
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<!-- JAVASCRIPT -->
+<!-- ─────────────────────────────────────────────────────────────────── -->
 <script>
-    let timerCount = 8;
-    let isRefreshing = false;
+const BASE_URL = '<?= BASE_URL ?>';
+let timerCount = 8;
+let isRefreshing = false;
 
-    async function refreshData() {
-        if (isRefreshing) return;
-        isRefreshing = true;
+// ── Modal State ─────────────────────────────────────────────────────
+let currentOrderId = null;
+let currentTableId = null;
+let currentGuestCount = 2;
+let currentPaymentMethod = 'cash';
+let addItemsCart = [];
 
-        const btn = document.querySelector('.refresh-circle-btn');
-        if (btn) btn.innerHTML = '<i class="fas fa-sync fa-spin"></i>';
+// ── Modal Functions ──────────────────────────────────────────────────
+function openModalOpenTable() {
+    document.getElementById('modalOpenTable').classList.add('is-open');
+}
 
-        try {
-            const res = await fetch('<?= BASE_URL ?>/admin/realtime/data?t=' + Date.now());
-            const data = await res.json();
-            
-            if (data.ok) {
-                updateStats(data);
-                renderPOSGrid(data.data);
-            }
-        } catch (err) {
-            console.error('Lỗi POS Sync:', err);
-        } finally {
-            if (btn) btn.innerHTML = '<i class="fas fa-sync-alt"></i>';
-            isRefreshing = false;
-            timerCount = 8;
-        }
+function closeModalOpenTable() {
+    document.getElementById('modalOpenTable').classList.remove('is-open');
+}
+
+function selectGuest(n) {
+    currentGuestCount = n;
+    document.querySelectorAll('.pos-guest-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.guest == n);
+    });
+}
+
+function submitOpenTable() {
+    const tableId = document.getElementById('openTableId').value;
+    if (!tableId) {
+        alert('Vui lòng chọn bàn!');
+        return;
     }
+    
+    fetch(BASE_URL + '/tables/open', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table_id: tableId, guest_count: currentGuestCount })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.ok) {
+            closeModalOpenTable();
+            refreshData();
+        } else {
+            alert(data.message || 'Lỗi mở bàn');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Lỗi kết nối');
+    });
+}
 
-    function updateStats(data) {
-        document.getElementById('statOccupied').textContent = data.counts.occupied;
-        document.getElementById('statAvailable').textContent = data.counts.available;
+// ── Add Items Modal ─────────────────────────────────────────────────
+function openModalAddItems(orderId, tableId, tableName) {
+    currentOrderId = orderId;
+    currentTableId = tableId;
+    addItemsCart = [];
+    document.getElementById('addItemsTableName').textContent = tableName;
+    document.getElementById('modalAddItems').classList.add('is-open');
+    updateCartUI();
+}
+
+function closeModalAddItems() {
+    document.getElementById('modalAddItems').classList.remove('is-open');
+    addItemsCart = [];
+}
+
+function filterMenuItems() {
+    const search = document.getElementById('menuSearchInput').value.toLowerCase();
+    document.querySelectorAll('.pos-menu-item').forEach(item => {
+        const name = item.dataset.name;
+        item.style.display = name.includes(search) ? '' : 'none';
+    });
+}
+
+function addItemToCart(id, name, price) {
+    const existing = addItemsCart.find(i => i.id === id);
+    if (existing) {
+        existing.qty++;
+    } else {
+        addItemsCart.push({ id, name, price, qty: 1 });
+    }
+    updateCartUI();
+}
+
+function updateCartUI() {
+    const container = document.getElementById('posCartItems');
+    const countEl = document.getElementById('cartItemCount');
+    
+    if (addItemsCart.length === 0) {
+        container.innerHTML = '<div class="pos-cart-empty">Chưa có món nào</div>';
+        countEl.textContent = '0 món';
+        return;
+    }
+    
+    let html = '';
+    addItemsCart.forEach(item => {
+        html += `
+            <div class="pos-cart-item">
+                <span class="pos-cart-item-name">${item.name}</span>
+                <div class="pos-cart-item-qty">
+                    <button class="pos-cart-qty-btn" onclick="changeCartItemQty(${item.id}, -1)">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <span class="pos-cart-qty-num">${item.qty}</span>
+                    <button class="pos-cart-qty-btn" onclick="changeCartItemQty(${item.id}, 1)">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+    countEl.textContent = addItemsCart.reduce((sum, i) => sum + i.qty, 0) + ' món';
+}
+
+function changeCartItemQty(id, delta) {
+    const item = addItemsCart.find(i => i.id === id);
+    if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) {
+            addItemsCart = addItemsCart.filter(i => i.id !== id);
+        }
+        updateCartUI();
+    }
+}
+
+function submitAddItems() {
+    if (addItemsCart.length === 0) {
+        alert('Chưa có món nào!');
+        return;
+    }
+    
+    const items = addItemsCart.map(i => ({ menu_item_id: i.id, qty: i.qty }));
+    
+    fetch(BASE_URL + '/orders/add-batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: currentOrderId, items: items })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.ok) {
+            closeModalAddItems();
+            refreshData();
+        } else {
+            alert(data.message || 'Lỗi thêm món');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Lỗi kết nối');
+    });
+}
+
+// ── Payment Modal ───────────────────────────────────────────────────
+function openModalPayment(orderId, tableId, tableName, amount) {
+    currentOrderId = orderId;
+    currentTableId = tableId;
+    document.getElementById('paymentTableName').textContent = tableName;
+    document.getElementById('paymentAmount').textContent = amount;
+    document.getElementById('modalPayment').classList.add('is-open');
+    document.getElementById('paymentConfirmed').checked = false;
+    document.getElementById('paymentConfirmedBox').style.background = '';
+    document.getElementById('paymentConfirmedBox').style.borderColor = '';
+    document.getElementById('paymentConfirmedBox').querySelector('i').style.color = '';
+}
+
+function closeModalPayment() {
+    document.getElementById('modalPayment').classList.remove('is-open');
+}
+
+function selectPaymentMethod(method) {
+    currentPaymentMethod = method;
+    document.querySelectorAll('.pos-method-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.method === method);
+    });
+}
+
+function togglePaymentCheckbox(id) {
+    const cb = document.getElementById(id);
+    const box = document.getElementById(id + 'Box');
+    cb.checked = !cb.checked;
+    
+    if (cb.checked) {
+        box.style.background = 'var(--pos-success)';
+        box.style.borderColor = 'var(--pos-success)';
+        box.querySelector('i').style.color = 'white';
+    } else {
+        box.style.background = '';
+        box.style.borderColor = '';
+        box.querySelector('i').style.color = '';
+    }
+}
+
+function submitPayment() {
+    if (!document.getElementById('paymentConfirmed').checked) {
+        alert('Vui lòng xác nhận đã nhận đủ tiền!');
+        return;
+    }
+    
+    fetch(BASE_URL + '/tables/close', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            table_id: currentTableId,
+            order_id: currentOrderId,
+            payment_method: currentPaymentMethod
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.ok) {
+            closeModalPayment();
+            refreshData();
+        } else {
+            alert(data.message || 'Lỗi thanh toán');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Lỗi kết nối');
+    });
+}
+
+// ── Data Refresh ────────────────────────────────────────────────────
+async function refreshData() {
+    if (isRefreshing) return;
+    isRefreshing = true;
+
+    const btn = document.querySelector('.refresh-circle-btn');
+    if (btn) btn.innerHTML = '<i class="fas fa-sync fa-spin"></i>';
+
+    try {
+        const res = await fetch(BASE_URL + '/admin/realtime/data?t=' + Date.now());
+        const data = await res.json();
         
-        let tempTotal = 0;
-        data.data.forEach(o => { if (o.status === 'open') tempTotal += parseFloat(o.total || 0); });
-        document.getElementById('statTempRevenue').textContent = new Intl.NumberFormat('vi-VN').format(tempTotal) + 'đ';
+        if (data.ok) {
+            updateStats(data);
+            renderPOSGrid(data.data);
+        }
+    } catch (err) {
+        console.error('Lỗi POS Sync:', err);
+    } finally {
+        if (btn) btn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+        isRefreshing = false;
+        timerCount = 8;
+    }
+}
+
+function updateStats(data) {
+    document.getElementById('statOccupied').textContent = data.counts.occupied;
+    document.getElementById('statAvailable').textContent = data.counts.available;
+    
+    let tempTotal = 0;
+    data.data.forEach(o => { if (o.status === 'open') tempTotal += parseFloat(o.total || 0); });
+    document.getElementById('statTempRevenue').textContent = new Intl.NumberFormat('vi-VN').format(tempTotal) + 'đ';
+}
+
+function renderPOSGrid(orders) {
+    const container = document.getElementById('realtimeListContainer');
+    if (orders.length === 0) {
+        container.innerHTML = `
+            <div class="pos-loader">
+                <i class="fas fa-utensils fa-3x mb-3 opacity-10"></i>
+                <h3 style="font-weight:800; color:var(--pos-text);">KHÔNG CÓ DỮ LIỆU</h3>
+                <p class="small text-muted">Hệ thống đang chờ đơn hàng mới...</p>
+            </div>
+        `;
+        return;
     }
 
-    function renderPOSGrid(orders) {
-        const container = document.getElementById('realtimeListContainer');
-        if (orders.length === 0) {
-            container.innerHTML = `
-                <div class="pos-loader">
-                    <i class="fas fa-utensils fa-3x mb-3 opacity-10"></i>
-                    <h3 style="font-weight:800; color:var(--pos-text);">KHÔNG CÓ DỮ LIỆU</h3>
-                    <p class="small text-muted">Hệ thống đang chờ đơn hàng mới từ khách hàng...</p>
-                </div>
-            `;
-            return;
+    let html = '';
+    orders.forEach(order => {
+        const isClosed = (order.status === 'closed');
+        const statusTag = isClosed ? 'closed' : 'open';
+        const statusText = isClosed ? 'Đã thanh toán' : (order.is_idle ? 'Đang chờ gọi món' : 'Đang ăn');
+        
+        let idleBadge = '';
+        if (order.is_idle && !isClosed) {
+            const remaining = Math.max(0, 300 - order.idle_seconds);
+            const min = Math.floor(remaining / 60);
+            const sec = remaining % 60;
+            const color = remaining < 60 ? 'var(--pos-danger)' : 'var(--pos-warning)';
+            idleBadge = `<div class="idle-timer" style="color:${color}; font-weight:800; font-size:0.75rem;">
+                <i class="fas fa-clock"></i> HUỶ SAU: ${min}:${sec < 10 ? '0'+sec : sec}
+            </div>`;
         }
 
-        let html = '';
-        orders.forEach(order => {
-            const isClosed = (order.status === 'closed');
-            const statusTag = isClosed ? 'closed' : 'open';
-            const statusText = isClosed ? 'Đã thanh toán' : (order.is_idle ? 'Đang chờ gọi món' : 'Đang ăn');
-            
-            let idleBadge = '';
-            if (order.is_idle && !isClosed) {
-                const remaining = Math.max(0, 300 - order.idle_seconds);
-                const min = Math.floor(remaining / 60);
-                const sec = remaining % 60;
-                const color = remaining < 60 ? 'var(--pos-danger)' : 'var(--pos-warning)';
-                idleBadge = `<div class="idle-timer" style="color:${color}; font-weight:800; font-size:0.75rem;">
-                    <i class="fas fa-clock"></i> HUỶ SAU: ${min}:${sec < 10 ? '0'+sec : sec}
-                </div>`;
-            }
-
-            let rows = '';
-            order.items.forEach(it => {
-                rows += `
-                    <tr>
-                        <td>
-                            <span class="item-title">${it.item_name}</span>
-                            ${it.note ? `<span class="item-note"><i class="fas fa-exclamation-circle"></i> ${it.note}</span>` : ''}
-                        </td>
-                        <td class="qty-badge">x${it.quantity}</td>
-                        <td class="price-col">${it.subtotal_fmt}</td>
-                    </tr>
-                `;
-            });
-
-            html += `
-                <div class="pos-card" id="card-${order.id}">
-                    <div class="card-header-pos">
-                        <div class="table-main-info">
-                            <h2>${order.full_name}</h2>
-                            <div class="table-sub-info">
-                                <span><i class="fas fa-user-friends me-1"></i> ${order.guest_count} khách</span>
-                                <span><i class="fas fa-user-tie me-1"></i> ${order.waiter_name || 'Khách QR'}</span>
-                            </div>
-                            ${idleBadge}
-                        </div>
-                        <div class="status-tag ${statusTag}">${statusText}</div>
-                    </div>
-                    
-                    <div class="card-body-pos">
-                        <table class="pos-table">
-                            <thead>
-                                <tr>
-                                    <th>Món gọi</th>
-                                    <th>SL</th>
-                                    <th style="text-align:right">Tạm tính</th>
-                                </tr>
-                            </thead>
-                            <tbody>${rows}</tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="card-footer-pos">
-                        <div class="total-summary">
-                            <div class="summary-left">
-                                <span>GIỜ MỞ BÀN</span>
-                                <span>${order.opened_at_fmt}</span>
-                            </div>
-                            <div class="summary-right">
-                                <span class="total-label">TỔNG CỘNG</span>
-                                <span class="total-value">${order.total_fmt}</span>
-                            </div>
-                        </div>
-                        <div class="action-row">
-                            ${isClosed 
-                                ? `<button onclick="dismissOrder(${order.id})" class="btn-pos btn-pos-primary">
-                                    <i class="fas fa-archive"></i> LƯU TRỮ
-                                   </button>`
-                                : `<a href="<?= BASE_URL ?>/orders?table_id=${order.table_id}&order_id=${order.id}" class="btn-pos btn-pos-outline">
-                                    <i class="fas fa-eye"></i> CHI TIẾT
-                                   </a>
-                                   <a href="<?= BASE_URL ?>/menu?table_id=${order.table_id}&order_id=${order.id}" class="btn-pos btn-pos-outline">
-                                    <i class="fas fa-plus"></i> THÊM MÓN
-                                   </a>
-                                   <a href="<?= BASE_URL ?>/orders?table_id=${order.table_id}&order_id=${order.id}" class="btn-pos btn-pos-gold">
-                                    <i class="fas fa-credit-card"></i> THANH TOÁN
-                                   </a>`
-                            }
-                        </div>
-                    </div>
-                </div>
+        let rows = '';
+        order.items.forEach(it => {
+            rows += `
+                <tr>
+                    <td>
+                        <span class="item-title">${it.item_name}</span>
+                        ${it.note ? `<span class="item-note"><i class="fas fa-exclamation-circle"></i> ${it.note}</span>` : ''}
+                    </td>
+                    <td class="qty-badge">x${it.quantity}</td>
+                    <td class="price-col">${it.subtotal_fmt}</td>
+                </tr>
             `;
         });
-        
-        container.innerHTML = html;
-    }
 
-    async function dismissOrder(id) {
-        try {
-            const fd = new FormData();
-            fd.append('order_id', id);
-            const res = await fetch('<?= BASE_URL ?>/admin/realtime/dismiss', { method: 'POST', body: fd });
-            if ((await res.json()).ok) {
-                const card = document.getElementById(`card-${id}`);
-                if (card) {
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateY(20px) scale(0.95)';
-                    setTimeout(() => refreshData(), 300);
-                }
+        html += `
+            <div class="pos-card" id="card-${order.id}">
+                <div class="card-header-pos">
+                    <div class="table-main-info">
+                        <h2>${order.full_name}</h2>
+                        <div class="table-sub-info">
+                            <span><i class="fas fa-user-friends me-1"></i> ${order.guest_count} khách</span>
+                            <span><i class="fas fa-user-tie me-1"></i> ${order.waiter_name || 'Khách QR'}</span>
+                        </div>
+                        ${idleBadge}
+                    </div>
+                    <div class="status-tag ${statusTag}">${statusText}</div>
+                </div>
+                
+                <div class="card-body-pos">
+                    <table class="pos-table">
+                        <thead>
+                            <tr>
+                                <th>Món gọi</th>
+                                <th>SL</th>
+                                <th style="text-align:right">Tạm tính</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+                
+                <div class="card-footer-pos">
+                    <div class="total-summary">
+                        <div class="summary-left">
+                            <span>GIỜ MỞ BÀN</span>
+                            <span>${order.opened_at_fmt}</span>
+                        </div>
+                        <div class="summary-right">
+                            <span class="total-label">TỔNG CỘNG</span>
+                            <span class="total-value">${order.total_fmt}</span>
+                        </div>
+                    </div>
+                    <div class="action-row">
+                        ${isClosed 
+                            ? `<button onclick="dismissOrder(${order.id})" class="btn-pos btn-pos-primary">
+                                <i class="fas fa-archive"></i> LƯU TRỮ
+                               </button>`
+                            : `<button onclick="openModalAddItems(${order.id}, ${order.table_id}, '${order.full_name}')" class="btn-pos btn-pos-outline">
+                                <i class="fas fa-plus"></i> THÊM MÓN
+                               </button>
+                               <button onclick="openModalPayment(${order.id}, ${order.table_id}, '${order.full_name}', '${order.total_fmt}')" class="btn-pos btn-pos-gold">
+                                <i class="fas fa-credit-card"></i> THANH TOÁN
+                               </button>`
+                        }
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+async function dismissOrder(id) {
+    try {
+        const fd = new FormData();
+        fd.append('order_id', id);
+        const res = await fetch(BASE_URL + '/admin/realtime/dismiss', { method: 'POST', body: fd });
+        if ((await res.json()).ok) {
+            const card = document.getElementById(`card-${id}`);
+            if (card) {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px) scale(0.95)';
+                setTimeout(() => refreshData(), 300);
             }
-        } catch (err) { console.error(err); }
-    }
+        }
+    } catch (err) { console.error(err); }
+}
 
-    setInterval(() => {
-        timerCount--;
-        if (timerCount <= 0) refreshData();
-        const el = document.getElementById('reloadCount');
-        if (el) el.textContent = timerCount;
-    }, 1000);
+setInterval(() => {
+    timerCount--;
+    if (timerCount <= 0) refreshData();
+    const el = document.getElementById('reloadCount');
+    if (el) el.textContent = timerCount;
+}, 1000);
 
-    refreshData();
+refreshData();
 </script>

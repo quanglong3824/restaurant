@@ -56,6 +56,10 @@ class TableController extends Controller
 
         $table = $this->tableModel->findById($tableId);
         if (!$table || $table['status'] === 'occupied') {
+            // Check if AJAX request
+            if ($this->isAjax()) {
+                $this->json(['ok' => false, 'message' => 'Bàn không hợp lệ hoặc đã có khách.'], 400);
+            }
             $_SESSION['flash'] = ['type' => 'danger', 'message' => 'Bàn không hợp lệ hoặc đã có khách.'];
             $this->redirect('/tables');
         }
@@ -83,9 +87,20 @@ class TableController extends Controller
                 ActivityLog::LEVEL_INFO
             );
 
-            // Redirect to orders page
+            // Return JSON for AJAX or redirect for form submit
+            if ($this->isAjax()) {
+                $this->json([
+                    'ok' => true,
+                    'message' => 'Đã mở bàn thành công.',
+                    'order_id' => $orderId,
+                    'table_id' => $tableId
+                ]);
+            }
             $this->redirect('/orders?table_id=' . $tableId . '&order_id=' . $orderId);
         } catch (\Exception $e) {
+            if ($this->isAjax()) {
+                $this->json(['ok' => false, 'message' => 'Lỗi khi mở bàn: ' . $e->getMessage()], 500);
+            }
             $_SESSION['flash'] = ['type' => 'danger', 'message' => 'Lỗi khi mở bàn: ' . $e->getMessage()];
             $this->redirect('/tables');
         }
@@ -246,7 +261,6 @@ class TableController extends Controller
         $tableId = (int) $this->input('table_id');
         $orderId = (int) $this->input('order_id');
         $paymentMethod = (string) $this->input('payment_method', 'cash');
-        $isAjax = $this->input('ajax') === '1';
         $redirectToOrder = $this->input('redirect_to_order') === '1';
 
         if (!in_array($paymentMethod, ['cash', 'transfer', 'card'])) {
@@ -271,13 +285,13 @@ class TableController extends Controller
                 $type = 'success';
             }
 
-            if ($isAjax) {
+            if ($this->isAjax()) {
                 $this->json(['ok' => true, 'message' => $message]);
                 return;
             }
             $_SESSION['flash'] = ['type' => $type, 'message' => $message];
         } catch (\Exception $e) {
-            if ($isAjax) {
+            if ($this->isAjax()) {
                 $this->json(['ok' => false, 'message' => $e->getMessage()]);
                 return;
             }

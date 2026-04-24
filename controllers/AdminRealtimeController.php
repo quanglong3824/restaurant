@@ -38,12 +38,22 @@ class AdminRealtimeController extends Controller
             $orders[] = $order;
         }
 
+        // Lấy bàn trống để modal mở bàn
+        $availableTables = $this->tableModel->getAvailable();
+
+        // Lấy menu items để modal thêm món
+        require_once BASE_PATH . '/models/MenuItem.php';
+        $menuModel = new MenuItem();
+        $menuItems = $menuModel->getAllActive();
+
         $this->view('layouts/admin', [
             'view' => 'admin/realtime/index',
             'pageTitle' => 'Quản lý Thời gian thực',
             'pageSubtitle' => 'Theo dõi tình trạng các bàn đang phục vụ',
             'orders' => $orders,
             'counts' => $this->tableModel->countByStatus(),
+            'availableTables' => $availableTables,
+            'menuItems' => $menuItems,
         ]);
     }
 
@@ -67,6 +77,7 @@ class AdminRealtimeController extends Controller
             $order['opened_at_fmt'] = date('H:i', strtotime($order['opened_at']));
             $order['closed_at_fmt'] = $order['closed_at'] ? date('H:i', strtotime($order['closed_at'])) : null;
             $order['total_fmt'] = formatPrice($order['total']);
+            $order['waiter_name'] = $order['waiter_name'] ?? '';
             
             // Tính toán thời gian Idle (nếu chưa có món nào)
             $order['is_idle'] = empty($order['items']);
@@ -74,6 +85,7 @@ class AdminRealtimeController extends Controller
             
             // Format items prices
             foreach ($order['items'] as &$it) {
+                $it['item_name'] = $it['item_name'] ?? $it['name'] ?? '';
                 $it['item_price_fmt'] = formatPrice($it['item_price']);
                 $it['subtotal_fmt'] = formatPrice($it['item_price'] * $it['quantity']);
             }

@@ -259,6 +259,61 @@ class OrderController extends Controller
         ]);
     }
 
+    /** POST /orders/add-batch — Thêm nhiều món cùng lúc (Admin Realtime) */
+    public function addBatch(): void
+    {
+        Auth::requireRole(ROLE_ADMIN, ROLE_IT);
+
+        $orderId = (int) $this->input('order_id');
+        $items = $this->input('items');
+
+        if ($orderId <= 0 || !is_array($items) || empty($items)) {
+            $this->json(['ok' => false, 'message' => 'Dữ liệu không hợp lệ.'], 400);
+        }
+
+        $order = $this->orderModel->findById($orderId);
+        if (!$order || $order['status'] !== 'open') {
+            $this->json(['ok' => false, 'message' => 'Order không hợp lệ.'], 400);
+        }
+
+        $addedCount = 0;
+        foreach ($items as $itemData) {
+            $menuItemId = (int) $itemData['menu_item_id'];
+            $qty = max(1, (int) $itemData['qty']);
+
+            $item = $this->menuModel->findById($menuItemId);
+            if (!$item || !$item['is_available']) {
+                continue;
+            }
+
+            $this->orderModel->addItem(
+                $orderId,
+                [
+                    'menu_item_id' => $menuItemId,
+                    'item_name' => $item['name'],
+                    'item_price' => $item['price'],
+                    'quantity' => $qty,
+                    'note' => '',
+                    'status' => 'draft'
+                ]
+            );
+            $addedCount++;
+        }
+
+        $total = $this->orderModel->getTotal($orderId);
+        $items = $this->orderModel->getItems($orderId);
+        $this->formatItemsForJs($items);
+
+        $this->json([
+            'ok' => true,
+            'message' => 'Đã thêm ' . $addedCount . ' món.',
+            'order_id' => $orderId,
+            'total' => $total,
+            'total_fmt' => formatPrice($total),
+            'items' => $items,
+        ]);
+    }
+
     /** POST /orders/add-set — Thêm set/combo vào order */
     public function addSet(): void
     {

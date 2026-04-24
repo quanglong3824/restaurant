@@ -52,6 +52,7 @@ $router->get('/menu', 'MenuController', 'index');
 // ── Waiter: Orders ───────────────────────────────────────
 $router->get('/orders', 'OrderController', 'index');
 $router->post('/orders/add', 'OrderController', 'addItem');
+$router->post('/orders/add-batch', 'OrderController', 'addBatch');
 $router->post('/orders/add-set', 'OrderController', 'addSet');
 $router->post('/orders/update', 'OrderController', 'updateItem');
 $router->post('/orders/update-guest-count', 'OrderController', 'updateGuestCount');
