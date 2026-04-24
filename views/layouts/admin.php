@@ -57,11 +57,6 @@
         <!-- Sidebar Nav -->
         <nav class="sidebar-nav">
             
-            <!-- Debug visible -->
-            <div style="background:#ff0; color:#000; padding:5px; font-size:12px; font-family:monospace; margin-bottom:10px;">
-                DEBUG: Role=<?= e(Auth::role() ?? 'NULL') ?> | isAdmin=<?= Auth::isAdmin() ? 'YES' : 'NO' ?> | isIT=<?= Auth::isIT() ? 'YES' : 'NO' ?>
-            </div>
-
             <!-- PHỤC VỤ BÀN (All roles: waiter, admin, IT) -->
             <div class="nav-section">
                 <div class="nav-section-title">PHỤC VỤ BÀN</div>
