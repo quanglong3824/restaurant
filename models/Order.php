@@ -177,6 +177,9 @@ class Order extends Model
 
         if (!$itemName || !$itemPrice) {
             $menuItem = $this->findOne("SELECT name, price FROM menu_items WHERE id = ?", [$menuItemId]);
+            if (!$menuItem) {
+                return;
+            }
             $itemName = $menuItem['name'];
             $itemPrice = $menuItem['price'];
         }

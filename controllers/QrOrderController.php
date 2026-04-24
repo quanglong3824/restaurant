@@ -7,6 +7,7 @@ require_once BASE_PATH . '/models/Order.php';
 require_once BASE_PATH . '/models/Table.php';
 require_once BASE_PATH . '/models/CustomerSession.php';
 require_once BASE_PATH . '/models/OrderNotification.php';
+require_once BASE_PATH . '/models/MenuItem.php';
 
 class QrOrderController extends Controller
 {
@@ -14,6 +15,7 @@ class QrOrderController extends Controller
     private Table $tableModel;
     private CustomerSession $sessionModel;
     private OrderNotification $notifModel;
+    private MenuItem $menuModel;
 
     public function __construct()
     {
@@ -21,6 +23,7 @@ class QrOrderController extends Controller
         $this->tableModel = new Table();
         $this->sessionModel = new CustomerSession();
         $this->notifModel = new OrderNotification();
+        $this->menuModel = new MenuItem();
     }
 
     private function requireCustomer(): int
@@ -101,8 +104,17 @@ class QrOrderController extends Controller
 
             // Add items to order
             foreach ($cartData as $item) {
+                $menuItemId = (int) $item['id'];
+                $menuItem = $this->menuModel->findById($menuItemId);
+                
+                if (!$menuItem || !$menuItem['is_available']) {
+                    continue;
+                }
+                
                 $this->orderModel->addItem($orderId, [
-                    'menu_item_id' => $item['id'],
+                    'menu_item_id' => $menuItemId,
+                    'item_name' => $menuItem['name'],
+                    'item_price' => $menuItem['price'],
                     'quantity' => $item['quantity'],
                     'note' => $item['note'] ?? '',
                     'status' => 'pending',
