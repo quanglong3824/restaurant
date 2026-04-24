@@ -57,12 +57,10 @@
         <!-- Sidebar Nav -->
         <nav class="sidebar-nav">
             
-            <!-- Debug: Show role -->
-            <?php 
-            $userRole = Auth::role();
-            $isAdminView = Auth::isAdmin();
-            ?>
-            <!-- DEBUG: Role=<?= e($userRole) ?>, isAdmin=<?= $isAdminView ? 'YES' : 'NO' ?> -->
+            <!-- Debug visible -->
+            <div style="background:#ff0; color:#000; padding:5px; font-size:12px; font-family:monospace; margin-bottom:10px;">
+                DEBUG: Role=<?= e(Auth::role() ?? 'NULL') ?> | isAdmin=<?= Auth::isAdmin() ? 'YES' : 'NO' ?> | isIT=<?= Auth::isIT() ? 'YES' : 'NO' ?>
+            </div>
 
             <?php if (Auth::isAdmin()): ?>
                 <div class="nav-section">
