@@ -1,33 +1,31 @@
 <?php 
 // views/orders/paid_bill.php — Premium Paid Bill View (Gogi Style)
-$currentLang = $_COOKIE['aurora_lang'] ?? 'vi';
-$isEn = $currentLang === 'en';
 ?>
 <div class="paid-bill-container">
     <div class="success-banner">
         <div class="success-check">
             <i class="fas fa-check"></i>
         </div>
-        <h2 class="status-title"><?= $isEn ? 'PAYMENT SUCCESSFUL / THANH TOÁN THÀNH CÔNG' : 'THANH TOÁN THÀNH CÔNG / PAYMENT SUCCESSFUL' ?></h2>
-        <p class="status-subtitle"><?= $isEn ? 'Thank you for dining at Aurora Restaurant' : 'Cảm ơn Quý khách đã ủng hộ Aurora Restaurant' ?></p>
+        <h2 class="status-title">PAYMENT SUCCESSFUL</h2>
+        <p class="status-subtitle">Thank you for dining at Aurora Restaurant</p>
     </div>
 
     <div class="receipt-paper">
         <div class="receipt-header">
             <h1 class="brand-name">AURORA HOTEL PLAZA</h1>
-            <p class="brand-address">253 Phạm Văn Thuận, KP2, P. Tam Hiệp, Biên Hòa, Đồng Nai</p>
+            <p class="brand-address">253 Pham Van Thuan, KP2, P. Tam Hiep, Bien Hoa, Dong Nai</p>
             <div class="receipt-divider"></div>
             <div class="receipt-meta">
                 <div class="meta-item">
-                    <span><?= $isEn ? 'Table:' : 'Bàn:' ?></span>
+                    <span>Table:</span>
                     <strong><?= e($table['name']) ?></strong>
                 </div>
                 <div class="meta-item">
-                    <span><?= $isEn ? 'Bill #:' : 'Mã HĐ:' ?></span>
+                    <span>Bill #:</span>
                     <strong>#<?= $order['id'] ?></strong>
                 </div>
                 <div class="meta-item">
-                    <span><?= $isEn ? 'Time:' : 'Thời gian:' ?></span>
+                    <span>Time:</span>
                     <strong><?= date('d/m/Y H:i', strtotime($order['closed_at'] ?? $order['updated_at'])) ?></strong>
                 </div>
             </div>
@@ -37,9 +35,9 @@ $isEn = $currentLang === 'en';
             <table class="items-table">
                 <thead>
                     <tr>
-                        <th><?= $isEn ? 'Item' : 'Món ăn' ?></th>
-                        <th class="text-center"><?= $isEn ? 'Qty' : 'SL' ?></th>
-                        <th class="text-right"><?= $isEn ? 'Amount' : 'T.Tiền' ?></th>
+                        <th>Item</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-right">Amount</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,16 +64,16 @@ $isEn = $currentLang === 'en';
         <div class="receipt-footer">
             <div class="receipt-divider"></div>
             <div class="total-row">
-                <span><?= $isEn ? 'TOTAL / TỔNG CỘNG' : 'TỔNG CỘNG / TOTAL' ?></span>
+                <span>TOTAL</span>
                 <span class="total-amount"><?= formatPrice($total) ?></span>
             </div>
             <div class="payment-info">
-                <span><?= $isEn ? 'Payment:' : 'Hình thức:' ?></span>
-                <strong><?= ($order['payment_method'] ?? 'cash') === 'cash' ? ($isEn ? 'Cash' : 'Tiền mặt') : ($isEn ? 'Transfer' : 'Chuyển khoản') ?></strong>
+                <span>Payment:</span>
+                <strong><?= ($order['payment_method'] ?? 'cash') === 'cash' ? 'Cash' : 'Transfer' ?></strong>
             </div>
             <div class="receipt-barcode">
                 <i class="fas fa-barcode"></i>
-                <p><?= $isEn ? 'See you again!' : 'Hẹn gặp lại Quý khách!' ?></p>
+                <p>See you again!</p>
             </div>
         </div>
         
@@ -86,21 +84,21 @@ $isEn = $currentLang === 'en';
     <div class="beta-notice">
         <i class="fas fa-info-circle"></i>
         <div class="notice-content">
-            <strong><?= $isEn ? 'NOTE:' : 'KHUYẾN NGHỊ:' ?></strong> 
-            <?= $isEn ? 'System is in beta testing phase. Please <b>save receipt image</b> for reference if needed. Thank you!' : 'Hệ thống đang trong giai đoạn nâng cấp thử nghiệm. Quý khách vui lòng <b>Lưu ảnh hóa đơn</b> để đối chiếu trong trường hợp cần thiết. Xin cảm ơn!' ?>
+            <strong>NOTE:</strong> 
+            System is in beta testing phase. Please <b>save receipt image</b> for reference if needed. Thank you!
         </div>
     </div>
 
     <div class="action-buttons">
         <button class="btn-save-img" onclick="captureReceipt()">
-            <i class="fas fa-camera"></i> <?= $isEn ? 'SAVE RECEIPT IMAGE / LƯU ẢNH HÓA ĐƠN' : 'LƯU ẢNH HÓA ĐƠN / SAVE RECEIPT IMAGE' ?>
+            <i class="fas fa-camera"></i> SAVE RECEIPT IMAGE
         </button>
-        <p class="button-tip"><?= $isEn ? '* Receipt image will be saved to your photo gallery.' : '* Ảnh hóa đơn sẽ được lưu trực tiếp vào thư viện ảnh của bạn.' ?></p>
+        <p class="button-tip">* Receipt image will be saved to your photo gallery.</p>
         <button class="btn-new-order" onclick="startNewOrder()">
-            <i class="fas fa-plus-circle"></i> <?= $isEn ? 'START NEW ORDER / TẠO LƯỢT MỚI' : 'TẠO LƯỢT MỚI / START NEW ORDER' ?>
+            <i class="fas fa-plus-circle"></i> START NEW ORDER
         </button>
         <button class="btn-exit" onclick="exitSession()">
-            <i class="fas fa-sign-out-alt"></i> <?= $isEn ? 'LEAVE TABLE (EXIT) / RỜI BÀN' : 'RỜI BÀN (THOÁT) / LEAVE TABLE' ?>
+            <i class="fas fa-sign-out-alt"></i> LEAVE TABLE
         </button>
     </div>
 </div>
@@ -109,13 +107,12 @@ $isEn = $currentLang === 'en';
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
-const isEnPaidBill = <?= $isEn ? 'true' : 'false' ?>;
 const paidBillTexts = {
-    creating: isEnPaidBill ? '<i class="fas fa-spinner fa-spin"></i> Creating image... / Đang tạo ảnh...' : '<i class="fas fa-spinner fa-spin"></i> ĐANG TẠO ẢNH...',
-    saved: isEnPaidBill ? '<i class="fas fa-check"></i> Image saved! / Đã lưu ảnh' : '<i class="fas fa-check"></i> ĐÃ LƯU ẢNH',
-    error: isEnPaidBill ? 'Cannot create receipt image. Please try again.' : 'Không thể tạo ảnh hóa đơn. Vui lòng thử lại.',
-    confirmNewOrder: isEnPaidBill ? 'Do you want to start a new order for this table?' : 'Bạn muốn bắt đầu lượt gọi món mới cho bàn này?',
-    confirmExit: isEnPaidBill ? 'Are you sure you want to leave and end this session?' : 'Bạn xác nhận rời bàn và kết thúc phiên làm việc?'
+    creating: '<i class="fas fa-spinner fa-spin"></i> Creating image...',
+    saved: '<i class="fas fa-check"></i> Image saved!',
+    error: 'Cannot create receipt image. Please try again.',
+    confirmNewOrder: 'Do you want to start a new order for this table?',
+    confirmExit: 'Are you sure you want to leave and end this session?'
 };
 
 async function captureReceipt() {

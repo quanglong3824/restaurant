@@ -1,17 +1,17 @@
 <?php // views/menu/sessions.php — My Active Tables / Sessions Management ?>
 <div class="sessions-container">
     <header class="sessions-header">
-        <h1 class="playfair">PHIÊN LÀM VIỆC / ACTIVE SESSIONS</h1>
-        <p class="visitor-token-label">Mã thiết bị / Device ID: <code><?= substr(e($visitorToken), 0, 8) ?>...</code></p>
+        <h1 class="playfair">ACTIVE SESSIONS</h1>
+        <p class="visitor-token-label">Device ID: <code><?= substr(e($visitorToken), 0, 8) ?>...</code></p>
     </header>
 
     <div class="sessions-content">
         <?php if (empty($orders)): ?>
             <div class="empty-sessions">
                 <i class="fas fa-qrcode"></i>
-                <h3>Chưa có phiên hoạt động / No active sessions</h3>
-                <p>Quét mã QR tại bàn để bắt đầu đặt món. / Scan QR code at the table to start ordering.</p>
-                <a href="<?= BASE_URL ?>" class="btn-gold-premium mt-4">QUAY LẠI TRANG CHỦ / GO BACK HOME</a>
+                <h3>No active sessions</h3>
+                <p>Scan the QR code at your table to start ordering.</p>
+                <a href="<?= BASE_URL ?>" class="btn-gold-premium mt-4">GO HOME</a>
             </div>
         <?php else: ?>
             <div class="active-orders-list">
@@ -25,23 +25,23 @@
                                 <i class="fas <?= $isRoom ? 'fa-bed' : 'fa-utensils' ?>"></i>
                                 <span><?= e($order['table_name']) ?></span>
                             </div>
-                            <div class="session-status occupied">Đang mở / Open</div>
+                            <div class="session-status occupied">Open</div>
                         </div>
 
                         <div class="session-card-body">
                             <div class="session-info-row">
-                                <span class="label">Bắt đầu / Started:</span>
+                                <span class="label">Started:</span>
                                 <span class="value"><?= date('H:i, d/m', strtotime($order['opened_at'])) ?></span>
                             </div>
                             <div class="session-info-row">
-                                <span class="label">Tạm tính / Subtotal:</span>
+                                <span class="label">Subtotal:</span>
                                 <span class="value price"><?= formatPrice($total) ?></span>
                             </div>
                         </div>
 
                         <div class="session-card-footer">
                             <a href="<?= BASE_URL ?>/qr/menu?table_id=<?= $order['table_id'] ?>&token=<?= $order['qr_hash'] ?>" class="btn-enter-menu">
-                                QUAY LẠI ĐẶT MÓN / BACK TO ORDER <i class="fas fa-chevron-right ms-2"></i>
+                                BACK TO ORDER <i class="fas fa-chevron-right ms-2"></i>
                             </a>
                         </div>
                     </div>
@@ -50,7 +50,7 @@
             
             <p class="sessions-footer-note">
                 <i class="fas fa-info-circle me-1"></i> 
-                Hệ thống tự động ghi nhớ các bàn bạn đã quét bằng thiết bị này.<br>The system automatically remembers the tables you scanned.
+                The system automatically remembers the tables you have scanned with this device.
             </p>
         <?php endif; ?>
     </div>
