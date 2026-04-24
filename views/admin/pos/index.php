@@ -793,15 +793,20 @@ const POS = {
     currentTableId: null
 };
 
+// ── Tab Switching ───────────────────────────────────────────
 function switchTab(tab) {
     document.querySelectorAll('.pos-tab').forEach(t => t.classList.remove('active'));
-    document.querySelector('.pos-tab[data-tab="' + tab + '"]').classList.add('active');
+    const activeTab = document.querySelector('.pos-tab[data-tab="' + tab + '"]');
+    if (activeTab) activeTab.classList.add('active');
+    
     document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-    document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
+    const tabContent = document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+    if (tabContent) tabContent.style.display = 'block';
 }
 
-document.querySelectorAll('.pos-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
+document.querySelectorAll('.pos-tab').forEach(function(tabEl) {
+    tabEl.addEventListener('click', function(e) {
+        e.preventDefault();
         switchTab(this.dataset.tab);
     });
 });
