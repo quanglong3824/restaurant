@@ -93,6 +93,61 @@ foreach (array_keys($grouped) as $a) {
 .menu-search input { width: 100%; padding: 10px 14px; border-radius: 10px; border: 2px solid #e2e8f0; font-size: 0.85rem; }
 .menu-search input:focus { border-color: #d4af37; outline: none; }
 
+.order-detail { background: white; border-radius: 14px; padding: 16px; border: 1px solid #e2e8f0; }
+.order-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 12px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; }
+.order-table-name { font-size: 1.3rem; font-weight: 800; color: #d4af37; }
+.order-info { font-size: 0.8rem; color: #64748b; margin-top: 4px; }
+.order-items { max-height: 400px; overflow-y: auto; }
+.order-item-row { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #f1f5f9; gap: 8px; }
+.order-item-row:last-child { border-bottom: none; }
+.order-item-name { flex: 1; font-size: 0.9rem; font-weight: 600; color: #1e293b; }
+.order-item-qty { display: flex; align-items: center; gap: 6px; }
+.cart-qty-btn { width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; border: 1px solid #e2e8f0; }
+.cart-qty-btn:hover { background: #e2e8f0; }
+.order-item-price { font-size: 0.9rem; font-weight: 700; color: #d4af37; min-width: 80px; text-align: right; }
+.order-item-status { font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; font-weight: 700; }
+.order-item-status.draft { background: #fef3c7; color: #92400e; }
+.order-item-status.confirmed { background: #d1fae5; color: #065f46; }
+.order-item-status.cooking { background: #fee2e2; color: #991b1b; }
+.order-item-status.served { background: #dbeafe; color: #1e40af; }
+.order-footer { padding: 16px; margin-top: 16px; background: #1e293b; border-radius: 12px; display: flex; flex-direction: column; gap: 12px; }
+.order-total { font-size: 1.5rem; font-weight: 800; color: #d4af37; text-align: center; }
+.order-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.btn { padding: 10px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; cursor: pointer; border: 2px solid #e2e8f0; background: white; color: #1e293b; transition: all 0.2s; }
+.btn:hover { transform: translateY(-1px); }
+.btn-gold { background: #d4af37; color: white; border-color: #d4af37; }
+.btn-green { background: #10b981; color: white; border-color: #10b981; }
+.btn-red { background: #ef4444; color: white; border-color: #ef4444; }
+.btn-ghost { background: #f8fafc; color: #64748b; }
+
+.notif-list { display: flex; flex-direction: column; gap: 10px; }
+.notif-item { background: white; border-radius: 12px; padding: 14px; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.2s; }
+.notif-item:hover { border-color: #d4af37; transform: translateX(4px); }
+.notif-item.unread { border-left: 4px solid #d4af37; background: linear-gradient(135deg, #fffbeb 0%, white 100%); }
+.notif-type { font-size: 0.75rem; color: #64748b; font-weight: 700; margin-bottom: 6px; }
+.notif-type i { margin-right: 6px; }
+.notif-message { font-size: 0.9rem; color: #1e293b; font-weight: 600; }
+.notif-time { font-size: 0.7rem; color: #94a3b8; margin-top: 6px; }
+
+.realtime-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.realtime-card { background: white; border-radius: 14px; border: 2px solid #e2e8f0; overflow: hidden; transition: all 0.2s; }
+.realtime-card:hover { border-color: #d4af37; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(212,175,55,0.2); }
+.realtime-card-header { padding: 14px; background: #f8fafc; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; }
+.realtime-table-name { font-size: 1rem; font-weight: 800; color: #1e293b; }
+.realtime-status { font-size: 0.75rem; padding: 4px 10px; border-radius: 8px; font-weight: 700; }
+.realtime-status.open { background: #dcfce7; color: #166534; }
+.realtime-status.closed { background: #f3f4f6; color: #6b7280; }
+.realtime-card-body { padding: 12px; max-height: 200px; overflow-y: auto; }
+.realtime-item { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+.realtime-item:last-child { border-bottom: none; }
+.realtime-item-name { flex: 1; font-size: 0.85rem; color: #1e293b; }
+.realtime-item-qty { font-size: 0.8rem; color: #64748b; font-weight: 600; }
+.realtime-card-footer { padding: 12px; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; }
+.realtime-total { font-size: 1rem; font-weight: 800; color: #d4af37; }
+.realtime-actions { display: flex; gap: 8px; }
+.idle-badge-realtime { background: linear-gradient(135deg,#f59e0b,#fbbf24); color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; margin-top: 6px; display: inline-block; }
+.idle-badge-realtime.critical { background: linear-gradient(135deg,#ef4444,#f87171); }
+
 .cart-panel { position: fixed; right: 16px; bottom: 16px; width: 360px; max-width: calc(100vw - 32px); background: white; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 40px rgba(0,0,0,0.1); display: flex; flex-direction: column; max-height: 400px; z-index: 100; }
 @media (max-width: 768px) {
     .cart-panel { width: 100%; right: 0; bottom: 0; border-radius: 16px 16px 0 0; max-height: 300px; }
@@ -471,6 +526,9 @@ foreach (array_keys($grouped) as $a) {
             <div class="pos-header">
                 <h2><i class="fas fa-satellite-dish"></i> Giám sát trực tiếp</h2>
                 <div class="pos-header-actions">
+                    <span style="font-size:0.75rem;color:#64748b">
+                        <i class="fas fa-clock"></i> Auto-refresh: 10s
+                    </span>
                     <button class="btn btn-ghost" onclick="refreshRealtime()" style="padding:6px 10px;font-size:0.75rem">
                         <i class="fas fa-sync-alt"></i> Refresh
                     </button>
@@ -479,26 +537,44 @@ foreach (array_keys($grouped) as $a) {
 
             <div class="realtime-grid" id="realtimeGrid">
                 <?php foreach ($realtimeOrders as $order): ?>
+                    <?php $isIdle = empty($order['items']); ?>
+                    <?php $idleSeconds = $isIdle ? (time() - strtotime($order['opened_at'])) : 0; ?>
                     <div class="realtime-card" id="realtime-<?= $order['id'] ?>">
                         <div class="realtime-card-header">
-                            <div class="realtime-table-name"><?= e($order['full_name']) ?></div>
+                            <div>
+                                <div class="realtime-table-name"><?= e($order['full_name']) ?></div>
+                                <?php if ($isIdle && $idleSeconds > 0): ?>
+                                    <?php $remaining = max(0, 300 - $idleSeconds); ?>
+                                    <div class="idle-badge-realtime <?= $remaining < 60 ? 'critical' : '' ?>">
+                                        <i class="fas fa-clock"></i> Chưa gọi món: <?= floor($remaining / 60) ?>:<?= ($remaining % 60 < 10 ? '0' : '') . ($remaining % 60) ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                             <span class="realtime-status <?= $order['status'] ?>"><?= ucfirst($order['status']) ?></span>
                         </div>
                         <div class="realtime-card-body">
-                            <?php foreach ($order['items'] as $item): ?>
-                                <div class="realtime-item">
-                                    <div class="realtime-item-name"><?= e($item['item_name'] ?? $item['name']) ?></div>
-                                    <div class="realtime-item-qty">x<?= $item['quantity'] ?></div>
+                            <?php if (!empty($order['items'])): ?>
+                                <?php foreach ($order['items'] as $item): ?>
+                                    <div class="realtime-item">
+                                        <div class="realtime-item-name"><?= e($item['item_name'] ?? $item['name']) ?></div>
+                                        <div class="realtime-item-qty">x<?= $item['quantity'] ?></div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div style="text-align:center;padding:20px;color:#f59e0b;font-weight:700">
+                                    <i class="fas fa-hourglass-half"></i> Khách mới vào - chưa gọi món
                                 </div>
-                            <?php endforeach; ?>
-                            <?php if (empty($order['items'])): ?>
-                                <div style="color:#64748b;font-size:0.8rem;text-align:center">Chưa có món</div>
                             <?php endif; ?>
                         </div>
                         <div class="realtime-card-footer">
                             <div class="realtime-total"><?= e($order['total_fmt']) ?></div>
                             <div class="realtime-actions">
-                                <button class="floor-btn floor-btn-gold" onclick="viewOrder(<?= $order['table_id'] ?>)">Chi tiết</button>
+                                <button class="floor-btn floor-btn-gold" onclick="viewOrder(<?= $order['table_id'] ?>)">
+                                    <i class="fas fa-eye"></i> Chi tiết
+                                </button>
+                                <button class="floor-btn floor-btn-blue" onclick="openTransferModal(<?= $order['table_id'] ?>)">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
