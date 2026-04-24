@@ -24,7 +24,9 @@ const MESSAGES = {
         requestError: 'Gửi yêu cầu thất bại.',
         connectionError: 'Lỗi kết nối.',
         emptyCart: 'Giỏ hàng đang trống.',
+        browseMenu: 'Duyệt thực đơn và thêm món',
         continueOrdering: 'TIẾP TỤC CHỌN MÓN',
+        note: 'Lưu ý',
         outOfStock: 'Hết hàng',
         noMenu: 'Chưa có thực đơn',
         contactStaff: 'Vui lòng liên hệ nhân viên để được hỗ trợ',
@@ -94,7 +96,9 @@ const MESSAGES = {
         requestError: 'Request failed.',
         connectionError: 'Connection error.',
         emptyCart: 'Your cart is empty.',
+        browseMenu: 'Browse the menu and add items',
         continueOrdering: 'CONTINUE ORDERING',
+        note: 'Note',
         outOfStock: 'Out of stock',
         noMenu: 'No menu available',
         contactStaff: 'Please contact staff for assistance',
@@ -855,7 +859,7 @@ function addFromDetail() {
     
     saveCart();
     closeItemDetail();
-    showToast(`Đã thêm ${currentItem.name}`);
+    showToast(`${t('addedToCart')} ${currentItem.name}`);
 }
 
 function toggleCartModal() {
@@ -875,6 +879,7 @@ function toggleCartModal() {
 function updateCartModal() {
     const container = document.getElementById('cartItemsList');
     const modalTotal = document.getElementById('modalCartTotal');
+    const isEn = typeof currentLang !== 'undefined' && currentLang === 'en';
     
     if (cart.length === 0) {
         container.innerHTML = `
@@ -882,10 +887,10 @@ function updateCartModal() {
                 <div style="width:64px;height:64px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
                     <i class="fas fa-shopping-basket" style="font-size:1.5rem;color:#cbd5e1;"></i>
                 </div>
-                <p style="font-weight:700;font-size:0.95rem;color:#64748b;margin:0;">${typeof currentLang !== 'undefined' && currentLang === 'en' ? 'Your cart is empty' : 'Giỏ hàng đang trống'}</p>
-                <p style="font-size:0.8rem;margin-top:6px;">${typeof currentLang !== 'undefined' && currentLang === 'en' ? 'Browse the menu and add items' : 'Duyệt thực đơn và thêm món'}</p>
+                <p style="font-weight:700;font-size:0.95rem;color:#64748b;margin:0;">${isEn ? 'Your cart is empty / Giỏ hàng đang trống' : 'Giỏ hàng đang trống / Your cart is empty'}</p>
+                <p style="font-size:0.8rem;margin-top:6px;">${isEn ? 'Browse the menu and add items' : 'Duyệt thực đơn và thêm món'}</p>
                 <button class="btn-gold" onclick="toggleCartModal()" style="margin-top:1rem;border:none;padding:12px 24px;border-radius:12px;font-weight:700;font-size:0.85rem;cursor:pointer;">
-                    ${typeof currentLang !== 'undefined' && currentLang === 'en' ? 'CONTINUE ORDERING' : 'TIẾP TỤC CHỌN MÓN'}
+                    ${isEn ? 'CONTINUE ORDERING' : 'TIẾP TỤC CHỌN MÓN'}
                 </button>
             </div>
         `;
@@ -897,15 +902,18 @@ function updateCartModal() {
     let total = 0;
     
     cart.forEach((item, index) => {
-        let displayName = typeof currentLang !== 'undefined' && currentLang === 'en' && (item.nameEn || item.name_en) ? (item.nameEn || item.name_en) : item.name;
-        let noteLabel = typeof currentLang !== 'undefined' && currentLang === 'en' ? 'Note' : 'Lưu ý';
+        let displayName = isEn && (item.nameEn || item.name_en) ? (item.nameEn || item.name_en) : item.name;
+        let displayNameEn = item.nameEn || item.name_en || item.name;
+        let noteLabel = isEn ? 'Note' : 'Lưu ý';
         total += item.price * item.quantity;
         html += `
             <div class="cart-item">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${displayName}</div>
+                    ${!isEn && displayNameEn && displayNameEn !== item.name ? `<div class="cart-item-name-en">${displayNameEn}</div>` : ''}
+                    ${isEn && item.name && displayName !== item.name ? `<div class="cart-item-name-en">${item.name}</div>` : ''}
                     <div class="cart-item-price">${formatCurrency(item.price)}</div>
-                    ${item.note ? `<div class="cart-item-note">${noteLabel}: ${item.note}</div>` : ''}
+                    ${item.note ? `<div class="cart-item-note"><i class="fas fa-pen" style="font-size:.6rem;margin-right:3px;"></i>${noteLabel}: ${item.note}</div>` : ''}
                 </div>
                 <div class="cart-item-qty">
                     <button onclick="changeCartQty(${index}, -1)"><i class="fas fa-minus"></i></button>
@@ -939,7 +947,7 @@ async function submitOrder() {
     const originalText = btn.innerHTML;
     
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG XỬ LÝ...';
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${t('processing')}`;
 
     const formData = new FormData();
     formData.append('cart', JSON.stringify(cart));
@@ -956,18 +964,18 @@ async function submitOrder() {
         if (result.success) {
             cart = [];
             saveCart();
-            showToast('Xác nhận đặt món thành công!');
+            showToast(t('orderSuccess'));
             setTimeout(() => {
                 window.location.href = `${CUSTOMER_CONFIG.baseUrl}/qr/order/status`;
             }, 1000);
         } else {
-            alert(result.error || 'Lỗi gửi order. Vui lòng thử lại.');
+            alert(result.error || t('orderError'));
             btn.disabled = false;
             btn.innerHTML = originalText;
         }
     } catch (e) {
         console.error(e);
-        alert('Lỗi kết nối máy chủ. Vui lòng kiểm tra mạng.');
+        alert(t('networkError'));
         btn.disabled = false;
         btn.innerHTML = originalText;
     }

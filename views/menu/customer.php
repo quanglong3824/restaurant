@@ -777,7 +777,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
             <span class="cart-badge" id="cartCount">0</span>
         </div>
         <div class="cart-info">
-            <span class="cart-label">Giỏ hàng của bạn</span>
+            <span class="cart-label"><span class="lang" data-vi="Giỏ hàng / Your cart" data-en="Your cart / Giỏ hàng">Giỏ hàng / Your cart</span></span>
             <span class="cart-total" id="cartTotal">0₫</span>
         </div>
         <div class="cart-bar-arrow">
@@ -791,23 +791,23 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     <div class="modal modal-bottom">
         <div class="modal-drag-handle"><span></span></div>
         <div class="modal-header">
-            <h3><i class="fas fa-shopping-cart me-2"></i> <span class="lang" data-vi="Chi tiết đơn hàng / Order Details" data-en="Order Details">Chi tiết đơn hàng / Order Details</span></h3>
+            <h3><i class="fas fa-shopping-cart me-2"></i> <span class="lang" data-vi="Chi tiết đơn hàng / Order Details" data-en="Order Details / Chi tiết đơn hàng">Chi tiết đơn hàng / Order Details</span></h3>
             <button class="modal-close" onclick="toggleCartModal()"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
             <div id="cartItemsList" class="cart-items-container"></div>
             <div class="order-notes-box mt-3" style="margin-top:1rem;">
-                <label class="lang" data-vi="GHI CHÚ ĐƠN HÀNG / ORDER NOTES" data-en="ORDER NOTES" style="font-size:.72rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">GHI CHÚ ĐƠN HÀNG / ORDER NOTES</label>
-                <textarea id="orderNotes" placeholder="VD: Không lấy hành, ít cay..."></textarea>
+                <label class="lang" data-vi="GHI CHÚ ĐƠN HÀNG / ORDER NOTES" data-en="ORDER NOTES / GHI CHÚ ĐƠN HÀNG" style="font-size:.72rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">GHI CHÚ ĐƠN HÀNG / ORDER NOTES</label>
+                <textarea id="orderNotes" placeholder="VD: Không lấy hành, ít cay... / e.g., No onion, less spicy..."></textarea>
             </div>
         </div>
         <div class="modal-footer">
             <div class="total-summary">
-                <span class="lang" data-vi="Tổng cộng / Total" data-en="Total">Tổng cộng / Total</span>
+                <span class="lang" data-vi="Tổng cộng / Total" data-en="Total / Tổng cộng">Tổng cộng / Total</span>
                 <strong id="modalCartTotal">0₫</strong>
             </div>
             <button class="btn-submit-order" id="btnSubmitOrder" onclick="submitOrder()">
-                <i class="fas fa-paper-plane me-2"></i> <span class="lang" data-vi="XÁC NHẬN ĐẶT MÓN / CONFIRM ORDER" data-en="CONFIRM ORDER">XÁC NHẬN ĐẶT MÓN / CONFIRM ORDER</span>
+                <i class="fas fa-paper-plane me-2"></i> <span class="lang" data-vi="XÁC NHẬN ĐẶT MÓN / CONFIRM ORDER" data-en="CONFIRM ORDER / XÁC NHẬN ĐẶT MÓN">XÁC NHẬN ĐẶT MÓN / CONFIRM ORDER</span>
             </button>
         </div>
     </div>
@@ -828,7 +828,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                 <p id="detailDesc" class="item-desc" style="margin-top:8px;font-size:.875rem;color:#64748b;line-height:1.5;"></p>
             </div>
             <div id="detailOptsWrap" style="display:none;margin-bottom:1.25rem;">
-                <label class="lang" data-vi="Tuỳ chọn nhanh / Quick Options" data-en="Quick Options" style="font-size:.72rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:block;">
+                <label class="lang" data-vi="Tuỳ chọn nhanh / Quick Options" data-en="Quick Options / Tuỳ chọn nhanh" style="font-size:.72rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:block;">
                     Tuỳ chọn nhanh / Quick Options
                 </label>
                 <div id="detailOptsContainer" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
@@ -841,13 +841,13 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                 </div>
                 <div class="note-input-box">
                     <i class="fas fa-edit"></i>
-                    <input type="text" id="detailNote" placeholder="Ghi chú thêm (No onion, less spicy...)">
+                    <input type="text" id="detailNote" placeholder="Ghi chú thêm / e.g., No onion, less spicy...">
                 </div>
             </div>
         </div>
         <div class="modal-footer">
             <button class="btn-submit-order w-100" id="btnAddOrder" onclick="addFromDetail()">
-                <i class="fas fa-cart-plus me-2"></i> <span class="lang" data-vi="THÊM VÀO ĐƠN HÀNG / ADD TO ORDER" data-en="ADD TO ORDER">THÊM VÀO ĐƠN HÀNG / ADD TO ORDER</span>
+                <i class="fas fa-cart-plus me-2"></i> <span class="lang" data-vi="THÊM VÀO ĐƠN HÀNG / ADD TO ORDER" data-en="ADD TO ORDER / THÊM VÀO ĐƠN HÀNG">THÊM VÀO ĐƠN HÀNG / ADD TO ORDER</span>
             </button>
         </div>
     </div>
@@ -857,13 +857,13 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 <div id="historyModal" class="modal-backdrop hidden">
     <div class="modal modal-bottom modal-premium">
         <div class="modal-header">
-            <h3><i class="fas fa-history me-2"></i> <span class="lang" data-vi="Lịch Sử Đơn Hàng / Order History" data-en="Order History">Lịch Sử Đơn Hàng / Order History</span></h3>
+            <h3><i class="fas fa-history me-2"></i> <span class="lang" data-vi="Lịch Sử Đơn Hàng / Order History" data-en="Order History / Lịch Sử Đơn Hàng">Lịch Sử Đơn Hàng / Order History</span></h3>
             <button class="modal-close" onclick="closeHistoryModal()"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body" id="historyModalContent">
             <div style="text-align:center;padding:2rem;color:#94a3b8;">
                 <i class="fas fa-spinner fa-spin" style="font-size:2rem;margin-bottom:1rem;"></i>
-                <p>Đang tải lịch sử...</p>
+                <p class="lang" data-vi="Đang tải lịch sử... / Loading history..." data-en="Loading history... / Đang tải lịch sử...">Đang tải lịch sử... / Loading history...</p>
             </div>
         </div>
     </div>
@@ -873,7 +873,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 <div id="billTamModal" class="modal-backdrop hidden">
     <div class="modal modal-bottom modal-premium">
         <div class="modal-header">
-            <h3><i class="fas fa-file-invoice-dollar me-2"></i> <span class="lang" data-vi="Hoá đơn tạm tính / Preliminary Bill" data-en="Preliminary Bill">Hoá đơn tạm tính / Preliminary Bill</span></h3>
+            <h3><i class="fas fa-file-invoice-dollar me-2"></i> <span class="lang" data-vi="Hoá đơn tạm tính / Preliminary Bill" data-en="Preliminary Bill / Hoá đơn tạm tính">Hoá đơn tạm tính / Preliminary Bill</span></h3>
             <button class="modal-close" onclick="closeBillTam()"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
@@ -903,24 +903,24 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                     <?php endforeach; ?>
                     <div class="bill-summary">
                         <div class="bill-total-row">
-                            <span class="lang" data-vi="Tổng tiền món / Subtotal" data-en="Subtotal">Tổng tiền món / Subtotal</span>
+                            <span class="lang" data-vi="Tổng tiền món / Subtotal" data-en="Subtotal / Tổng tiền món">Tổng tiền món / Subtotal</span>
                             <strong><?= formatPrice($orderTotal) ?></strong>
                         </div>
                     </div>
                 <?php else: ?>
                     <div class="menu-empty-state">
                         <i class="fas fa-receipt"></i>
-                        <p class="lang" data-vi="Bàn chưa có món nào được gọi. / No items ordered yet." data-en="No items ordered yet.">Bàn chưa có món nào được gọi. / No items ordered yet.</p>
+                        <p class="lang" data-vi="Bàn chưa có món nào được gọi. / No items ordered yet." data-en="No items ordered yet. / Bàn chưa có món nào được gọi.">Bàn chưa có món nào được gọi. / No items ordered yet.</p>
                     </div>
                 <?php endif; ?>
             </div>
         </div>
         <div class="modal-footer" style="display:flex;flex-direction:column;gap:.5rem;">
             <button class="btn-gold w-100" onclick="callWaiter('payment')">
-                <i class="fas fa-hand-holding-usd me-2"></i> <span class="lang" data-vi="YÊU CẦU THANH TOÁN / REQUEST PAYMENT" data-en="REQUEST PAYMENT">YÊU CẦU THANH TOÁN / REQUEST PAYMENT</span>
+                <i class="fas fa-hand-holding-usd me-2"></i> <span class="lang" data-vi="YÊU CẦU THANH TOÁN / REQUEST PAYMENT" data-en="REQUEST PAYMENT / YÊU CẦU THANH TOÁN">YÊU CẦU THANH TOÁN / REQUEST PAYMENT</span>
             </button>
             <button class="btn-ghost w-100" onclick="closeBillTam()">
-                <span class="lang" data-vi="TIẾP TỤC ĐẶT MÓN / CONTINUE ORDERING" data-en="CONTINUE ORDERING">TIẾP TỤC ĐẶT MÓN / CONTINUE ORDERING</span>
+                <span class="lang" data-vi="TIẾP TỤC ĐẶT MÓN / CONTINUE ORDERING" data-en="CONTINUE ORDERING / TIẾP TỤC ĐẶT MÓN">TIẾP TỤC ĐẶT MÓN / CONTINUE ORDERING</span>
             </button>
         </div>
     </div>
@@ -1054,14 +1054,14 @@ function showHistoryModal() {
                 let html = '<div style="display:flex;flex-direction:column;gap:12px;">';
                 data.orders.forEach(function(order) {
                     const statusClass = order.status === 'open' ? 'open' : 'closed';
-                    const statusText = order.status === 'open' ? 'ĐANG MỞ / OPEN' : 'ĐÃ THANH TOÁN / PAID';
+                    const statusText = order.status === 'open' ? (currentLang === 'en' ? 'OPEN / ĐANG MỞ' : 'ĐANG MỞ / OPEN') : (currentLang === 'en' ? 'PAID / ĐÃ THANH TOÁN' : 'ĐÃ THANH TOÁN / PAID');
                     const statusColor = order.status === 'open' ? '#fef3c7' : '#d1fae5';
                     const statusTextColor = order.status === 'open' ? '#d97706' : '#059669';
                     
                     html += '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">';
                     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
                     html += '<div style="display:flex;align-items:center;gap:8px;">';
-                    html += '<span style="font-size:0.7rem;font-weight:700;color:#64748b;text-transform:uppercase;">Đơn #' + order.id + '</span>';
+                    html += '<span style="font-size:0.7rem;font-weight:700;color:#64748b;text-transform:uppercase;">' + (currentLang === 'en' ? 'Order' : 'Đơn') + ' #' + order.id + '</span>';
                     html += '<span style="font-size:0.65rem;font-weight:700;padding:3px 10px;border-radius:10px;background:' + statusColor + ';color:' + statusTextColor + ';">' + statusText + '</span>';
                     html += '</div>';
                     html += '<span style="font-size:0.75rem;color:#94a3b8;"><i class="far fa-clock"></i> ' + new Date(order.created_at).toLocaleString('vi-VN') + '</span>';
@@ -1078,14 +1078,14 @@ function showHistoryModal() {
                             html += '</div>';
                         });
                         if (order.items.length > 3) {
-                            html += '<div style="font-size:0.75rem;color:#94a3b8;font-style:italic;">+ ' + (order.items.length - 3) + ' món khác</div>';
+                            html += '<div style="font-size:0.75rem;color:#94a3b8;font-style:italic;">+ ' + (order.items.length - 3) + ' ' + (currentLang === 'en' ? 'more items' : 'món khác') + '</div>';
                         }
                         html += '</div>';
                     }
                     
                     // Total
                     html += '<div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px dashed #e2e8f0;">';
-                    html += '<span style="font-size:0.8rem;color:#64748b;">Tổng cộng / Total</span>';
+                    html += '<span style="font-size:0.8rem;color:#64748b;">' + (currentLang === 'en' ? 'Total / Tổng cộng' : 'Tổng cộng / Total') + '</span>';
                     html += '<span style="font-size:1.1rem;font-weight:800;color:var(--gold-dark);">' + formatPrice(order.total) + '</span>';
                     html += '</div>';
                     html += '</div>';
@@ -1093,11 +1093,11 @@ function showHistoryModal() {
                 html += '</div>';
                 content.innerHTML = html;
             } else {
-                content.innerHTML = '<div style="text-align:center;padding:2rem;color:#94a3b8;"><i class="fas fa-receipt" style="font-size:3rem;opacity:0.3;margin-bottom:1rem;"></i><p style="font-weight:600;">Chưa có lịch sử đơn hàng / No order history</p></div>';
+                content.innerHTML = '<div style="text-align:center;padding:2rem;color:#94a3b8;"><i class="fas fa-receipt" style="font-size:3rem;opacity:0.3;margin-bottom:1rem;"></i><p style="font-weight:600;">' + (currentLang === 'en' ? 'No order history / Chưa có lịch sử đơn hàng' : 'Chưa có lịch sử đơn hàng / No order history') + '</p></div>';
             }
         })
         .catch(err => {
-            content.innerHTML = '<div style="text-align:center;padding:2rem;color:#ef4444;"><i class="fas fa-exclamation-circle" style="font-size:2rem;margin-bottom:1rem;"></i><p>Lỗi tải lịch sử / Error loading history</p></div>';
+            content.innerHTML = '<div style="text-align:center;padding:2rem;color:#ef4444;"><i class="fas fa-exclamation-circle" style="font-size:2rem;margin-bottom:1rem;"></i><p>' + (currentLang === 'en' ? 'Error loading history / Lỗi tải lịch sử' : 'Lỗi tải lịch sử / Error loading history') + '</p></div>';
         });
 }
 
@@ -1198,9 +1198,9 @@ function applyLanguage(lang) {
     }
     
     // Update cart label
-    const cartLabel = document.querySelector('.cart-label');
-    if (cartLabel) {
-        cartLabel.textContent = lang === 'vi' ? 'Giỏ hàng của bạn' : 'Your cart';
+    const cartLabelEl = document.querySelector('.cart-label');
+    if (cartLabelEl) {
+        cartLabelEl.textContent = lang === 'vi' ? 'Giỏ hàng / Your cart' : 'Your cart / Giỏ hàng';
     }
     
     // Update view cart arrow
@@ -1266,17 +1266,17 @@ function applyLanguage(lang) {
     
     const notePlaceholder = document.getElementById('detailNote');
     if (notePlaceholder) {
-        notePlaceholder.placeholder = lang === 'vi' ? 'Ghi chú thêm (No onion, less spicy...)' : 'Additional notes (No onion, less spicy...)';
+        notePlaceholder.placeholder = lang === 'vi' ? 'Ghi chú thêm / e.g., No onion, less spicy...' : 'Additional notes / VD: Không lấy hành, ít cay...';
     }
     
     const orderNotesLabel = document.querySelector('.order-notes-box label');
     if (orderNotesLabel) {
-        orderNotesLabel.textContent = lang === 'vi' ? 'GHI CHÚ ĐƠN HÀNG' : 'ORDER NOTES';
+        orderNotesLabel.textContent = lang === 'vi' ? 'GHI CHÚ ĐƠN HÀNG / ORDER NOTES' : 'ORDER NOTES / GHI CHÚ ĐƠN HÀNG';
     }
     
     const orderNotesTextarea = document.getElementById('orderNotes');
     if (orderNotesTextarea) {
-        orderNotesTextarea.placeholder = lang === 'vi' ? 'VD: Không lấy hành, ít cay...' : 'e.g., No onion, less spicy...';
+        orderNotesTextarea.placeholder = lang === 'vi' ? 'VD: Không lấy hành, ít cay... / e.g., No onion, less spicy...' : 'e.g., No onion, less spicy... / VD: Không lấy hành, ít cay...';
     }
 }
 
