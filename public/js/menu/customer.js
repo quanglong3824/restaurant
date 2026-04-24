@@ -878,10 +878,15 @@ function updateCartModal() {
     
     if (cart.length === 0) {
         container.innerHTML = `
-            <div class="text-center py-5">
-                <i class="fas fa-shopping-basket fa-3x text-light mb-3"></i>
-                <p class="text-muted">Giỏ hàng đang trống.</p>
-                <button class="btn-gold mt-3" onclick="toggleCartModal()">TIẾP TỤC CHỌN MÓN</button>
+            <div style="text-align:center;padding:2.5rem 1rem;color:#94a3b8;">
+                <div style="width:64px;height:64px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                    <i class="fas fa-shopping-basket" style="font-size:1.5rem;color:#cbd5e1;"></i>
+                </div>
+                <p style="font-weight:700;font-size:0.95rem;color:#64748b;margin:0;">${typeof currentLang !== 'undefined' && currentLang === 'en' ? 'Your cart is empty' : 'Giỏ hàng đang trống'}</p>
+                <p style="font-size:0.8rem;margin-top:6px;">${typeof currentLang !== 'undefined' && currentLang === 'en' ? 'Browse the menu and add items' : 'Duyệt thực đơn và thêm món'}</p>
+                <button class="btn-gold" onclick="toggleCartModal()" style="margin-top:1rem;border:none;padding:12px 24px;border-radius:12px;font-weight:700;font-size:0.85rem;cursor:pointer;">
+                    ${typeof currentLang !== 'undefined' && currentLang === 'en' ? 'CONTINUE ORDERING' : 'TIẾP TỤC CHỌN MÓN'}
+                </button>
             </div>
         `;
         modalTotal.textContent = '0₫';
@@ -896,16 +901,16 @@ function updateCartModal() {
         let noteLabel = typeof currentLang !== 'undefined' && currentLang === 'en' ? 'Note' : 'Lưu ý';
         total += item.price * item.quantity;
         html += `
-            <div class="cart-item" style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid var(--border);">
-                <div style="flex:1;">
-                    <div style="font-weight:700; color:var(--text-dark);">${displayName}</div>
-                    <div style="color:var(--gold-dark); font-weight:600; font-size:0.85rem;">${formatCurrency(item.price)}</div>
-                    ${item.note ? `<div style="font-style:italic; font-size:0.75rem; color:var(--text-light); margin-top:4px;">${noteLabel}: ${item.note}</div>` : ''}
+            <div class="cart-item">
+                <div class="cart-item-info">
+                    <div class="cart-item-name">${displayName}</div>
+                    <div class="cart-item-price">${formatCurrency(item.price)}</div>
+                    ${item.note ? `<div class="cart-item-note">${noteLabel}: ${item.note}</div>` : ''}
                 </div>
-                <div class="qty-selector" style="background:#f1f5f9; padding:5px 10px; border-radius:10px; display:flex; align-items:center; gap:15px; scale:0.8;">
-                    <button class="qty-btn" style="width:30px; height:30px; font-size:0.8rem;" onclick="changeCartQty(${index}, -1)"><i class="fas fa-minus"></i></button>
-                    <span class="qty-value" style="font-size:1rem; min-width:20px;">${item.quantity}</span>
-                    <button class="qty-btn" style="width:30px; height:30px; font-size:0.8rem;" onclick="changeCartQty(${index}, 1)"><i class="fas fa-plus"></i></button>
+                <div class="cart-item-qty">
+                    <button onclick="changeCartQty(${index}, -1)"><i class="fas fa-minus"></i></button>
+                    <span>${item.quantity}</span>
+                    <button onclick="changeCartQty(${index}, 1)"><i class="fas fa-plus"></i></button>
                 </div>
             </div>
         `;

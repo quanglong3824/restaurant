@@ -771,7 +771,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 
 <!-- ── Floating Cart Bar ── -->
 <div id="cartBar" class="cart-bar hidden">
-    <div class="cart-bar-content">
+    <div class="cart-bar-content" onclick="toggleCartModal()">
         <div class="cart-icon-box">
             <i class="fas fa-shopping-basket"></i>
             <span class="cart-badge" id="cartCount">0</span>
@@ -780,15 +780,16 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
             <span class="cart-label">Giỏ hàng của bạn</span>
             <span class="cart-total" id="cartTotal">0₫</span>
         </div>
-        <button class="btn-view-cart" onclick="toggleCartModal()">
-            XEM GIỎ <i class="fas fa-chevron-right"></i>
-        </button>
+        <div class="cart-bar-arrow">
+            <i class="fas fa-chevron-right"></i>
+        </div>
     </div>
 </div>
 
 <!-- ── Cart Modal ── -->
 <div id="cartModal" class="modal-backdrop hidden">
     <div class="modal modal-bottom">
+        <div class="modal-drag-handle"><span></span></div>
         <div class="modal-header">
             <h3><i class="fas fa-shopping-cart me-2"></i> <span class="lang" data-vi="Chi tiết đơn hàng / Order Details" data-en="Order Details">Chi tiết đơn hàng / Order Details</span></h3>
             <button class="modal-close" onclick="toggleCartModal()"><i class="fas fa-times"></i></button>
@@ -1202,10 +1203,10 @@ function applyLanguage(lang) {
         cartLabel.textContent = lang === 'vi' ? 'Giỏ hàng của bạn' : 'Your cart';
     }
     
-    // Update view cart button
-    const viewCartBtn = document.querySelector('.btn-view-cart');
-    if (viewCartBtn) {
-        viewCartBtn.innerHTML = lang === 'vi' ? 'XEM GIỎ <i class="fas fa-chevron-right"></i>' : 'VIEW <i class="fas fa-chevron-right"></i>';
+    // Update view cart arrow
+    const cartBarArrow = document.querySelector('.cart-bar-arrow');
+    if (cartBarArrow) {
+        cartBarArrow.innerHTML = '<i class="fas fa-chevron-right"></i>';
     }
     
     // Update FAB labels

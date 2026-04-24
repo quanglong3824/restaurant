@@ -1068,6 +1068,11 @@ button {
     gap: 14px;
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
     cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cart-bar-content:active {
+    transform: scale(0.98);
 }
 
 .cart-icon-box {
@@ -1125,7 +1130,8 @@ button {
     letter-spacing: 0.5px;
 }
 
-.btn-view-cart {
+.btn-view-cart,
+.cart-bar-arrow {
     background: rgba(255, 255, 255, 0.15);
     border: none;
     color: #fff;
@@ -1140,13 +1146,40 @@ button {
     gap: 6px;
 }
 
-.btn-view-cart:hover {
+.cart-bar-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    padding: 0;
+    justify-content: center;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.btn-view-cart:hover,
+.cart-bar-arrow:hover {
     background: rgba(255, 255, 255, 0.25);
 }
 
 /* ══════════════════════════════════════════════════════
    MODALS - PREMIUM DESIGN
-══════════════════════════════════════════════════════ */
+   ══════════════════════════════════════════════════════ */
+
+.modal-drag-handle {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0 4px;
+    flex-shrink: 0;
+}
+
+.modal-drag-handle span {
+    width: 40px;
+    height: 4px;
+    border-radius: 4px;
+    background: #d1d5db;
+    display: block;
+}
+
 .modal-backdrop {
     position: fixed;
     inset: 0;
@@ -1172,7 +1205,7 @@ button {
 }
 
 .modal {
-    background: var(--card-bg);
+    background: #fff;
     border-radius: 28px 28px 0 0;
     width: 100%;
     max-width: 600px;
@@ -1181,7 +1214,8 @@ button {
     display: flex;
     flex-direction: column;
     transform: translateY(100%);
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    box-shadow: 0 -10px 60px rgba(0, 0, 0, 0.15);
 }
 
 .modal-backdrop:not(.hidden) .modal {
@@ -1200,8 +1234,8 @@ button {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border-light);
+    padding: 16px 24px 20px;
+    border-bottom: none;
     flex-shrink: 0;
 }
 
@@ -1212,25 +1246,27 @@ button {
     color: var(--text-dark);
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 
 .modal-close {
-    background: var(--bg);
+    background: #f1f5f9;
     border: none;
     width: 36px;
     height: 36px;
-    border-radius: 10px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s;
-    color: var(--text-med);
+    color: #64748b;
+    font-size: 0.85rem;
 }
 
 .modal-close:hover {
-    background: var(--gold-light);
-    color: var(--gold);
+    background: #fee2e2;
+    color: #ef4444;
 }
 
 .modal-close-circle {
@@ -1255,15 +1291,16 @@ button {
 }
 
 .modal-body {
-    padding: 24px;
+    padding: 0 24px 24px;
     overflow-y: auto;
     flex: 1;
 }
 
 .modal-footer {
-    padding: 20px 24px;
+    padding: 16px 24px 24px;
     border-top: 1px solid var(--border-light);
     flex-shrink: 0;
+    background: #fff;
 }
 
 /* Item Detail Image */
@@ -1358,20 +1395,25 @@ button {
 }
 
 .order-notes-box textarea {
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: 12px;
     padding: 12px 14px;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-family: inherit;
     resize: none;
-    min-height: 80px;
+    min-height: 72px;
     transition: all 0.2s;
+    background: #f8fafc;
+    color: var(--text-dark);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .order-notes-box textarea:focus {
     border-color: var(--gold);
     outline: none;
     box-shadow: 0 0 0 3px var(--gold-light);
+    background: #fff;
 }
 
 /* Total Summary */
@@ -1379,20 +1421,20 @@ button {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 16px;
-    margin-bottom: 16px;
-    border-bottom: 1px solid var(--border-light);
+    padding: 16px 0;
+    margin-bottom: 12px;
+    border-top: 2px dashed #e2e8f0;
 }
 
 .total-summary span {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-med);
     font-weight: 600;
 }
 
 .total-summary strong {
-    font-size: 1.3rem;
-    color: var(--text-dark);
+    font-size: 1.4rem;
+    color: var(--gold-dark);
     font-weight: 800;
     font-family: 'Outfit', sans-serif;
     letter-spacing: 0.5px;
@@ -1405,24 +1447,27 @@ button {
     border: none;
     padding: 16px 24px;
     border-radius: 16px;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.3s;
-    box-shadow: 0 8px 24px var(--gold-glow);
+    box-shadow: 0 6px 20px var(--gold-glow);
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
+    letter-spacing: 0.5px;
 }
 
 .btn-submit-order:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 35px var(--gold-glow);
+    box-shadow: 0 10px 30px var(--gold-glow);
 }
 
 .btn-submit-order:active {
     transform: translateY(0);
+    box-shadow: 0 4px 12px var(--gold-glow);
 }
 
 .w-100 {
@@ -1512,7 +1557,92 @@ button {
 .cart-items-container {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s;
+}
+
+.cart-item:hover {
+    border-color: var(--gold-light);
+    box-shadow: 0 2px 8px rgba(197, 160, 89, 0.08);
+}
+
+.cart-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.cart-item-name {
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cart-item-price {
+    color: var(--gold-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+    font-family: 'Outfit', sans-serif;
+}
+
+.cart-item-note {
+    font-style: italic;
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-top: 4px;
+}
+
+.cart-item-qty {
+    background: #fff;
+    padding: 4px 8px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #e2e8f0;
+    flex-shrink: 0;
+}
+
+.cart-item-qty button {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text-med);
+    font-size: 0.75rem;
+}
+
+.cart-item-qty button:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: var(--gold-light);
+}
+
+.cart-item-qty span {
+    font-size: 1rem;
+    font-weight: 800;
+    min-width: 20px;
+    text-align: center;
+    color: var(--text-dark);
 }
 
 /* Ghost Button */
