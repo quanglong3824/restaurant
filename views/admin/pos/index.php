@@ -46,6 +46,8 @@ foreach (array_keys($grouped) as $a) {
 .floor-card:hover { border-color: #d4af37; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212,175,55,0.2); }
 .floor-card.occupied { border-color: #ef4444; background: linear-gradient(135deg, #fef2f2 0%, white 100%); }
 .floor-card.occupied:hover { border-color: #dc2626; }
+.floor-card.merged-child { border-color: #8b5cf6; background: linear-gradient(135deg, #f3e8ff 0%, white 100%); }
+.floor-card.merged-child:hover { border-color: #7c3aed; }
 .floor-card-name { font-size: 0.95rem; font-weight: 800; color: #1e293b; }
 .floor-card-status { font-size: 0.65rem; color: #64748b; margin-top: 4px; }
 .floor-card.occupied .floor-card-status { color: #ef4444; }
@@ -54,6 +56,11 @@ foreach (array_keys($grouped) as $a) {
 .floor-btn-gold { background: #d4af37; color: white; }
 .floor-btn-red { background: #ef4444; color: white; }
 .floor-btn-ghost { background: #f1f5f9; color: #64748b; }
+.floor-btn-blue { background: #3b82f6; color: white; }
+.floor-btn-purple { background: #8b5cf6; color: white; }
+
+.idle-badge { background: linear-gradient(135deg,#f59e0b,#fbbf24); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; margin-top: 4px; }
+.idle-badge.critical { background: linear-gradient(135deg,#ef4444,#f87171); }
 
 .menu-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
 .menu-tab { padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; cursor: pointer; background: white; border: 1px solid #e2e8f0; color: #64748b; transition: all 0.2s; }
@@ -211,12 +218,24 @@ foreach (array_keys($grouped) as $a) {
                     <div class="floor-grid">
                         <?php foreach ($tables as $t): ?>
                             <?php $isOccupied = $t['status'] === 'occupied'; ?>
-                            <div class="floor-card <?= $isOccupied ? 'occupied' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
+                            <?php $isChild = !empty($t['parent_id']); ?>
+                            <div class="floor-card <?= $isOccupied ? 'occupied' : '' ?> <?= $isChild ? 'merged-child' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
                                 <div class="floor-card-name"><?= e($t['name']) ?></div>
-                                <div class="floor-card-status"><?= $isOccupied ? 'Có khách' : 'Trống' ?></div>
+                                <div class="floor-card-status">
+                                    <?= $isOccupied ? 'Có khách' : 'Trống' ?>
+                                    <?php if ($isChild): ?>
+                                        <span style="color:#8b5cf6">(Ghép)</span>
+                                    <?php endif; ?>
+                                </div>
                                 <?php if ($isOccupied): ?>
                                     <div class="floor-card-actions">
-                                        <button class="floor-btn floor-btn-gold" onclick="viewOrder(<?= $t['id'] ?>)">Chi tiết</button>
+                                        <button class="floor-btn floor-btn-gold" onclick="event.stopPropagation();viewOrder(<?= $t['id'] ?>)">Chi tiết</button>
+                                        <button class="floor-btn floor-btn-blue" onclick="event.stopPropagation();openTransferModal(<?= $t['id'] ?>)">Chuyển</button>
+                                        <?php if (!$isChild): ?>
+                                            <button class="floor-btn floor-btn-purple" onclick="event.stopPropagation();openMergeModal(<?= $t['id'] ?>)">Ghép</button>
+                                        <?php else: ?>
+                                            <button class="floor-btn floor-btn-ghost" onclick="event.stopPropagation();unmergeTable(<?= $t['id'] ?>)">Tách</button>
+                                        <?php endif; ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -230,9 +249,17 @@ foreach (array_keys($grouped) as $a) {
                     <div class="area-header"><i class="fas fa-crown" style="color:#d4af37"></i><h3>VIP 1 & 2</h3></div>
                     <div class="floor-grid">
                         <?php foreach (array_merge($vip1, $vip2) as $t): ?>
-                            <div class="floor-card <?= $t['status'] === 'occupied' ? 'occupied' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
+                            <?php $isOccupiedVIP = $t['status'] === 'occupied'; ?>
+                            <?php $isChildVIP = !empty($t['parent_id']); ?>
+                            <div class="floor-card <?= $isOccupiedVIP ? 'occupied' : '' ?> <?= $isChildVIP ? 'merged-child' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
                                 <div class="floor-card-name"><?= e($t['name']) ?></div>
-                                <div class="floor-card-status"><?= $t['status'] === 'occupied' ? 'Có khách' : 'Trống' ?></div>
+                                <div class="floor-card-status"><?= $isOccupiedVIP ? 'Có khách' : 'Trống' ?><?php if ($isChildVIP): ?><span style="color:#8b5cf6">(Ghép)</span><?php endif; ?></div>
+                                <?php if ($isOccupiedVIP): ?>
+                                    <div class="floor-card-actions">
+                                        <button class="floor-btn floor-btn-gold" onclick="event.stopPropagation();viewOrder(<?= $t['id'] ?>)">Chi tiết</button>
+                                        <button class="floor-btn floor-btn-blue" onclick="event.stopPropagation();openTransferModal(<?= $t['id'] ?>)">Chuyển</button>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -244,9 +271,17 @@ foreach (array_keys($grouped) as $a) {
                     <div class="area-header"><i class="fas fa-crown" style="color:#d4af37"></i><h3>VIP 3 & 4</h3></div>
                     <div class="floor-grid">
                         <?php foreach (array_merge($vip3, $vip4) as $t): ?>
-                            <div class="floor-card <?= $t['status'] === 'occupied' ? 'occupied' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
+                            <?php $isOccupiedVIP34 = $t['status'] === 'occupied'; ?>
+                            <?php $isChildVIP34 = !empty($t['parent_id']); ?>
+                            <div class="floor-card <?= $isOccupiedVIP34 ? 'occupied' : '' ?> <?= $isChildVIP34 ? 'merged-child' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
                                 <div class="floor-card-name"><?= e($t['name']) ?></div>
-                                <div class="floor-card-status"><?= $t['status'] === 'occupied' ? 'Có khách' : 'Trống' ?></div>
+                                <div class="floor-card-status"><?= $isOccupiedVIP34 ? 'Có khách' : 'Trống' ?><?php if ($isChildVIP34): ?><span style="color:#8b5cf6">(Ghép)</span><?php endif; ?></div>
+                                <?php if ($isOccupiedVIP34): ?>
+                                    <div class="floor-card-actions">
+                                        <button class="floor-btn floor-btn-gold" onclick="event.stopPropagation();viewOrder(<?= $t['id'] ?>)">Chi tiết</button>
+                                        <button class="floor-btn floor-btn-blue" onclick="event.stopPropagation();openTransferModal(<?= $t['id'] ?>)">Chuyển</button>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -300,11 +335,23 @@ foreach (array_keys($grouped) as $a) {
                         <div class="area-header"><h3><?= e($catName) ?></h3></div>
                         <div class="menu-grid">
                             <?php foreach ($items as $item): ?>
-                                <div class="menu-item-card" data-item="<?= e(json_encode($item)) ?>">
+                                <?php
+                                $optsStr = $item['note_options'] ?? '';
+                                $optsEnStr = $item['note_options_en'] ?? '';
+                                $optsArr = array_filter(array_map('trim', explode(',', $optsStr)));
+                                $optsEnArr = array_filter(array_map('trim', explode(',', $optsEnStr)));
+                                $combinedOpts = [];
+                                foreach ($optsArr as $idx => $optVal) {
+                                    $enVal = $optsEnArr[$idx] ?? '';
+                                    $combinedOpts[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
+                                }
+                                $itemOptsJson = json_encode($combinedOpts, JSON_UNESCAPED_UNICODE);
+                                ?>
+                                <div class="menu-item-card" data-item="<?= e(json_encode($item)) ?>" data-options="<?= htmlspecialchars($itemOptsJson) ?>">
                                     <div class="menu-item-name"><?= e($item['name']) ?></div>
                                     <div class="menu-item-price"><?= formatPrice($item['price']) ?></div>
                                     <?php if ($orderId > 0): ?>
-                                        <div class="menu-item-add" onclick="addItemToOrder(<?= $item['id'] ?>)">
+                                        <div class="menu-item-add" onclick="event.stopPropagation();openAddItemModal(<?= $item['id'] ?>, '<?= addslashes(e($item['name'])) ?>', <?= htmlspecialchars($itemOptsJson) ?>)">
                                             <i class="fas fa-plus"></i>
                                         </div>
                                     <?php endif; ?>
@@ -334,7 +381,19 @@ foreach (array_keys($grouped) as $a) {
 
                     <div class="order-items">
                         <?php foreach ($orderItems as $item): ?>
-                            <div class="order-item-row">
+                            <?php
+                            $optsStr = $item['note_options'] ?? '';
+                            $optsEnStr = $item['note_options_en'] ?? '';
+                            $optsArr = array_filter(array_map('trim', explode(',', $optsStr)));
+                            $optsEnArr = array_filter(array_map('trim', explode(',', $optsEnStr)));
+                            $combinedOpts = [];
+                            foreach ($optsArr as $idx => $optVal) {
+                                $enVal = $optsEnArr[$idx] ?? '';
+                                $combinedOpts[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
+                            }
+                            $itemOptsJson = json_encode($combinedOpts, JSON_UNESCAPED_UNICODE);
+                            ?>
+                            <div class="order-item-row" data-item-id="<?= $item['id'] ?>" data-options="<?= htmlspecialchars($itemOptsJson) ?>">
                                 <div class="order-item-name">
                                     <?= e($item['item_name']) ?>
                                     <?php if ($item['note']): ?>
@@ -346,6 +405,7 @@ foreach (array_keys($grouped) as $a) {
                                     <span style="font-weight:700"><?= $item['quantity'] ?></span>
                                     <button class="cart-qty-btn" onclick="updateItemQty(<?= $item['id'] ?>, 1)"><i class="fas fa-plus"></i></button>
                                 </div>
+                                <button class="floor-btn floor-btn-ghost" onclick="openItemNoteModal(<?= $item['id'] ?>, '<?= addslashes(e($item['item_name'])) ?>', <?= htmlspecialchars($itemOptsJson) ?>, '<?= addslashes(e($item['note'] ?? '')) ?>')"><i class="fas fa-pen"></i></button>
                                 <div class="order-item-price"><?= formatPrice($item['item_price'] * $item['quantity']) ?></div>
                                 <span class="order-item-status <?= $item['status'] ?? 'draft' ?>"><?= ucfirst($item['status'] ?? 'draft') ?></span>
                                 <button class="floor-btn floor-btn-red" onclick="removeItem(<?= $item['id'] ?>)" style="margin-left:4px"><i class="fas fa-trash"></i></button>
@@ -357,6 +417,7 @@ foreach (array_keys($grouped) as $a) {
                         <div class="order-total"><?= formatPrice($orderTotal) ?></div>
                         <div class="order-actions">
                             <?php $draftCount = count(array_filter($orderItems, fn($i) => ($i['status'] ?? 'draft') === 'draft')); ?>
+                            <?php $confirmedCount = count(array_filter($orderItems, fn($i) => in_array(($i['status'] ?? 'draft'), ['confirmed', 'cooking', 'served']))); ?>
                             <?php if ($draftCount > 0): ?>
                                 <button class="btn btn-gold" onclick="confirmOrder()">
                                     <i class="fas fa-check"></i> Xác nhận (<?= $draftCount ?>)
@@ -369,6 +430,28 @@ foreach (array_keys($grouped) as $a) {
                                 <button class="btn btn-red" onclick="cancelOrder()">
                                     <i class="fas fa-times"></i> Hủy bàn
                                 </button>
+                            <?php endif; ?>
+                            <?php if ($confirmedCount > 0): ?>
+                                <button class="btn btn-ghost" onclick="openSplitModal()">
+                                    <i class="fas fa-cut"></i> Tách món
+                                </button>
+                            <?php endif; ?>
+                            <?php if ($orderTotal > 0): ?>
+                                <button class="btn btn-ghost" onclick="printBill()">
+                                    <i class="fas fa-print"></i> In
+                                </button>
+                                <button class="btn btn-ghost" onclick="openTransferModal(<?= $tableId ?>)">
+                                    <i class="fas fa-exchange-alt"></i> Chuyển
+                                </button>
+                                <?php if (empty($table['parent_id'])): ?>
+                                    <button class="btn btn-ghost" onclick="openMergeModal(<?= $tableId ?>)">
+                                        <i class="fas fa-link"></i> Ghép
+                                    </button>
+                                <?php else: ?>
+                                    <button class="btn btn-ghost" onclick="unmergeTable(<?= $tableId ?>)">
+                                        <i class="fas fa-unlink"></i> Tách bàn
+                                    </button>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -573,14 +656,127 @@ foreach (array_keys($grouped) as $a) {
             <select class="form-control" id="transferTarget">
                 <option value="">-- Chọn bàn trống --</option>
                 <?php foreach ($allTables as $t): ?>
-                    <?php if ($t['status'] === 'available' && $t['id'] !== $tableId): ?>
+                    <?php if ($t['status'] === 'available' && $t['id'] !== $tableId && empty($t['parent_id'])): ?>
                         <option value="<?= $t['id'] ?>"><?= e($t['name']) ?> (<?= e($t['area']) ?>)</option>
                     <?php endif; ?>
                 <?php endforeach; ?>
             </select>
         </div>
         <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('modalTransfer')">Hủy</button>
             <button class="btn btn-gold" onclick="submitTransfer()"><i class="fas fa-exchange-alt"></i> Chuyển</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="modalMerge">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Ghép bàn</div>
+            <button class="modal-close" onclick="closeModal('modalMerge')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:0.85rem;color:#64748b;margin-bottom:12px">Chọn bàn trống để ghép vào bàn hiện tại</p>
+            <select class="form-control" id="mergeTarget">
+                <option value="">-- Chọn bàn --</option>
+                <?php foreach ($allTables as $t): ?>
+                    <?php if ($t['status'] === 'available' && $t['id'] !== $tableId && empty($t['parent_id'])): ?>
+                        <option value="<?= $t['id'] ?>"><?= e($t['name']) ?> (<?= e($t['area']) ?>)</option>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('modalMerge')">Hủy</button>
+            <button class="btn btn-gold" onclick="submitMerge()"><i class="fas fa-link"></i> Ghép</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="modalSplit">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Tách món sang bàn mới</div>
+            <button class="modal-close" onclick="closeModal('modalSplit')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom:12px">
+                <label style="font-size:0.75rem;color:#64748b;font-weight:700">Bàn đích</label>
+                <select class="form-control" id="splitTargetTable">
+                    <option value="">-- Chọn bàn trống --</option>
+                    <?php foreach ($allTables as $t): ?>
+                        <?php if ($t['status'] === 'available' && $t['id'] !== $tableId && empty($t['parent_id'])): ?>
+                            <option value="<?= $t['id'] ?>"><?= e($t['name']) ?> (<?= e($t['area']) ?>)</option>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div style="margin-bottom:12px">
+                <label style="font-size:0.75rem;color:#64748b;font-weight:700">Số khách (bàn mới)</label>
+                <div style="display:flex;gap:6px">
+                    <?php for ($i = 1; $i <= 6; $i++): ?>
+                        <button class="guest-btn <?= $i === 2 ? 'selected' : '' ?>" onclick="selectSplitGuest(<?= $i ?>)" style="padding:6px 10px"><?= $i ?></button>
+                    <?php endfor; ?>
+                </div>
+            </div>
+            <div style="margin-bottom:12px">
+                <label style="font-size:0.75rem;color:#64748b;font-weight:700">Món cần tách (<span id="splitSelectedCount">0</span>)</label>
+                <div id="splitItemsList" style="max-height:200px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;padding:8px">
+                    <?php foreach ($orderItems as $item): ?>
+                        <?php if (in_array(($item['status'] ?? 'draft'), ['confirmed', 'cooking', 'served'])): ?>
+                            <div style="display:flex;align-items:center;padding:6px;border-bottom:1px solid #f1f5f9">
+                                <input type="checkbox" class="split-item-cb" data-item-id="<?= $item['id'] ?>" onchange="updateSplitCount()">
+                                <span style="flex:1;font-size:0.85rem"><?= e($item['item_name']) ?></span>
+                                <span style="font-size:0.8rem;color:#64748b">x<?= $item['quantity'] ?></span>
+                            </div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('modalSplit')">Hủy</button>
+            <button class="btn btn-gold" onclick="submitSplit()"><i class="fas fa-cut"></i> Tách</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="modalItemNote">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Ghi chú món</div>
+            <button class="modal-close" onclick="closeModal('modalItemNote')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div id="itemNoteName" style="font-weight:800;font-size:1rem;margin-bottom:12px"></div>
+            <div id="itemNoteOptions" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
+            <input type="text" class="form-control" id="itemNoteText" placeholder="Ghi chú thêm (VD: Không hành, ít cay...)">
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('modalItemNote')">Hủy</button>
+            <button class="btn btn-gold" onclick="submitItemNote()"><i class="fas fa-check"></i> Lưu</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="modalAddItem">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title" id="addItemName">Thêm món</div>
+            <button class="modal-close" onclick="closeModal('modalAddItem')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div id="addItemOptions" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
+            <input type="text" class="form-control" id="addItemNote" placeholder="Ghi chú (VD: Không hành...)" style="margin-bottom:12px">
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+                <button class="guest-btn" onclick="changeAddQty(-1)"><i class="fas fa-minus"></i></button>
+                <span id="addItemQty" style="font-size:1.5rem;font-weight:800;width:50px;text-align:center">1</span>
+                <button class="guest-btn" onclick="changeAddQty(1)"><i class="fas fa-plus"></i></button>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('modalAddItem')">Hủy</button>
+            <button class="btn btn-gold" onclick="submitAddItem()"><i class="fas fa-plus"></i> Thêm</button>
         </div>
     </div>
 </div>
@@ -686,11 +882,81 @@ function submitOpenTable() {
     });
 }
 
+// ── Add Item with Note ────────────────────────────────────
+let addItemItemId = 0;
+let addItemQtyCount = 1;
+let addItemSelectedOpts = [];
+
+function openAddItemModal(itemId, itemName, options) {
+    addItemItemId = itemId;
+    addItemQtyCount = 1;
+    addItemSelectedOpts = [];
+    
+    document.getElementById('addItemName').textContent = itemName;
+    document.getElementById('addItemQty').textContent = '1';
+    document.getElementById('addItemNote').value = '';
+    
+    const optsContainer = document.getElementById('addItemOptions');
+    optsContainer.innerHTML = '';
+    
+    const opts = options ? JSON.parse(options) : [];
+    opts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = opt;
+        btn.className = 'guest-btn';
+        btn.style.cssText = 'padding:6px 12px;font-size:0.8rem;';
+        btn.onclick = function() {
+            const idx = addItemSelectedOpts.indexOf(opt);
+            if (idx >= 0) {
+                addItemSelectedOpts.splice(idx, 1);
+                this.classList.remove('selected');
+            } else {
+                addItemSelectedOpts.push(opt);
+                this.classList.add('selected');
+            }
+        };
+        optsContainer.appendChild(btn);
+    });
+    
+    openModal('modalAddItem');
+}
+
+function changeAddQty(delta) {
+    addItemQtyCount = Math.max(1, addItemQtyCount + delta);
+    document.getElementById('addItemQty').textContent = addItemQtyCount;
+}
+
+function submitAddItem() {
+    const freeNote = document.getElementById('addItemNote').value.trim();
+    const parts = [...addItemSelectedOpts];
+    if (freeNote) parts.push(freeNote);
+    const note = parts.join(', ');
+    
+    fetch(POS.baseUrl + '/admin/pos/add-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: POS.orderId, table_id: POS.tableId, menu_item_id: addItemItemId, qty: addItemQtyCount, note: note })
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.ok) {
+            closeModal('modalAddItem');
+            POS.orderId = d.order_id;
+            updateCartUI(d);
+            if (POS.orderId > 0) showCart();
+        } else {
+            alert(d.message || 'Lỗi thêm món');
+        }
+    });
+}
+
+// ── Quick Add (no modal) ───────────────────────────────────
 function addItemToOrder(itemId) {
     fetch(POS.baseUrl + '/admin/pos/add-item', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: POS.orderId, table_id: POS.tableId, menu_item_id: itemId, qty: 1 })
+        body: JSON.stringify({ order_id: POS.orderId, table_id: POS.tableId, menu_item_id: itemId, qty: 1, note: '' })
     })
     .then(r => r.json())
     .then(d => {
@@ -735,8 +1001,8 @@ function updateCartUI(d) {
     document.getElementById('cartTotal').textContent = d.total_fmt;
     const body = document.getElementById('cartBody');
     body.innerHTML = d.items.map(it => `
-        <div class="cart-item">
-            <div class="cart-item-name">${it.item_name}</div>
+        <div class="cart-item" data-item-id="${it.id}">
+            <div class="cart-item-name">${it.item_name}${it.note ? '<span style="font-size:0.65rem;color:#d4af37">(' + it.note + ')</span>' : ''}</div>
             <div class="cart-item-qty">
                 <button class="cart-qty-btn" onclick="updateItemQty(${it.id}, -1)"><i class="fas fa-minus"></i></button>
                 <span>${it.quantity}</span>
@@ -749,13 +1015,14 @@ function updateCartUI(d) {
     const orderBody = document.querySelector('.order-items');
     if (orderBody) {
         orderBody.innerHTML = d.items.map(it => `
-            <div class="order-item-row">
-                <div class="order-item-name">${it.item_name}</div>
+            <div class="order-item-row" data-item-id="${it.id}" data-options="${it.note_options || '[]'}">
+                <div class="order-item-name">${it.item_name}${it.note ? '<span style="font-size:0.7rem;color:#d4af37">(' + it.note + ')</span>' : ''}</div>
                 <div class="order-item-qty">
                     <button class="cart-qty-btn" onclick="updateItemQty(${it.id}, -1)"><i class="fas fa-minus"></i></button>
                     <span style="font-weight:700">${it.quantity}</span>
                     <button class="cart-qty-btn" onclick="updateItemQty(${it.id}, 1)"><i class="fas fa-plus"></i></button>
                 </div>
+                <button class="floor-btn floor-btn-ghost" onclick="openItemNoteModal(${it.id}, '${it.item_name.replace(/'/g, "\\'")}', ${it.note_options || '[]'}, '${it.note || ''}')"><i class="fas fa-pen"></i></button>
                 <div class="order-item-price">${it.subtotal_fmt}</div>
                 <span class="order-item-status ${it.status || 'draft'}">${it.status || 'draft'}</span>
                 <button class="floor-btn floor-btn-red" onclick="removeItem(${it.id})"><i class="fas fa-trash"></i></button>
@@ -898,6 +1165,267 @@ function showCart() {
 
 function hideCart() {
     document.getElementById('cartPanel').style.display = 'none';
+}
+
+// ── Transfer ──────────────────────────────────────────────
+function openTransferModal(tableId) {
+    POS.transferTableId = tableId;
+    openModal('modalTransfer');
+}
+
+function submitTransfer() {
+    const targetId = parseInt(document.getElementById('transferTarget').value);
+    if (!targetId) { alert('Chọn bàn đích'); return; }
+    
+    fetch(POS.baseUrl + '/admin/pos/transfer-table', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from_table_id: POS.transferTableId, to_table_id: targetId })
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.ok) {
+            closeModal('modalTransfer');
+            alert('Chuyển bàn thành công!');
+            window.location.href = POS.baseUrl + '/admin/pos?tab=floor';
+        } else {
+            alert(d.message || 'Lỗi chuyển bàn');
+        }
+    });
+}
+
+// ── Merge/Unmerge ──────────────────────────────────────────
+function openMergeModal(tableId) {
+    POS.mergeParentId = tableId;
+    openModal('modalMerge');
+}
+
+function submitMerge() {
+    const childId = parseInt(document.getElementById('mergeTarget').value);
+    if (!childId) { alert('Chọn bàn để ghép'); return; }
+    
+    fetch(POS.baseUrl + '/admin/pos/merge-table', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ parent_id: POS.mergeParentId, child_id: childId })
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.ok) {
+            closeModal('modalMerge');
+            alert('Ghép bàn thành công!');
+            location.reload();
+        } else {
+            alert(d.message || 'Lỗi ghép bàn');
+        }
+    });
+}
+
+function unmergeTable(tableId) {
+    if (!confirm('Tách bàn này khỏi nhóm ghép?')) return;
+    
+    fetch(POS.baseUrl + '/admin/pos/unmerge-table', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table_id: tableId })
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.ok) {
+            alert('Tách bàn thành công!');
+            location.reload();
+        } else {
+            alert(d.message || 'Lỗi tách bàn');
+        }
+    });
+}
+
+// ── Split Order ────────────────────────────────────────────
+let splitGuestCount = 2;
+
+function openSplitModal() {
+    openModal('modalSplit');
+}
+
+function selectSplitGuest(n) {
+    splitGuestCount = n;
+    document.querySelectorAll('#modalSplit .guest-btn').forEach(b => b.classList.remove('selected'));
+    event.target.classList.add('selected');
+}
+
+function updateSplitCount() {
+    const count = document.querySelectorAll('.split-item-cb:checked').length;
+    document.getElementById('splitSelectedCount').textContent = count;
+}
+
+function submitSplit() {
+    const targetTableId = parseInt(document.getElementById('splitTargetTable').value);
+    if (!targetTableId) { alert('Chọn bàn đích'); return; }
+    
+    const itemIds = [];
+    document.querySelectorAll('.split-item-cb:checked').forEach(cb => {
+        itemIds.push(parseInt(cb.dataset.itemId));
+    });
+    
+    if (itemIds.length === 0) { alert('Chọn món cần tách'); return; }
+    
+    fetch(POS.baseUrl + '/admin/pos/split-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: POS.orderId, target_table_id: targetTableId, guest_count: splitGuestCount, item_ids: itemIds })
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.ok) {
+            closeModal('modalSplit');
+            alert('Tách món thành công!');
+            location.reload();
+        } else {
+            alert(d.message || 'Lỗi tách món');
+        }
+    });
+}
+
+// ── Print Bill ─────────────────────────────────────────────
+function printBill() {
+    window.open(POS.baseUrl + '/orders/print?order_id=' + POS.orderId, '_blank');
+}
+
+// ── Item Note ──────────────────────────────────────────────
+let currentNoteItemId = 0;
+let selectedNoteOptions = [];
+
+function openItemNoteModal(itemId, itemName, options, currentNote) {
+    currentNoteItemId = itemId;
+    selectedNoteOptions = [];
+    
+    document.getElementById('itemNoteName').textContent = itemName;
+    
+    const optsContainer = document.getElementById('itemNoteOptions');
+    optsContainer.innerHTML = '';
+    
+    const opts = options ? JSON.parse(options) : [];
+    const currentParts = currentNote ? currentNote.split(',').map(s => s.trim()).filter(Boolean) : [];
+    
+    opts.forEach(opt => {
+        const isActive = currentParts.includes(opt);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = opt;
+        btn.style.cssText = `padding:6px 12px;border-radius:20px;font-size:0.8rem;cursor:pointer;border:2px solid ${isActive ? '#d4af37' : '#e2e8f0'};background:${isActive ? 'rgba(212,175,55,0.15)' : '#f8fafc'};color:${isActive ? '#d4af37' : '#64748b'};font-weight:700;`;
+        btn.onclick = function() {
+            const idx = selectedNoteOptions.indexOf(opt);
+            if (idx >= 0) {
+                selectedNoteOptions.splice(idx, 1);
+                this.style.borderColor = '#e2e8f0';
+                this.style.background = '#f8fafc';
+                this.style.color = '#64748b';
+            } else {
+                selectedNoteOptions.push(opt);
+                this.style.borderColor = '#d4af37';
+                this.style.background = 'rgba(212,175,55,0.15)';
+                this.style.color = '#d4af37';
+            }
+        };
+        if (isActive) selectedNoteOptions.push(opt);
+        optsContainer.appendChild(btn);
+    });
+    
+    const freeText = currentParts.filter(p => !opts.includes(p)).join(', ');
+    document.getElementById('itemNoteText').value = freeText;
+    
+    openModal('modalItemNote');
+}
+
+function submitItemNote() {
+    const freeText = document.getElementById('itemNoteText').value.trim();
+    const parts = [...selectedNoteOptions];
+    if (freeText) parts.push(freeText);
+    const note = parts.join(', ');
+    
+    fetch(POS.baseUrl + '/admin/pos/update-item-note', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ item_id: currentNoteItemId, order_id: POS.orderId, note: note })
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.ok) {
+            closeModal('modalItemNote');
+            updateCartUI(d);
+        } else {
+            alert('Lỗi lưu ghi chú');
+        }
+    });
+}
+
+// ── Add note button to order items ──────────────────────────
+document.querySelectorAll('.order-item-row').forEach(row => {
+    const nameDiv = row.querySelector('.order-item-name');
+    if (nameDiv) {
+        const noteBtn = document.createElement('button');
+        noteBtn.className = 'floor-btn floor-btn-ghost';
+        noteBtn.innerHTML = '<i class="fas fa-pen"></i>';
+        noteBtn.style.marginLeft = '4px';
+        noteBtn.onclick = function(e) {
+            e.stopPropagation();
+            const itemData = row.dataset;
+            openItemNoteModal(
+                parseInt(itemData?.itemId || row.querySelector('.cart-qty-btn')?.onclick?.toString().match(/\d+/)?.[0] || 0),
+                nameDiv.textContent.split('(')[0].trim(),
+                itemData?.options || '[]',
+                nameDiv.querySelector('span')?.textContent?.replace(/[()]/g, '') || ''
+            );
+        };
+        row.querySelector('.order-item-qty')?.after(noteBtn);
+    }
+});
+
+// ── Realtime with idle timer ───────────────────────────────
+function refreshRealtime() {
+    fetch(POS.baseUrl + '/admin/pos/realtime-data')
+    .then(r => r.json())
+    .then(d => {
+        if (d.ok) {
+            const grid = document.getElementById('realtimeGrid');
+            grid.innerHTML = d.data.map(o => {
+                let idleBadge = '';
+                if (o.is_idle && o.idle_seconds > 0) {
+                    const remaining = Math.max(0, 300 - o.idle_seconds);
+                    const min = Math.floor(remaining / 60);
+                    const sec = remaining % 60;
+                    const critical = remaining < 60;
+                    idleBadge = `<div class="idle-badge ${critical ? 'critical' : ''}"><i class="fas fa-clock"></i> ${min}:${sec < 10 ? '0' + sec : sec}</div>`;
+                }
+                return `
+                <div class="realtime-card" id="realtime-${o.id}">
+                    <div class="realtime-card-header">
+                        <div>
+                            <div class="realtime-table-name">${o.full_name}</div>
+                            ${idleBadge}
+                        </div>
+                        <span class="realtime-status ${o.status}">${o.status}</span>
+                    </div>
+                    <div class="realtime-card-body">
+                        ${o.items.length > 0 ? o.items.map(it => `
+                            <div class="realtime-item">
+                                <div class="realtime-item-name">${it.item_name}</div>
+                                <div class="realtime-item-qty">x${it.quantity}</div>
+                            </div>
+                        `).join('') : '<div style="color:#64748b;font-size:0.8rem;text-align:center">Chưa có món</div>'}
+                    </div>
+                    <div class="realtime-card-footer">
+                        <div class="realtime-total">${o.total_fmt}</div>
+                        <div class="realtime-actions">
+                            <button class="floor-btn floor-btn-gold" onclick="viewOrder(${o.table_id})">Chi tiết</button>
+                            <button class="floor-btn floor-btn-blue" onclick="openTransferModal(${o.table_id})">Chuyển</button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+    });
 }
 
 setInterval(refreshRealtime, 10000);

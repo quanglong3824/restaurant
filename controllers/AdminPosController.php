@@ -295,7 +295,9 @@ class AdminPosController extends Controller
                     'item_price' => $item['price'],
                     'quantity' => $qty,
                     'note' => $note,
-                    'status' => 'draft'
+                    'status' => 'draft',
+                    'note_options' => $item['note_options'] ?? '',
+                    'note_options_en' => $item['note_options_en'] ?? ''
                 ]);
             }
         }
@@ -304,6 +306,16 @@ class AdminPosController extends Controller
         $items = $this->orderModel->getItems($orderId);
         foreach ($items as &$it) {
             $it['subtotal_fmt'] = formatPrice($it['item_price'] * $it['quantity']);
+            $optsStr = $it['note_options'] ?? '';
+            $optsEnStr = $it['note_options_en'] ?? '';
+            $optsArr = array_filter(array_map('trim', explode(',', $optsStr)));
+            $optsEnArr = array_filter(array_map('trim', explode(',', $optsEnStr)));
+            $combined = [];
+            foreach ($optsArr as $idx => $optVal) {
+                $enVal = $optsEnArr[$idx] ?? '';
+                $combined[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
+            }
+            $it['note_options'] = json_encode($combined, JSON_UNESCAPED_UNICODE);
         }
 
         $this->json([
@@ -333,6 +345,16 @@ class AdminPosController extends Controller
         $items = $this->orderModel->getItems($orderId);
         foreach ($items as &$it) {
             $it['subtotal_fmt'] = formatPrice($it['item_price'] * $it['quantity']);
+            $optsStr = $it['note_options'] ?? '';
+            $optsEnStr = $it['note_options_en'] ?? '';
+            $optsArr = array_filter(array_map('trim', explode(',', $optsStr)));
+            $optsEnArr = array_filter(array_map('trim', explode(',', $optsEnStr)));
+            $combined = [];
+            foreach ($optsArr as $idx => $optVal) {
+                $enVal = $optsEnArr[$idx] ?? '';
+                $combined[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
+            }
+            $it['note_options'] = json_encode($combined, JSON_UNESCAPED_UNICODE);
         }
 
         $this->json([
@@ -354,6 +376,16 @@ class AdminPosController extends Controller
         $items = $this->orderModel->getItems($orderId);
         foreach ($items as &$it) {
             $it['subtotal_fmt'] = formatPrice($it['item_price'] * $it['quantity']);
+            $optsStr = $it['note_options'] ?? '';
+            $optsEnStr = $it['note_options_en'] ?? '';
+            $optsArr = array_filter(array_map('trim', explode(',', $optsStr)));
+            $optsEnArr = array_filter(array_map('trim', explode(',', $optsEnStr)));
+            $combined = [];
+            foreach ($optsArr as $idx => $optVal) {
+                $enVal = $optsEnArr[$idx] ?? '';
+                $combined[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
+            }
+            $it['note_options'] = json_encode($combined, JSON_UNESCAPED_UNICODE);
         }
 
         $this->json([
@@ -373,6 +405,16 @@ class AdminPosController extends Controller
         $items = $this->orderModel->getItems($orderId);
         foreach ($items as &$it) {
             $it['subtotal_fmt'] = formatPrice($it['item_price'] * $it['quantity']);
+            $optsStr = $it['note_options'] ?? '';
+            $optsEnStr = $it['note_options_en'] ?? '';
+            $optsArr = array_filter(array_map('trim', explode(',', $optsStr)));
+            $optsEnArr = array_filter(array_map('trim', explode(',', $optsEnStr)));
+            $combined = [];
+            foreach ($optsArr as $idx => $optVal) {
+                $enVal = $optsEnArr[$idx] ?? '';
+                $combined[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
+            }
+            $it['note_options'] = json_encode($combined, JSON_UNESCAPED_UNICODE);
         }
 
         $this->json([
@@ -513,6 +555,16 @@ class AdminPosController extends Controller
         $items = $this->orderModel->getItems($orderId);
         foreach ($items as &$it) {
             $it['subtotal_fmt'] = formatPrice($it['item_price'] * $it['quantity']);
+            $optsStr = $it['note_options'] ?? '';
+            $optsEnStr = $it['note_options_en'] ?? '';
+            $optsArr = array_filter(array_map('trim', explode(',', $optsStr)));
+            $optsEnArr = array_filter(array_map('trim', explode(',', $optsEnStr)));
+            $combined = [];
+            foreach ($optsArr as $idx => $optVal) {
+                $enVal = $optsEnArr[$idx] ?? '';
+                $combined[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
+            }
+            $it['note_options'] = json_encode($combined, JSON_UNESCAPED_UNICODE);
         }
 
         $this->json([

@@ -57,27 +57,6 @@
         <!-- Sidebar Nav -->
         <nav class="sidebar-nav">
             
-            <!-- PHỤC VỤ BÀN (All roles: waiter, admin, IT) -->
-            <div class="nav-section">
-                <div class="nav-section-title">PHỤC VỤ BÀN</div>
-                <a href="<?= BASE_URL ?>/tables" class="nav-item <?= activeClass('/tables') ?>">
-                    <i class="fas fa-chair"></i>
-                    <span>Quản lý bàn</span>
-                </a>
-                <a href="<?= BASE_URL ?>/menu" class="nav-item <?= activeClass('/menu') ?>">
-                    <i class="fas fa-book-open"></i>
-                    <span>Menu phục vụ</span>
-                </a>
-                <a href="<?= BASE_URL ?>/orders" class="nav-item <?= activeClass('/orders') ?>">
-                    <i class="fas fa-receipt"></i>
-                    <span>Danh sách order</span>
-                </a>
-                <a href="<?= BASE_URL ?>/notifications" class="nav-item <?= activeClass('/notifications') ?>">
-                    <i class="fas fa-bell"></i>
-                    <span>Thông báo bàn</span>
-                </a>
-            </div>
-
             <?php if (Auth::isAdmin()): ?>
                 <div class="nav-section">
                     <div class="nav-section-title">VẬN HÀNH</div>
