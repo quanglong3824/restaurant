@@ -844,15 +844,16 @@ function updateCartModal() {
     let total = 0;
     
     cart.forEach((item, index) => {
+        // Hiển thị tên tiếng Anh ưu tiên, tiếng Việt nhỏ dưới
         let displayName = item.nameEn || item.name_en || item.name;
+        let displayViName = item.name || '';
         let noteLabel = 'Note';
         total += item.price * item.quantity;
         html += `
             <div class="cart-item">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${displayName}</div>
-                    ${!isEn && displayNameEn && displayNameEn !== item.name ? `<div class="cart-item-name-en">${displayNameEn}</div>` : ''}
-                    ${isEn && item.name && displayName !== item.name ? `<div class="cart-item-name-en">${item.name}</div>` : ''}
+                    ${displayViName && displayViName !== displayName ? `<div class="cart-item-name-en" style="font-size:0.75rem;color:#94a3b8;">${displayViName}</div>` : ''}
                     <div class="cart-item-price">${formatCurrency(item.price)}</div>
                     ${item.note ? `<div class="cart-item-note"><i class="fas fa-pen" style="font-size:.6rem;margin-right:3px;"></i>${noteLabel}: ${item.note}</div>` : ''}
                 </div>
