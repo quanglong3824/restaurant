@@ -41,37 +41,57 @@ foreach (array_keys($grouped) as $a) {
 .pos-header h2 { font-size: 1.1rem; font-weight: 800; color: #1e293b; margin: 0; }
 .pos-header-actions { display: flex; gap: 8px; }
 
-.floor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; }
-.floor-card { background: white; border-radius: 12px; padding: 12px; cursor: pointer; border: 2px solid #e2e8f0; transition: all 0.2s; min-height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-.floor-card:hover { border-color: #d4af37; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212,175,55,0.2); }
+.floor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; }
+.floor-card { background: white; border-radius: 14px; padding: 14px; cursor: pointer; border: 2px solid #e2e8f0; transition: all 0.2s; min-height: 90px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
+.floor-card:hover { border-color: #d4af37; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(212,175,55,0.25); }
 .floor-card.occupied { border-color: #ef4444; background: linear-gradient(135deg, #fef2f2 0%, white 100%); }
-.floor-card.occupied:hover { border-color: #dc2626; }
+.floor-card.occupied:hover { border-color: #dc2626; box-shadow: 0 8px 20px rgba(239,68,68,0.25); }
 .floor-card.merged-child { border-color: #8b5cf6; background: linear-gradient(135deg, #f3e8ff 0%, white 100%); }
 .floor-card.merged-child:hover { border-color: #7c3aed; }
-.floor-card-name { font-size: 0.95rem; font-weight: 800; color: #1e293b; }
-.floor-card-status { font-size: 0.65rem; color: #64748b; margin-top: 4px; }
+.floor-card.available { border-color: #10b981; background: linear-gradient(135deg, #d1fae5 0%, white 100%); }
+.floor-card.available:hover { border-color: #059669; }
+.floor-card-name { font-size: 1rem; font-weight: 800; color: #1e293b; }
+.floor-card-status { font-size: 0.7rem; color: #64748b; margin-top: 4px; font-weight: 600; }
 .floor-card.occupied .floor-card-status { color: #ef4444; }
-.floor-card-actions { display: flex; gap: 4px; margin-top: 8px; }
-.floor-btn { padding: 4px 8px; border-radius: 6px; font-size: 0.6rem; font-weight: 700; cursor: pointer; border: none; }
+.floor-card.available .floor-card-status { color: #10b981; }
+.floor-card-icon { position: absolute; top: 8px; right: 8px; font-size: 0.8rem; opacity: 0.3; }
+.floor-card.occupied .floor-card-icon { opacity: 0.5; color: #ef4444; }
+.floor-card-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
+.floor-btn { padding: 5px 10px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; cursor: pointer; border: none; }
 .floor-btn-gold { background: #d4af37; color: white; }
 .floor-btn-red { background: #ef4444; color: white; }
 .floor-btn-ghost { background: #f1f5f9; color: #64748b; }
 .floor-btn-blue { background: #3b82f6; color: white; }
 .floor-btn-purple { background: #8b5cf6; color: white; }
+.floor-btn:hover { transform: scale(1.05); }
 
-.idle-badge { background: linear-gradient(135deg,#f59e0b,#fbbf24); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; margin-top: 4px; }
-.idle-badge.critical { background: linear-gradient(135deg,#ef4444,#f87171); }
+.type-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+.type-tab { padding: 10px 20px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; background: white; border: 2px solid #e2e8f0; color: #64748b; transition: all 0.2s; }
+.type-tab:hover { border-color: #d4af37; }
+.type-tab.active { background: #d4af37; color: white; border-color: #d4af37; }
 
-.menu-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
-.menu-tab { padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; cursor: pointer; background: white; border: 1px solid #e2e8f0; color: #64748b; transition: all 0.2s; }
-.menu-tab:hover { border-color: #d4af37; }
+.area-section { margin-bottom: 20px; }
+.area-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 10px 14px; background: white; border-radius: 10px; border: 1px solid #e2e8f0; }
+.area-header h3 { font-size: 0.9rem; font-weight: 800; color: #1e293b; margin: 0; }
+.area-header i { color: #d4af37; }
+
+.menu-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.menu-tab { padding: 10px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; cursor: pointer; background: white; border: 2px solid #e2e8f0; color: #64748b; transition: all 0.2s; }
+.menu-tab:hover { border-color: #d4af37; color: #d4af37; }
 .menu-tab.active { background: #d4af37; color: white; border-color: #d4af37; }
-.menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-.menu-item-card { background: white; border-radius: 10px; padding: 10px; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.15s; }
-.menu-item-card:hover { border-color: #d4af37; transform: scale(1.02); }
-.menu-item-name { font-size: 0.85rem; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
-.menu-item-price { font-size: 0.75rem; color: #d4af37; font-weight: 800; }
-.menu-item-add { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; background: #d4af37; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; }
+.menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.menu-item-card { background: white; border-radius: 12px; padding: 12px; cursor: pointer; border: 2px solid #e2e8f0; transition: all 0.15s; position: relative; display: flex; flex-direction: column; min-height: 100px; }
+.menu-item-card:hover { border-color: #d4af37; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(212,175,55,0.2); }
+.menu-item-img { width: 100%; height: 80px; background: #f8fafc; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.menu-item-img img { width: 100%; height: 100%; object-fit: cover; }
+.menu-item-img i { color: #d4af37; opacity: 0.3; font-size: 2rem; }
+.menu-item-name { font-size: 0.9rem; font-weight: 700; color: #1e293b; margin-bottom: 4px; line-height: 1.2; }
+.menu-item-price { font-size: 0.85rem; color: #d4af37; font-weight: 800; }
+.menu-item-add { position: absolute; bottom: 8px; right: 8px; width: 36px; height: 36px; background: #d4af37; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 10px rgba(212,175,55,0.3); }
+.menu-item-add:hover { transform: scale(1.1); }
+.menu-search { margin-bottom: 12px; }
+.menu-search input { width: 100%; padding: 10px 14px; border-radius: 10px; border: 2px solid #e2e8f0; font-size: 0.85rem; }
+.menu-search input:focus { border-color: #d4af37; outline: none; }
 
 .cart-panel { position: fixed; right: 16px; bottom: 16px; width: 360px; max-width: calc(100vw - 32px); background: white; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 40px rgba(0,0,0,0.1); display: flex; flex-direction: column; max-height: 400px; z-index: 100; }
 @media (max-width: 768px) {
@@ -109,28 +129,37 @@ foreach (array_keys($grouped) as $a) {
         <!-- FLOOR TAB -->
         <div id="tabFloor" class="tab-content" style="<?= $tab !== 'floor' ? 'display:none' : '' ?>">
             <div class="pos-header">
-                <h2><i class="fas fa-chair"></i> Sơ đồ bàn - <?= $type === 'room' ? 'Khách lưu trú' : 'Nhà hàng' ?></h2>
+                <h2><i class="fas fa-chair"></i> Sơ đồ bàn</h2>
                 <div class="pos-header-actions">
                     <div class="stat-box"><i class="fas fa-circle text-success"></i> <?= $counts['available'] ?> Trống</div>
                     <div class="stat-box"><i class="fas fa-circle text-danger"></i> <?= $counts['occupied'] ?> Bận</div>
-                    <a href="<?= BASE_URL ?>/admin/pos?tab=floor&type=<?= $type === 'table' ? 'room' : 'table' ?>" class="btn btn-ghost" style="padding:6px 10px;font-size:0.75rem">
-                        <i class="fas fa-exchange-alt"></i> <?= $type === 'table' ? 'Phòng' : 'Bàn' ?>
-                    </a>
                 </div>
+            </div>
+
+            <div class="type-tabs">
+                <a href="<?= BASE_URL ?>/admin/pos?tab=floor&type=table" class="type-tab <?= $type === 'table' ? 'active' : '' ?>">
+                    <i class="fas fa-utensils"></i> Bàn nhà hàng
+                </a>
+                <a href="<?= BASE_URL ?>/admin/pos?tab=floor&type=room" class="type-tab <?= $type === 'room' ? 'active' : '' ?>">
+                    <i class="fas fa-bed"></i> Khách lưu trú
+                </a>
             </div>
 
             <?php $areasToRender = ($type === 'room') ? $room_areas : $other_areas; ?>
             <?php foreach ($areasToRender as $area => $tables): ?>
                 <div class="area-section">
                     <div class="area-header">
-                        <i class="fas fa-map-marker-alt" style="color:#d4af37"></i>
+                        <i class="fas fa-map-marker-alt"></i>
                         <h3><?= $type === 'room' ? 'Tầng' : 'Khu' ?>: <?= e($area) ?></h3>
                     </div>
                     <div class="floor-grid">
                         <?php foreach ($tables as $t): ?>
                             <?php $isOccupied = $t['status'] === 'occupied'; ?>
                             <?php $isChild = !empty($t['parent_id']); ?>
-                            <div class="floor-card <?= $isOccupied ? 'occupied' : '' ?> <?= $isChild ? 'merged-child' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
+                            <div class="floor-card <?= $isOccupied ? 'occupied' : 'available' ?> <?= $isChild ? 'merged-child' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
+                                <div class="floor-card-icon">
+                                    <i class="fas <?= $isOccupied ? 'fa-user' : 'fa-chair' ?>"></i>
+                                </div>
                                 <div class="floor-card-name"><?= e($t['name']) ?></div>
                                 <div class="floor-card-status">
                                     <?= $isOccupied ? 'Có khách' : 'Trống' ?>
@@ -140,12 +169,20 @@ foreach (array_keys($grouped) as $a) {
                                 </div>
                                 <?php if ($isOccupied): ?>
                                     <div class="floor-card-actions">
-                                        <button class="floor-btn floor-btn-gold" onclick="event.stopPropagation();viewOrder(<?= $t['id'] ?>)">Chi tiết</button>
-                                        <button class="floor-btn floor-btn-blue" onclick="event.stopPropagation();openTransferModal(<?= $t['id'] ?>)">Chuyển</button>
+                                        <button class="floor-btn floor-btn-gold" onclick="event.stopPropagation();viewOrder(<?= $t['id'] ?>)">
+                                            <i class="fas fa-eye"></i> Chi tiết
+                                        </button>
+                                        <button class="floor-btn floor-btn-blue" onclick="event.stopPropagation();openTransferModal(<?= $t['id'] ?>)">
+                                            <i class="fas fa-exchange-alt"></i>
+                                        </button>
                                         <?php if (!$isChild): ?>
-                                            <button class="floor-btn floor-btn-purple" onclick="event.stopPropagation();openMergeModal(<?= $t['id'] ?>)">Ghép</button>
+                                            <button class="floor-btn floor-btn-purple" onclick="event.stopPropagation();openMergeModal(<?= $t['id'] ?>)">
+                                                <i class="fas fa-link"></i>
+                                            </button>
                                         <?php else: ?>
-                                            <button class="floor-btn floor-btn-ghost" onclick="event.stopPropagation();unmergeTable(<?= $t['id'] ?>)">Tách</button>
+                                            <button class="floor-btn floor-btn-ghost" onclick="event.stopPropagation();unmergeTable(<?= $t['id'] ?>)">
+                                                <i class="fas fa-unlink"></i>
+                                            </button>
                                         <?php endif; ?>
                                     </div>
                                 <?php endif; ?>
@@ -157,18 +194,19 @@ foreach (array_keys($grouped) as $a) {
 
             <?php if (!empty($vip1) || !empty($vip2)): ?>
                 <div class="area-section">
-                    <div class="area-header"><i class="fas fa-crown" style="color:#d4af37"></i><h3>VIP 1 & 2</h3></div>
+                    <div class="area-header"><i class="fas fa-crown"></i><h3>VIP 1 & 2</h3></div>
                     <div class="floor-grid">
                         <?php foreach (array_merge($vip1, $vip2) as $t): ?>
                             <?php $isOccupiedVIP = $t['status'] === 'occupied'; ?>
                             <?php $isChildVIP = !empty($t['parent_id']); ?>
-                            <div class="floor-card <?= $isOccupiedVIP ? 'occupied' : '' ?> <?= $isChildVIP ? 'merged-child' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
+                            <div class="floor-card <?= $isOccupiedVIP ? 'occupied' : 'available' ?> <?= $isChildVIP ? 'merged-child' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
+                                <div class="floor-card-icon"><i class="fas <?= $isOccupiedVIP ? 'fa-crown' : 'fa-chair' ?>"></i></div>
                                 <div class="floor-card-name"><?= e($t['name']) ?></div>
-                                <div class="floor-card-status"><?= $isOccupiedVIP ? 'Có khách' : 'Trống' ?><?php if ($isChildVIP): ?><span style="color:#8b5cf6">(Ghép)</span><?php endif; ?></div>
+                                <div class="floor-card-status"><?= $isOccupiedVIP ? 'VIP - Có khách' : 'VIP - Trống' ?><?php if ($isChildVIP): ?><span style="color:#8b5cf6">(Ghép)</span><?php endif; ?></div>
                                 <?php if ($isOccupiedVIP): ?>
                                     <div class="floor-card-actions">
-                                        <button class="floor-btn floor-btn-gold" onclick="event.stopPropagation();viewOrder(<?= $t['id'] ?>)">Chi tiết</button>
-                                        <button class="floor-btn floor-btn-blue" onclick="event.stopPropagation();openTransferModal(<?= $t['id'] ?>)">Chuyển</button>
+                                        <button class="floor-btn floor-btn-gold" onclick="event.stopPropagation();viewOrder(<?= $t['id'] ?>)"><i class="fas fa-eye"></i></button>
+                                        <button class="floor-btn floor-btn-blue" onclick="event.stopPropagation();openTransferModal(<?= $t['id'] ?>)"><i class="fas fa-exchange-alt"></i></button>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -179,18 +217,19 @@ foreach (array_keys($grouped) as $a) {
 
             <?php if (!empty($vip3) || !empty($vip4)): ?>
                 <div class="area-section">
-                    <div class="area-header"><i class="fas fa-crown" style="color:#d4af37"></i><h3>VIP 3 & 4</h3></div>
+                    <div class="area-header"><i class="fas fa-crown"></i><h3>VIP 3 & 4</h3></div>
                     <div class="floor-grid">
                         <?php foreach (array_merge($vip3, $vip4) as $t): ?>
                             <?php $isOccupiedVIP34 = $t['status'] === 'occupied'; ?>
                             <?php $isChildVIP34 = !empty($t['parent_id']); ?>
-                            <div class="floor-card <?= $isOccupiedVIP34 ? 'occupied' : '' ?> <?= $isChildVIP34 ? 'merged-child' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
+                            <div class="floor-card <?= $isOccupiedVIP34 ? 'occupied' : 'available' ?> <?= $isChildVIP34 ? 'merged-child' : '' ?>" data-table="<?= e(json_encode($t)) ?>">
+                                <div class="floor-card-icon"><i class="fas <?= $isOccupiedVIP34 ? 'fa-crown' : 'fa-chair' ?>"></i></div>
                                 <div class="floor-card-name"><?= e($t['name']) ?></div>
-                                <div class="floor-card-status"><?= $isOccupiedVIP34 ? 'Có khách' : 'Trống' ?><?php if ($isChildVIP34): ?><span style="color:#8b5cf6">(Ghép)</span><?php endif; ?></div>
+                                <div class="floor-card-status"><?= $isOccupiedVIP34 ? 'VIP - Có khách' : 'VIP - Trống' ?><?php if ($isChildVIP34): ?><span style="color:#8b5cf6">(Ghép)</span><?php endif; ?></div>
                                 <?php if ($isOccupiedVIP34): ?>
                                     <div class="floor-card-actions">
-                                        <button class="floor-btn floor-btn-gold" onclick="event.stopPropagation();viewOrder(<?= $t['id'] ?>)">Chi tiết</button>
-                                        <button class="floor-btn floor-btn-blue" onclick="event.stopPropagation();openTransferModal(<?= $t['id'] ?>)">Chuyển</button>
+                                        <button class="floor-btn floor-btn-gold" onclick="event.stopPropagation();viewOrder(<?= $t['id'] ?>)"><i class="fas fa-eye"></i></button>
+                                        <button class="floor-btn floor-btn-blue" onclick="event.stopPropagation();openTransferModal(<?= $t['id'] ?>)"><i class="fas fa-exchange-alt"></i></button>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -203,33 +242,46 @@ foreach (array_keys($grouped) as $a) {
         <!-- MENU TAB -->
         <div id="tabMenu" class="tab-content" style="<?= $tab !== 'menu' ? 'display:none' : '' ?>">
             <div class="pos-header">
-                <h2><i class="fas fa-utensils"></i> Menu - <?= ucfirst($menuType) ?></h2>
+                <h2><i class="fas fa-utensils"></i> Menu</h2>
                 <div class="pos-header-actions">
-                    <select class="form-control" style="width:auto;padding:6px 10px" onchange="changeMenuType(this.value)">
-                        <option value="asia" <?= $menuType === 'asia' ? 'selected' : '' ?>>Món Á</option>
-                        <option value="europe" <?= $menuType === 'europe' ? 'selected' : '' ?>>Món Âu</option>
-                        <option value="alacarte" <?= $menuType === 'alacarte' ? 'selected' : '' ?>>Ala Carte</option>
-                        <option value="sets" <?= $menuType === 'sets' ? 'selected' : '' ?>>Sets</option>
-                        <option value="other" <?= $menuType === 'other' ? 'selected' : '' ?>>Đồ uống</option>
+                    <select class="form-control" style="width:auto;padding:8px 12px;border-radius:10px" onchange="changeMenuType(this.value)">
+                        <option value="asia" <?= $menuType === 'asia' ? 'selected' : '' ?>>🍜 Món Á</option>
+                        <option value="europe" <?= $menuType === 'europe' ? 'selected' : '' ?>>🥩 Món Âu</option>
+                        <option value="alacarte" <?= $menuType === 'alacarte' ? 'selected' : '' ?>>🍽 Ala Carte</option>
+                        <option value="sets" <?= $menuType === 'sets' ? 'selected' : '' ?>>📦 Sets</option>
+                        <option value="other" <?= $menuType === 'other' ? 'selected' : '' ?>>🥤 Đồ uống</option>
                     </select>
                     <?php if ($orderId > 0): ?>
-                        <span style="background:#10b981;color:white;padding:4px 10px;border-radius:8px;font-size:0.75rem">
-                            Order #<?= $orderId ?>
+                        <span style="background:#10b981;color:white;padding:6px 12px;border-radius:10px;font-size:0.8rem;font-weight:700">
+                            <i class="fas fa-receipt"></i> Order #<?= $orderId ?>
                         </span>
                     <?php endif; ?>
                 </div>
             </div>
 
+            <div class="menu-search">
+                <input type="text" placeholder="🔍 Tìm món..." onkeyup="searchMenu(this.value)">
+            </div>
+
             <div class="menu-tabs">
                 <?php foreach ($categories as $cat): ?>
-                    <div class="menu-tab" data-cat="<?= e($cat['name']) ?>"><?= e($cat['name']) ?></div>
+                    <div class="menu-tab <?= ($cat['name'] === $categories[0]['name']) ? 'active' : '' ?>" data-cat="<?= e($cat['name']) ?>" onclick="filterMenuCategory(this)">
+                        <?= e($cat['name']) ?>
+                    </div>
                 <?php endforeach; ?>
             </div>
 
             <?php if ($menuType === 'sets' && !empty($sets)): ?>
-                <div class="menu-grid">
+                <div class="menu-grid" id="menuGrid">
                     <?php foreach ($sets as $set): ?>
                         <div class="menu-item-card" onclick="showSetDetail(<?= e(json_encode($set)) ?>)">
+                            <div class="menu-item-img">
+                                <?php if ($set['image']): ?>
+                                    <img src="<?= BASE_URL ?>/public/uploads/<?= e($set['image']) ?>" alt="<?= e($set['name']) ?>">
+                                <?php else: ?>
+                                    <i class="fas fa-box-open"></i>
+                                <?php endif; ?>
+                            </div>
                             <div class="menu-item-name"><?= e($set['name']) ?></div>
                             <div class="menu-item-price"><?= formatPrice($set['price']) ?></div>
                             <?php if ($orderId > 0): ?>
@@ -241,36 +293,40 @@ foreach (array_keys($grouped) as $a) {
                     <?php endforeach; ?>
                 </div>
             <?php else: ?>
-                <?php foreach ($groupedMenu as $catName => $items): ?>
-                    <div class="area-section" data-cat="<?= e($catName) ?>">
-                        <div class="area-header"><h3><?= e($catName) ?></h3></div>
-                        <div class="menu-grid">
-                            <?php foreach ($items as $item): ?>
-                                <?php
-                                $optsStr = $item['note_options'] ?? '';
-                                $optsEnStr = $item['note_options_en'] ?? '';
-                                $optsArr = array_filter(array_map('trim', explode(',', $optsStr)));
-                                $optsEnArr = array_filter(array_map('trim', explode(',', $optsEnStr)));
-                                $combinedOpts = [];
-                                foreach ($optsArr as $idx => $optVal) {
-                                    $enVal = $optsEnArr[$idx] ?? '';
-                                    $combinedOpts[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
-                                }
-                                $itemOptsJson = json_encode($combinedOpts, JSON_UNESCAPED_UNICODE);
-                                ?>
-                                <div class="menu-item-card" data-item="<?= e(json_encode($item)) ?>" data-options="<?= htmlspecialchars($itemOptsJson) ?>">
-                                    <div class="menu-item-name"><?= e($item['name']) ?></div>
-                                    <div class="menu-item-price"><?= formatPrice($item['price']) ?></div>
-                                    <?php if ($orderId > 0): ?>
-                                        <div class="menu-item-add" onclick="event.stopPropagation();openAddItemModal(<?= $item['id'] ?>, '<?= addslashes(e($item['name'])) ?>', <?= htmlspecialchars($itemOptsJson) ?>)">
-                                            <i class="fas fa-plus"></i>
-                                        </div>
+                <div class="menu-grid" id="menuGrid">
+                    <?php foreach ($groupedMenu as $catName => $items): ?>
+                        <?php foreach ($items as $item): ?>
+                            <?php
+                            $optsStr = $item['note_options'] ?? '';
+                            $optsEnStr = $item['note_options_en'] ?? '';
+                            $optsArr = array_filter(array_map('trim', explode(',', $optsStr)));
+                            $optsEnArr = array_filter(array_map('trim', explode(',', $optsEnStr)));
+                            $combinedOpts = [];
+                            foreach ($optsArr as $idx => $optVal) {
+                                $enVal = $optsEnArr[$idx] ?? '';
+                                $combinedOpts[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
+                            }
+                            $itemOptsJson = json_encode($combinedOpts, JSON_UNESCAPED_UNICODE);
+                            ?>
+                            <div class="menu-item-card" data-cat="<?= e($catName) ?>" data-name="<?= strtolower(e($item['name'])) ?>" data-item="<?= e(json_encode($item)) ?>">
+                                <div class="menu-item-img">
+                                    <?php if ($item['image']): ?>
+                                        <img src="<?= BASE_URL ?>/public/uploads/<?= e($item['image']) ?>" alt="<?= e($item['name']) ?>">
+                                    <?php else: ?>
+                                        <i class="fas fa-utensils"></i>
                                     <?php endif; ?>
                                 </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+                                <div class="menu-item-name"><?= e($item['name']) ?></div>
+                                <div class="menu-item-price"><?= formatPrice($item['price']) ?></div>
+                                <?php if ($orderId > 0): ?>
+                                    <div class="menu-item-add" onclick="event.stopPropagation();openAddItemModal(<?= $item['id'] ?>, '<?= addslashes(e($item['name'])) ?>', <?= htmlspecialchars($itemOptsJson) ?>)">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endforeach; ?>
+                </div>
             <?php endif; ?>
         </div>
 
@@ -750,6 +806,34 @@ function viewOrder(tableId) {
 
 function changeMenuType(type) {
     window.location.href = POS.baseUrl + '/admin/pos?tab=menu&menu_type=' + type + '&order_id=' + POS.orderId;
+}
+
+function searchMenu(keyword) {
+    const kw = keyword.toLowerCase().trim();
+    document.querySelectorAll('.menu-item-card').forEach(function(card) {
+        const name = card.dataset.name || '';
+        if (kw === '' || name.includes(kw)) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function filterMenuCategory(tabEl) {
+    document.querySelectorAll('.menu-tab').forEach(function(t) {
+        t.classList.remove('active');
+    });
+    tabEl.classList.add('active');
+    
+    const cat = tabEl.dataset.cat;
+    document.querySelectorAll('.menu-item-card').forEach(function(card) {
+        if (cat === 'all' || card.dataset.cat === cat) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
 }
 
 document.querySelectorAll('.floor-card').forEach(card => {
