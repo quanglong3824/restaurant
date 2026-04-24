@@ -5,6 +5,7 @@
 
 abstract class Controller
 {
+    private static ?array $jsonInput = null;
 
     protected function view(string $view, array $data = []): void
     {
@@ -40,7 +41,28 @@ abstract class Controller
 
     protected function input(string $key, mixed $default = null): mixed
     {
-        return $_POST[$key] ?? $_GET[$key] ?? $default;
+        // Check $_POST first
+        if (isset($_POST[$key])) {
+            return $_POST[$key];
+        }
+        
+        // Check $_GET
+        if (isset($_GET[$key])) {
+            return $_GET[$key];
+        }
+        
+        // Check JSON body (for fetch requests with Content-Type: application/json)
+        if (self::$jsonInput === null) {
+            $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+            if (strpos($contentType, 'application/json') !== false) {
+                $rawInput = file_get_contents('php://input');
+                self::$jsonInput = json_decode($rawInput, true) ?? [];
+            } else {
+                self::$jsonInput = [];
+            }
+        }
+        
+        return self::$jsonInput[$key] ?? $default;
     }
 
     protected function isPost(): bool

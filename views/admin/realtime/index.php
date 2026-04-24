@@ -842,10 +842,10 @@ function renderPOSGrid(orders) {
                             ? `<button onclick="dismissOrder(${order.id})" class="btn-pos btn-pos-primary">
                                 <i class="fas fa-archive"></i> LƯU TRỮ
                                </button>`
-                            : `<button onclick="openModalAddItems(${order.id}, ${order.table_id}, '${order.full_name}')" class="btn-pos btn-pos-outline">
+                            : `<button onclick="openModalAddItems(${order.id}, ${order.table_id}, '${order.full_name.replace(/'/g, "\\'")}')" class="btn-pos btn-pos-outline">
                                 <i class="fas fa-plus"></i> THÊM MÓN
                                </button>
-                               <button onclick="openModalPayment(${order.id}, ${order.table_id}, '${order.full_name}', '${order.total_fmt}')" class="btn-pos btn-pos-gold">
+                               <button onclick="openModalPayment(${order.id}, ${order.table_id}, '${order.full_name.replace(/'/g, "\\'")}', '${order.total_fmt}')" class="btn-pos btn-pos-gold">
                                 <i class="fas fa-credit-card"></i> THANH TOÁN
                                </button>`
                         }
