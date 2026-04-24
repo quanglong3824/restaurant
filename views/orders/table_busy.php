@@ -1,32 +1,36 @@
-<?php // views/orders/table_busy.php — Table Busy Notification for Customers ?>
+<?php 
+// views/orders/table_busy.php — Table Busy Notification for Customers
+$currentLang = $_COOKIE['aurora_lang'] ?? 'vi';
+$isEn = $currentLang === 'en';
+?>
 <div class="table-busy-wrapper">
     <div class="busy-header">
         <div class="busy-icon-box">
             <i class="fas fa-user-lock"></i>
         </div>
-        <h2 class="playfair">Bàn này đang bận</h2>
-        <div class="table-badge">BÀN <?= e($table['name'] ?? 'NÀY') ?></div>
+        <h2 class="playfair"><?= $isEn ? 'This table is currently occupied' : 'Bàn này đang bận / This table is occupied' ?></h2>
+        <div class="table-badge"><?= $isEn ? 'TABLE' : 'BÀN' ?> <?= e($table['name'] ?? ($isEn ? 'THIS' : 'NÀY')) ?></div>
     </div>
 
     <div class="busy-content-card">
         <p class="busy-intro">
-            Dường như bàn này hiện đã có khách đang sử dụng hoặc phiên làm việc của Quý khách đã hết hạn.
+            <?= $isEn ? 'This table appears to be in use or your session has expired.' : 'Dường như bàn này hiện đã có khách đang sử dụng hoặc phiên làm việc của Quý khách đã hết hạn.' ?>
         </p>
         
         <div class="busy-guidelines">
             <div class="guide-item">
                 <i class="fas fa-users-cog"></i>
                 <div>
-                    <strong>Dành cho khách đi cùng đoàn:</strong>
-                    <span>Vui lòng xem chung thực đơn với người cùng bàn hoặc sử dụng thiết bị đã gọi món trước đó.</span>
+                    <strong><?= $isEn ? 'For guests in a group:' : 'Dành cho khách đi cùng đoàn:' ?></strong>
+                    <span><?= $isEn ? 'Please share the menu with others at the table or use the device that placed the order earlier.' : 'Vui lòng xem chung thực đơn với người cùng bàn hoặc sử dụng thiết bị đã gọi món trước đó.' ?></span>
                 </div>
             </div>
             
             <div class="guide-item">
                 <i class="fas fa-concierge-bell"></i>
                 <div>
-                    <strong>Dành cho khách vừa mới đến:</strong>
-                    <span>Nếu bàn này thực tế còn trống, vui lòng liên hệ nhân viên phục vụ để được hỗ trợ mở bàn mới.</span>
+                    <strong><?= $isEn ? 'For newly arrived guests:' : 'Dành cho khách vừa mới đến:' ?></strong>
+                    <span><?= $isEn ? 'If this table is actually empty, please contact our staff to open a new session.' : 'Nếu bàn này thực tế còn trống, vui lòng liên hệ nhân viên phục vụ để được hỗ trợ mở bàn mới.' ?></span>
                 </div>
             </div>
         </div>
@@ -34,15 +38,15 @@
 
     <div class="busy-actions">
         <button type="button" class="btn-gold w-100 mb-3" onclick="location.reload()">
-            <i class="fas fa-sync-alt me-2"></i> THỬ TẢI LẠI TRANG
+            <i class="fas fa-sync-alt me-2"></i> <?= $isEn ? 'RETRY / THỬ LẠI' : 'THỬ TẢI LẠI TRANG / RETRY' ?>
         </button>
         <button type="button" class="btn-ghost w-100" onclick="window.history.back()">
-            <i class="fas fa-chevron-left me-2"></i> QUAY LẠI
+            <i class="fas fa-chevron-left me-2"></i> <?= $isEn ? 'GO BACK / QUAY LẠI' : 'QUAY LẠI / GO BACK' ?>
         </button>
     </div>
 
     <div class="busy-footer">
-        <p>© AURORA HOTEL PLAZA — Trải nghiệm đẳng cấp</p>
+        <p>© AURORA HOTEL PLAZA — <?= $isEn ? 'Premium Experience' : 'Trải nghiệm đẳng cấp' ?></p>
     </div>
 </div>
 
