@@ -351,60 +351,81 @@
     margin-bottom: 16px;
 }
 
-/* Bottom Sheet */
+/* Bottom Sheet → Centered Modal */
 #modalOrderDetails.modal-backdrop {
-    display: block; /* Tắt flex centering của waiter.css để dùng bottom: 0 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 9999;
+    padding: 16px;
 }
 
 .bottom-sheet {
-    position: fixed;
-    bottom: calc(var(--bottomnav-h) + 20px); /* Đẩy lên cao hơn navigator 20px */
-    left: 12px;
-    right: 12px;
+    position: relative;
     background: var(--surface);
     border-radius: 24px;
     z-index: 10000;
-    max-width: 500px;
-    margin: 0 auto;
-    transform: translateY(calc(100% + 100px));
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    max-height: 75vh;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.1), 0 20px 50px rgba(0,0,0,0.2);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 30px 80px rgba(0,0,0,0.1);
     border: 1px solid rgba(184, 155, 94, 0.2);
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modal-backdrop.is-open .bottom-sheet {
-    transform: translateY(0);
+    transform: scale(1) translateY(0);
+    opacity: 1;
 }
 
 .sheet-handle {
-    width: 40px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    margin: 12px auto;
+    display: none;
 }
 
 .sheet-header {
-    padding: 0 20px 16px;
+    padding: 20px 20px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid var(--border-light);
 }
 
-.header-main h3 { font-size: 1.4rem; font-weight: 800; margin: 0; }
-.header-main span { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+.header-main h3 { 
+    font-size: 1.25rem; 
+    font-weight: 800; 
+    margin: 0;
+    color: var(--text);
+}
+.header-main span { 
+    font-size: 0.75rem; 
+    color: var(--text-muted); 
+    font-weight: 600;
+    margin-top: 4px;
+    display: block;
+}
 
 .sheet-close {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: var(--bg);
-    border: none;
+    border: 1px solid var(--border);
     color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sheet-close:hover {
+    background: var(--gold-light);
+    border-color: var(--gold);
+    color: var(--gold-dark);
 }
 
 .sheet-content {
