@@ -7,6 +7,10 @@ $isEn = $currentLang === 'en';
 $TEXT = [
     'payment_successful_vi' => 'THANH TOÁN THÀNH CÔNG',
     'payment_successful_en' => 'PAYMENT SUCCESSFUL',
+    'order_cancelled_vi' => 'ĐƠN HÀNG ĐÃ HỦY',
+    'order_cancelled_en' => 'ORDER CANCELLED',
+    'cancelled_note_vi' => 'Bàn đã được hủy, không có món được gọi',
+    'cancelled_note_en' => 'Table cancelled, no items ordered',
     'thank_you_vi' => 'Cảm ơn bạn đã dùng bữa tại Aurora Restaurant',
     'thank_you_en' => 'Thank you for dining at Aurora Restaurant',
     'table_vi' => 'Bàn:',
@@ -54,21 +58,40 @@ $TEXT = [
     'confirm_exit_vi' => 'Bạn chắc chắn muốn kết thúc phiên này?',
     'confirm_exit_en' => 'Are you sure you want to leave and end this session?',
 ];
+
+// Calculate total to check if cancelled
+$totalAmount = 0;
+foreach ($items as $item) {
+    if ($item['status'] !== 'cancelled') {
+        $totalAmount += $item['item_price'] * $item['quantity'];
+    }
+}
+$isCancelled = $totalAmount == 0;
 ?>
 <div class="paid-bill-container">
     <div class="success-banner">
-        <div class="success-check">
-            <i class="fas fa-check"></i>
+        <div class="success-check <?= $isCancelled ? 'cancelled' : '' ?>">
+            <i class="fas fa-<?= $isCancelled ? 'times' : 'check' ?>"></i>
         </div>
         <!-- Bilingual Title -->
-        <h2 class="status-title">
-            <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'block' ?>;"><?= $TEXT['payment_successful_vi'] ?></span>
-            <span class="lang-en" style="display: <?= $isEn ? 'block' : 'none' ?>;"><?= $TEXT['payment_successful_en'] ?></span>
+        <h2 class="status-title <?= $isCancelled ? 'cancelled' : '' ?>">
+            <?php if ($isCancelled): ?>
+                <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'block' ?>;"><?= $TEXT['order_cancelled_vi'] ?></span>
+                <span class="lang-en" style="display: <?= $isEn ? 'block' : 'none' ?>;"><?= $TEXT['order_cancelled_en'] ?></span>
+            <?php else: ?>
+                <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'block' ?>;"><?= $TEXT['payment_successful_vi'] ?></span>
+                <span class="lang-en" style="display: <?= $isEn ? 'block' : 'none' ?>;"><?= $TEXT['payment_successful_en'] ?></span>
+            <?php endif; ?>
         </h2>
         <!-- Bilingual Subtitle -->
         <p class="status-subtitle">
-            <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'block' ?>;"><?= $TEXT['thank_you_vi'] ?></span>
-            <span class="lang-en" style="display: <?= $isEn ? 'block' : 'none' ?>;"><?= $TEXT['thank_you_en'] ?></span>
+            <?php if ($isCancelled): ?>
+                <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'block' ?>;"><?= $TEXT['cancelled_note_vi'] ?></span>
+                <span class="lang-en" style="display: <?= $isEn ? 'block' : 'none' ?>;"><?= $TEXT['cancelled_note_en'] ?></span>
+            <?php else: ?>
+                <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'block' ?>;"><?= $TEXT['thank_you_vi'] ?></span>
+                <span class="lang-en" style="display: <?= $isEn ? 'block' : 'none' ?>;"><?= $TEXT['thank_you_en'] ?></span>
+            <?php endif; ?>
         </p>
     </div>
 
@@ -140,8 +163,16 @@ $TEXT = [
             <div class="total-row">
                 <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['total_vi'] ?></span>
                 <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['total_en'] ?></span>
-                <span class="total-amount"><?= formatPrice($total) ?></span>
+                <?php if ($isCancelled): ?>
+                    <span class="total-amount cancelled-text">
+                        <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;">Đã hủy</span>
+                        <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;">Cancelled</span>
+                    </span>
+                <?php else: ?>
+                    <span class="total-amount"><?= formatPrice($total) ?></span>
+                <?php endif; ?>
             </div>
+            <?php if (!$isCancelled): ?>
             <div class="payment-info">
                 <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['payment_vi'] ?></span>
                 <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['payment_en'] ?></span>
@@ -149,6 +180,7 @@ $TEXT = [
                     ? ($isEn ? $TEXT['cash_en'] : $TEXT['cash_vi']) 
                     : ($isEn ? $TEXT['transfer_en'] : $TEXT['transfer_vi']) ?></strong>
             </div>
+            <?php endif; ?>
             <div class="receipt-barcode">
                 <i class="fas fa-barcode"></i>
                 <p>
@@ -319,7 +351,12 @@ function exitSession() {
         margin: 0 auto 15px; font-size: 1.8rem;
         box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
     }
+    .success-check.cancelled {
+        background: #ef4444;
+        box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+    }
     .status-title { font-weight: 800; color: #1e293b; font-size: 1.4rem; margin-bottom: 5px; }
+    .status-title.cancelled { color: #ef4444; }
     .status-subtitle { color: #64748b; font-size: 0.9rem; }
 
     /* Receipt Paper Effect */
@@ -351,6 +388,7 @@ function exitSession() {
     .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
     .total-row span:first-child { font-weight: 800; color: #1e293b; font-size: 1rem; }
     .total-amount { font-weight: 900; color: #d4af37; font-size: 1.4rem; }
+    .cancelled-text { color: #ef4444; font-size: 1.1rem; font-weight: 700; }
     
     .payment-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: #475569; }
     
