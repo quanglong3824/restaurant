@@ -283,27 +283,48 @@ class Table extends Model
              WHERE p.status = 'available' OR o.id IS NULL"
         );
 
-        // 3. Sửa lỗi bàn "khách ảo": Occupied nhưng không có món nào trong order và đã quá 5 phút
-        // Đặc biệt ưu tiên dọn dẹp các bàn do khách quét QR (waiter_id IS NULL)
+        // 3. Tự động huỷ bàn mở quá 5 phút nhưng không có món nào (áp dụng cho TẤT CẢ bàn)
+        // Ghi nhật ký hoạt động với action 'cancel'
         $stuckSessions = $this->findAll(
-            "SELECT o.table_id, o.id as order_id, o.session_id
+            "SELECT o.table_id, o.id as order_id, o.session_id, o.waiter_id, o.order_source, t.name as table_name
              FROM orders o 
              JOIN tables t ON o.table_id = t.id
              WHERE o.status = 'open' 
              AND t.status = 'occupied'
-             AND o.waiter_id IS NULL
              AND o.opened_at < NOW() - INTERVAL 5 MINUTE
              AND o.id NOT IN (SELECT DISTINCT order_id FROM order_items)"
         );
 
+        // Khởi tạo ActivityLog model để ghi nhật ký
+        $activityLog = new ActivityLog();
+
         foreach ($stuckSessions as $s) {
             // Đóng order trống này và trả bàn về trống
-            $this->execute("UPDATE orders SET status = 'closed', note = 'Hệ thống tự động huỷ do không đặt món sau 5 phút', closed_at = NOW() WHERE id = ?", [$s['order_id']]);
+            $cancelNote = 'Hệ thống tự động huỷ do không đặt món sau 5 phút';
+            $this->execute("UPDATE orders SET status = 'closed', note = ?, payment_status = 'canceled', closed_at = NOW() WHERE id = ?", [$cancelNote, $s['order_id']]);
             $this->close($s['table_id']);
             
-            // Vô hiệu hoá session của khách này để thiết bị A bị logout
+            // Ghi nhật ký hoạt động - action 'cancel', entity 'table'
+            $activityLog->log(
+                ActivityLog::ACTION_CANCEL,
+                'table',
+                $s['table_id'],
+                [
+                    'order_id' => $s['order_id'],
+                    'table_name' => $s['table_name'],
+                    'reason' => 'auto_cancel_no_items',
+                    'message' => $cancelNote,
+                    'order_source' => $s['order_source'],
+                    'waiter_id' => $s['waiter_id'],
+                    'session_id' => $s['session_id']
+                ],
+                ActivityLog::LEVEL_NOTICE,
+                null // user_id = null vì đây là hệ thống tự động
+            );
+            
+            // Vô hiệu hoá session của khách (nếu có) để thiết bị bị logout
             if (!empty($s['session_id'])) {
-                $this->execute("UPDATE customer_sessions SET is_active = 0 WHERE session_id = ? OR session_id = (SELECT session_id FROM customer_sessions WHERE session_id = ? LIMIT 1)", [$s['session_id'], $s['session_id']]);
+                $this->execute("UPDATE customer_sessions SET is_active = 0 WHERE session_id = ?", [$s['session_id']]);
             }
         }
     }
