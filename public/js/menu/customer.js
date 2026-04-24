@@ -2,175 +2,92 @@ console.log("%c AURORA POS SYSTEM %c Optimized by LongDev ", "background:#1e293b
 
 /**
  * Customer Menu JS — Aurora Restaurant
- * Bilingual Support VI/EN
+ * English Only for International Customers
  */
 
 let cart = [];
 let currentItem = null;
 
-// Translation dictionary for notifications and messages
+// Messages dictionary - English only
 const MESSAGES = {
-    vi: {
-        devMode: 'DEV MODE: Kiểm tra vị trí đã tắt. Bạn có thể test từ bất kỳ đâu.',
-        locationVerified: '✅ Vị trí đã xác thực. Bạn đang trong khu vực nhà hàng.',
-        locationNotVerified: '⚠️ Chưa xác thực vị trí. Vui lòng bấm nút xác thực.',
-        addedToCart: 'Đã thêm',
-        orderSuccess: 'Xác nhận đặt món thành công!',
-        orderError: 'Lỗi gửi order. Vui lòng thử lại.',
-        networkError: 'Lỗi kết nối máy chủ. Vui lòng kiểm tra mạng.',
-        callWaiterConfirm: 'Bạn muốn gọi nhân viên phục vụ?',
-        callPaymentConfirm: 'Bạn muốn yêu cầu thanh toán?',
-        requestSent: 'Yêu cầu đã được gửi đến nhân viên!',
-        requestError: 'Gửi yêu cầu thất bại.',
-        connectionError: 'Lỗi kết nối.',
-        emptyCart: 'Giỏ hàng đang trống.',
-        browseMenu: 'Duyệt thực đơn và thêm món',
-        continueOrdering: 'TIẾP TỤC CHỌN MÓN',
-        note: 'Lưu ý',
-        outOfStock: 'Hết hàng',
-        noMenu: 'Chưa có thực đơn',
-        contactStaff: 'Vui lòng liên hệ nhân viên để được hỗ trợ',
-        noResult: 'Không tìm thấy món phù hợp',
-        clearSearch: 'Xoá tìm kiếm',
-        yourCart: 'Giỏ hàng của bạn',
-        viewCart: 'XEM GIỎ',
-        orderNotes: 'GHI CHÚ ĐƠN HÀNG',
-        orderNotesPlaceholder: 'VD: Không lấy hành, ít cay...',
-        total: 'Tổng cộng',
-        confirmOrder: 'XÁC NHẬN ĐẶT MÓN',
-        addToOrder: 'THÊM VÀO ĐƠN HÀNG',
-        processing: 'ĐANG XỬ LÝ...',
-        locationChecking: 'Đang kiểm tra...',
-        locationVerified: 'Đã xác thực',
-        locationDenied: 'Bị từ chối',
-        locationOutOfRange: 'Ngoài phạm vi',
-        locationOK: 'OK',
-        startExperience: 'BẮT ĐẦU TRẢI NGHIỆM',
-        verifying: 'ĐANG XÁC THỰC...',
-        success: 'XÁC THỰC THÀNH CÔNG!',
-        retry: 'THỬ LẠI XÁC THỰC',
-        browserNoSupport: 'Trình duyệt không hỗ trợ định vị.',
-        permissionDenied: 'BẠN ĐÃ TỪ CHỐI ĐỊNH VỊ. Vui lòng cho phép trong Cài đặt và Tải lại trang.',
-        locationUnavailable: 'Thông tin vị trí không khả dụng.',
-        locationTimeout: 'Hết thời gian yêu cầu vị trí.',
-        pleaseAllowLocation: 'Vui lòng cấp quyền định vị: ',
-        youAreFar: 'Bạn đang ở xa nhà hàng',
-        scanAtTable: 'Vui lòng quét mã tại bàn.',
-        meters: 'm',
-        leavingArea: 'BẠN ĐÃ RỜI KHỎI KHU VỰC',
-        menuLocked: 'Thực đơn tạm thời bị khoá để bảo mật đơn hàng',
-        distance: 'Khoảng cách',
-        pleaseReturn: 'Vui lòng quay lại khu vực để tiếp tục',
-        privacyNotice: 'Bằng cách tiếp tục, bạn đồng ý với chính sách bảo mật của chúng tôi.',
-        forSecurity: 'Để bảo mật đơn hàng và tốc độ phục vụ tối ưu, vui lòng xác nhận vị trí của bạn.',
-        instantConfirm: 'Đơn hàng xác nhận ngay lập tức',
-        noHistory: 'Không lưu lịch sử vị trí',
-        autoDelete: 'Tự động xoá khi rời đi',
-        quickOptions: 'Tuỳ chọn nhanh',
-        noOptions: 'Chưa có Tùy chọn cấu hình sẵn cho món này (Thiết lập tại Admin).',
-        notePlaceholder: 'Ghi chú thêm (No onion, less spicy...)',
-        preliminaryBill: 'Hoá đơn tạm tính',
-        requestPayment: 'YÊU CẦU THANH TOÁN',
-        continueOrdering2: 'TIẾP TỤC ĐẶT MÓN',
-        noItemsOrdered: 'Bàn chưa có món nào được gọi.',
-        subtotal: 'Tổng tiền món',
-        orderDetails: 'Chi tiết đơn hàng',
-        callReception: 'Call Reception',
-        callWaiter: 'Call Waiter',
-        bill: 'Bill',
-        payment: 'Payment',
-        refresh: 'Làm mới',
-        myTables: 'Bàn của tôi',
-        paymentProcessing: 'Đang xử lý Thanh Toán',
-        paymentWaitStaff: 'Vui lòng chờ nhân viên mang hóa đơn đến bàn.',
-        paymentAutoRedirect: 'Hệ thống tự động chuyển trang khi hoàn tất!'
-    },
-    en: {
-        devMode: 'DEV MODE: Location checking disabled. You can test from anywhere.',
-        locationVerified: '✅ Location verified. You are in the restaurant area.',
-        locationNotVerified: '⚠️ Location not verified. Please press the verify button.',
-        addedToCart: 'Added',
-        orderSuccess: 'Order confirmed successfully!',
-        orderError: 'Order submission error. Please try again.',
-        networkError: 'Connection error. Please check your network.',
-        callWaiterConfirm: 'Do you want to call the waiter?',
-        callPaymentConfirm: 'Do you want to request payment?',
-        requestSent: 'Request sent to staff!',
-        requestError: 'Request failed.',
-        connectionError: 'Connection error.',
-        emptyCart: 'Your cart is empty.',
-        browseMenu: 'Browse the menu and add items',
-        continueOrdering: 'CONTINUE ORDERING',
-        note: 'Note',
-        outOfStock: 'Out of stock',
-        noMenu: 'No menu available',
-        contactStaff: 'Please contact staff for assistance',
-        noResult: 'No dishes found matching your search',
-        clearSearch: 'Clear search',
-        yourCart: 'Your cart',
-        viewCart: 'VIEW',
-        orderNotes: 'ORDER NOTES',
-        orderNotesPlaceholder: 'e.g., No onion, less spicy...',
-        total: 'Total',
-        confirmOrder: 'CONFIRM ORDER',
-        addToOrder: 'ADD TO ORDER',
-        processing: 'PROCESSING...',
-        locationChecking: 'Checking...',
-        locationVerified: 'Verified',
-        locationDenied: 'Denied',
-        locationOutOfRange: 'Out of range',
-        locationOK: 'OK',
-        startExperience: 'START EXPERIENCE',
-        verifying: 'VERIFYING...',
-        success: 'VERIFICATION SUCCESSFUL!',
-        retry: 'RETRY VERIFICATION',
-        browserNoSupport: 'Browser does not support geolocation.',
-        permissionDenied: 'LOCATION PERMISSION DENIED. Please allow in Settings and Reload page.',
-        locationUnavailable: 'Location information unavailable.',
-        locationTimeout: 'Location request timeout.',
-        pleaseAllowLocation: 'Please allow geolocation: ',
-        youAreFar: 'You are far from the restaurant',
-        scanAtTable: 'Please scan the code at the table.',
-        meters: 'm',
-        leavingArea: 'YOU HAVE LEFT THE AREA',
-        menuLocked: 'Menu is temporarily locked for order security',
-        distance: 'Distance',
-        pleaseReturn: 'Please return to the area to continue',
-        privacyNotice: 'By continuing, you agree to our privacy policy.',
-        forSecurity: 'For order security and optimal service speed, please confirm your location.',
-        instantConfirm: 'Instant order confirmation',
-        noHistory: 'No location history stored',
-        autoDelete: 'Auto-delete when leaving',
-        quickOptions: 'Quick Options',
-        noOptions: 'No options configured for this item (Set up at Admin).',
-        notePlaceholder: 'Additional notes (No onion, less spicy...)',
-        preliminaryBill: 'Preliminary Bill',
-        requestPayment: 'REQUEST PAYMENT',
-        continueOrdering2: 'CONTINUE ORDERING',
-        noItemsOrdered: 'No items ordered yet.',
-        subtotal: 'Subtotal',
-        orderDetails: 'Order Details',
-        callReception: 'Call Reception',
-        callWaiter: 'Call Waiter',
-        bill: 'Bill',
-        payment: 'Payment',
-        refresh: 'Refresh',
-        myTables: 'My Tables',
-        paymentProcessing: 'Processing Payment',
-        paymentWaitStaff: 'Please wait for staff to bring the bill to your table.',
-        paymentAutoRedirect: 'Page will auto-redirect when completed!'
-    }
+    devMode: 'DEV MODE: Location checking disabled. You can test from anywhere.',
+    locationVerified: '✅ Location verified. You are in the restaurant area.',
+    locationNotVerified: '⚠️ Location not verified. Please press the verify button.',
+    addedToCart: 'Added',
+    orderSuccess: 'Order confirmed successfully!',
+    orderError: 'Order submission error. Please try again.',
+    networkError: 'Connection error. Please check your network.',
+    callWaiterConfirm: 'Do you want to call the waiter?',
+    callPaymentConfirm: 'Do you want to request payment?',
+    requestSent: 'Request sent to staff!',
+    requestError: 'Request failed.',
+    connectionError: 'Connection error.',
+    emptyCart: 'Your cart is empty.',
+    browseMenu: 'Browse the menu and add items',
+    continueOrdering: 'CONTINUE ORDERING',
+    note: 'Note',
+    outOfStock: 'Out of stock',
+    noMenu: 'No menu available',
+    contactStaff: 'Please contact staff for assistance',
+    noResult: 'No dishes found matching your search',
+    clearSearch: 'Clear search',
+    yourCart: 'Your cart',
+    viewCart: 'VIEW',
+    orderNotes: 'ORDER NOTES',
+    orderNotesPlaceholder: 'e.g., No onion, less spicy...',
+    total: 'Total',
+    confirmOrder: 'CONFIRM ORDER',
+    addToOrder: 'ADD TO ORDER',
+    processing: 'PROCESSING...',
+    locationChecking: 'Checking...',
+    locationVerified: 'Verified',
+    locationDenied: 'Denied',
+    locationOutOfRange: 'Out of range',
+    locationOK: 'OK',
+    startExperience: 'START EXPERIENCE',
+    verifying: 'VERIFYING...',
+    success: 'VERIFICATION SUCCESSFUL!',
+    retry: 'RETRY VERIFICATION',
+    browserNoSupport: 'Browser does not support geolocation.',
+    permissionDenied: 'LOCATION PERMISSION DENIED. Please allow in Settings and Reload page.',
+    locationUnavailable: 'Location information unavailable.',
+    locationTimeout: 'Location request timeout.',
+    pleaseAllowLocation: 'Please allow geolocation: ',
+    youAreFar: 'You are far from the restaurant',
+    scanAtTable: 'Please scan the code at the table.',
+    meters: 'm',
+    leavingArea: 'YOU HAVE LEFT THE AREA',
+    menuLocked: 'Menu is temporarily locked for order security',
+    distance: 'Distance',
+    pleaseReturn: 'Please return to the area to continue',
+    privacyNotice: 'By continuing, you agree to our privacy policy.',
+    forSecurity: 'For order security and optimal service speed, please confirm your location.',
+    instantConfirm: 'Instant order confirmation',
+    noHistory: 'No location history stored',
+    autoDelete: 'Auto-delete when leaving',
+    quickOptions: 'Quick Options',
+    noOptions: 'No options configured for this item (Set up at Admin).',
+    notePlaceholder: 'Additional notes (No onion, less spicy...)',
+    preliminaryBill: 'Preliminary Bill',
+    requestPayment: 'REQUEST PAYMENT',
+    continueOrdering2: 'CONTINUE ORDERING',
+    noItemsOrdered: 'No items ordered yet.',
+    subtotal: 'Subtotal',
+    orderDetails: 'Order Details',
+    callReception: 'Call Reception',
+    callWaiter: 'Call Waiter',
+    bill: 'Bill',
+    payment: 'Payment',
+    refresh: 'Refresh',
+    myTables: 'My Tables',
+    paymentProcessing: 'Processing Payment',
+    paymentWaitStaff: 'Please wait for staff to bring the bill to your table.',
+    paymentAutoRedirect: 'Page will auto-redirect when completed!'
 };
-
-// Get current language
-function getCurrentLang() {
-    return localStorage.getItem('aurora_lang') || 'vi';
-}
 
 // Get message by key
 function t(key) {
-    const lang = getCurrentLang();
-    return MESSAGES[lang][key] || MESSAGES['vi'][key] || key;
+    return MESSAGES[key] || key;
 }
 
 /** Đọc giá trị cookie theo tên */
@@ -229,7 +146,7 @@ function updateHeaderLocationIndicator(status, label) {
     el.className = 'header-loc-chip'; // reset
     el.classList.add(`loc-${status}`);
     const labelEl = el.querySelector('.loc-chip-label');
-    if (labelEl) labelEl.textContent = label || 'Định vị';
+    if (labelEl) labelEl.textContent = label || 'Location';
 }
 
 function updateLocationIndicator(status, label) {
@@ -259,22 +176,22 @@ async function startLocationWatcher() {
             const permStatus = await navigator.permissions.query({ name: 'geolocation' });
             if (permStatus.state === 'denied') {
                 console.warn('Geolocation permission denied, skipping watcher');
-                updateHeaderLocationIndicator('denied', 'Bị từ chối');
+                updateHeaderLocationIndicator('denied', 'Denied');
                 return;
             }
             if (permStatus.state === 'granted') {
-                updateHeaderLocationIndicator('granted', 'Đã xác thực');
+                updateHeaderLocationIndicator('granted', 'Verified');
             }
             // Listen for permission changes
             permStatus.onchange = () => {
                 if (permStatus.state === 'denied') {
-                    updateHeaderLocationIndicator('denied', 'Bị từ chối');
+                    updateHeaderLocationIndicator('denied', 'Denied');
                     if (locationWatcher !== null) {
                         navigator.geolocation.clearWatch(locationWatcher);
                         locationWatcher = null;
                     }
                 } else if (permStatus.state === 'granted') {
-                    updateHeaderLocationIndicator('granted', 'Đã xác thực');
+                    updateHeaderLocationIndicator('granted', 'Verified');
                 }
             };
         }
@@ -297,7 +214,7 @@ async function startLocationWatcher() {
             
             if (distance > CUSTOMER_CONFIG.maxDistance) {
                 // Out of range -> Freeze everything
-                updateHeaderLocationIndicator('denied', `Ngoài phạm vi (${Math.round(distance)}m)`);
+                updateHeaderLocationIndicator('denied', `Out of range (${Math.round(distance)}m)`);
                 if (frozenOverlay) {
                     frozenOverlay.style.display = 'flex';
                     if (frozenDistVal) frozenDistVal.textContent = Math.round(distance);
@@ -315,7 +232,7 @@ async function startLocationWatcher() {
         (err) => {
             console.warn("Location monitoring error:", err.message);
             if (err.code === err.PERMISSION_DENIED) {
-                updateLocationIndicator('denied', 'Bị từ chối');
+                updateLocationIndicator('denied', 'Denied');
             }
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
@@ -332,29 +249,29 @@ function checkLocation() {
     if (localStorage.getItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`) === 'true') {
         if (overlay) overlay.style.display = 'none';
         if (wrapper) wrapper.style.display = 'block';
-        updateHeaderLocationIndicator('granted', 'Đã xác thực');
+        updateHeaderLocationIndicator('granted', 'Verified');
         return;
     }
 
     // Force overlay visible if not verified
     if (overlay) overlay.style.display = 'flex';
     if (wrapper) wrapper.style.display = 'none';
-    updateHeaderLocationIndicator('checking', 'Chưa xác thực');
+    updateHeaderLocationIndicator('checking', 'Not verified');
 
     const requestLocation = async (isInitial = false) => {
         // Only update button state if not an initial silent check
         if (isInitial !== true) {
             if (btn) {
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> ĐANG XÁC THỰC...';
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> VERIFYING...';
                 btn.disabled = true;
             }
             if (errorEl) errorEl.style.display = 'none';
-            updateHeaderLocationIndicator('checking', 'Đang kiểm tra...');
+            updateHeaderLocationIndicator('checking', 'Checking...');
         }
 
         if (!navigator.geolocation) {
-            if (isInitial !== true) showLocError("Trình duyệt không hỗ trợ định vị.");
-            updateHeaderLocationIndicator('denied', 'Không hỗ trợ');
+            if (isInitial !== true) showLocError("Browser does not support geolocation.");
+            updateHeaderLocationIndicator('denied', 'Not supported');
             return;
         }
 
@@ -364,12 +281,12 @@ function checkLocation() {
                 const perm = await navigator.permissions.query({ name: 'geolocation' });
                 if (perm.state === 'denied') {
                     // Quyền bị từ chối → không gọi getCurrentPosition (tránh popup)
-                    updateHeaderLocationIndicator('denied', 'Bị từ chối');
+                    updateHeaderLocationIndicator('denied', 'Denied');
                     return;
                 }
                 if (perm.state === 'prompt') {
-                    // Quyền chưa được cấp → không gọi silent check (chờ user bấm nút)
-                    updateHeaderLocationIndicator('checking', 'Chờ xác thực');
+                    // Permission not granted yet → wait for user to click button
+                    updateHeaderLocationIndicator('checking', 'Waiting');
                     return;
                 }
                 // perm.state === 'granted' → tiếp tục kiểm tra khoảng cách
@@ -404,14 +321,14 @@ function checkLocation() {
                 }
 
                 if (distance > CUSTOMER_CONFIG.maxDistance) {
-                    showLocError(`Bạn đang ở xa nhà hàng (${Math.round(distance)}m). Vui lòng quét mã tại bàn.`);
-                    updateHeaderLocationIndicator('denied', `Xa (${Math.round(distance)}m)`);
+                    showLocError(`You are far from the restaurant (${Math.round(distance)}m). Please scan the code at the table.`);
+                    updateHeaderLocationIndicator('denied', `Far (${Math.round(distance)}m)`);
                 } else {
                     // Success - hide overlay, show menu
                     localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
                     if (overlay) overlay.style.display = 'none';
                     if (wrapper) wrapper.style.display = 'block';
-                    if (btn) btn.innerHTML = '<i class="fas fa-check me-2"></i> XÁC THỰC THÀNH CÔNG!';
+                    if (btn) btn.innerHTML = '<i class="fas fa-check me-2"></i> VERIFIED!';
                     updateHeaderLocationIndicator('granted', `OK (${Math.round(distance)}m)`);
                     startLocationWatcher();
                     setTimeout(() => {
@@ -431,19 +348,19 @@ function checkLocation() {
             },
             (err) => {
                 if (isInitial !== true) {
-                    let msg = "Vui lòng cấp quyền định vị: ";
+                    let msg = "Please allow geolocation: ";
                     switch(err.code) {
                         case err.PERMISSION_DENIED: 
-                            msg = "BẠN ĐÃ TỪ CHỐI ĐỊNH VỊ. Vui lòng cho phép trong Cài đặt và Tải lại trang."; 
-                            updateLocationIndicator('denied', 'Bị từ chối');
+                            msg = "LOCATION PERMISSION DENIED. Please allow in Settings and Reload page."; 
+                            updateLocationIndicator('denied', 'Denied');
                             break;
                         case err.POSITION_UNAVAILABLE: 
-                            msg += "Thông tin vị trí không khả dụng."; 
-                            updateLocationIndicator('denied', 'Không có tín hiệu');
+                            msg += "Location information unavailable."; 
+                            updateLocationIndicator('denied', 'No signal');
                             break;
                         case err.TIMEOUT: 
-                            msg += "Hết thời gian yêu cầu vị trí."; 
-                            updateLocationIndicator('denied', 'Hết thời gian');
+                            msg += "Location request timeout."; 
+                            updateLocationIndicator('denied', 'Timeout');
                             break;
                     }
                     showLocError(msg);
@@ -470,7 +387,7 @@ function checkLocation() {
             errorEl.style.display = 'block';
         }
         if (btn) {
-            btn.innerHTML = '<i class="fas fa-location-arrow me-2"></i> THỬ LẠI XÁC THỰC';
+            btn.innerHTML = '<i class="fas fa-location-arrow me-2"></i> RETRY VERIFICATION';
             btn.disabled = false;
         }
     }
@@ -637,7 +554,7 @@ function quickAdd(itemId, itemName, itemPrice, itemNameEn = '') {
     // Validate data
     if (!itemId || !itemName || isNaN(itemPrice)) {
         console.error('Invalid item data:', { itemId, itemName, itemPrice });
-        showToast('Lỗi: Không thể thêm món này');
+        showToast('Error: Cannot add this item');
         return;
     }
     
@@ -741,7 +658,7 @@ function showItemDetailById(itemId) {
     // Validate item data
     if (!item.id || isNaN(item.price)) {
         console.error('Invalid item data:', item);
-        showToast('Lỗi: Không thể xem chi tiết món này');
+        showToast('Error: Cannot view item details');
         return;
     }
     
@@ -778,7 +695,7 @@ function showItemDetail(item) {
     currentItem = { ...item, quantity: 1, note: '' };
     document.getElementById('detailName').textContent = typeof currentLang !== 'undefined' && currentLang === 'en' && item.name_en ? item.name_en : item.name;
     document.getElementById('detailPrice').textContent = formatCurrency(item.price);
-    document.getElementById('detailDesc').textContent = item.description || (typeof currentLang !== 'undefined' && currentLang === 'en' ? 'No description for this item.' : 'Không có mô tả cho món ăn này.');
+    document.getElementById('detailDesc').textContent = item.description || 'No description for this item.';
     document.getElementById('detailQty').textContent = '1';
     document.getElementById('detailNote').value = '';
     
@@ -824,7 +741,7 @@ function showItemDetail(item) {
         });
     } else {
         optsWrap.style.display = 'block';
-        optsContainer.innerHTML = '<span style="color:#94a3b8; font-size:0.75rem;"><i class="fas fa-info-circle me-1"></i>Chưa có Tùy chọn cấu hình sẵn cho món này (Thiết lập tại Admin).</span>';
+        optsContainer.innerHTML = '<span style="color:#94a3b8; font-size:0.75rem;"><i class="fas fa-info-circle me-1"></i>No options configured for this item (Set up at Admin).</span>';
     }
 
     updateDetailTotal();
@@ -848,7 +765,7 @@ function updateDetailTotal() {
     const total = currentItem.price * currentItem.quantity;
     const btnAdd = document.getElementById('btnAddOrder');
     if (btnAdd) {
-        btnAdd.innerHTML = `<i class="fas fa-cart-plus me-2"></i> TH\u00caM V\u00c0O \u0110\u01a0N H\u00c0NG — ${formatCurrency(total)}`;
+        btnAdd.innerHTML = `<i class="fas fa-cart-plus me-2"></i> ADD TO ORDER — ${formatCurrency(total)}`;
     }
 }
 
@@ -893,10 +810,10 @@ function updateCartModal() {
                 <div style="width:64px;height:64px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
                     <i class="fas fa-shopping-basket" style="font-size:1.5rem;color:#cbd5e1;"></i>
                 </div>
-                <p style="font-weight:700;font-size:0.95rem;color:#64748b;margin:0;">${isEn ? 'Your cart is empty / Giỏ hàng đang trống' : 'Giỏ hàng đang trống / Your cart is empty'}</p>
-                <p style="font-size:0.8rem;margin-top:6px;">${isEn ? 'Browse the menu and add items' : 'Duyệt thực đơn và thêm món'}</p>
+                <p style="font-weight:700;font-size:0.95rem;color:#64748b;margin:0;">Your cart is empty</p>
+                <p style="font-size:0.8rem;margin-top:6px;">Browse the menu and add items</p>
                 <button class="btn-gold" onclick="toggleCartModal()" style="margin-top:1rem;border:none;padding:12px 24px;border-radius:12px;font-weight:700;font-size:0.85rem;cursor:pointer;">
-                    ${isEn ? 'CONTINUE ORDERING' : 'TIẾP TỤC CHỌN MÓN'}
+                    CONTINUE ORDERING
                 </button>
             </div>
         `;
@@ -908,9 +825,8 @@ function updateCartModal() {
     let total = 0;
     
     cart.forEach((item, index) => {
-        let displayName = isEn && (item.nameEn || item.name_en) ? (item.nameEn || item.name_en) : item.name;
-        let displayNameEn = item.nameEn || item.name_en || item.name;
-        let noteLabel = isEn ? 'Note' : 'Lưu ý';
+        let displayName = item.nameEn || item.name_en || item.name;
+        let noteLabel = 'Note';
         total += item.price * item.quantity;
         html += `
             <div class="cart-item">
@@ -988,7 +904,7 @@ async function submitOrder() {
 }
 
 async function callWaiter(type) {
-    if (!confirm(type === 'payment' ? 'Bạn muốn yêu cầu thanh toán?' : 'Bạn muốn gọi nhân viên phục vụ?')) return;
+    if (!confirm(type === 'payment' ? 'Do you want to request payment?' : 'Do you want to call the waiter?')) return;
 
     try {
         const url = type === 'payment' ? `${CUSTOMER_CONFIG.baseUrl}/qr/support/request-bill` : `${CUSTOMER_CONFIG.baseUrl}/qr/support/call-waiter`;
@@ -996,15 +912,15 @@ async function callWaiter(type) {
         
         const result = await response.json();
         if (result.success) {
-            showToast(result.message || 'Yêu cầu đã được gửi đến nhân viên!');
+            showToast(result.message || 'Request sent to staff!');
             if (type === 'payment') {
                 showPaymentOverlay();
             }
         } else {
-            alert(result.error || 'Gửi yêu cầu thất bại.');
+            alert(result.error || 'Request failed.');
         }
     } catch (e) {
-        alert('Lỗi kết nối.');
+        alert('Connection error.');
     }
 }
 
@@ -1062,12 +978,9 @@ document.querySelectorAll('.modal-backdrop').forEach(modal => {
     });
 });
 
-// Language Toggle
+// Language Toggle (deprecated - English only now)
 function toggleLanguage() {
-    currentLang = currentLang === 'vi' ? 'en' : 'vi';
-    localStorage.setItem('aurora_lang', currentLang);
-    document.cookie = "aurora_lang=" + currentLang + "; path=/; max-age=31536000; SameSite=Lax";
-    location.reload();
+    console.log('Language toggle disabled - English only mode');
 }
 
 // Clear Search

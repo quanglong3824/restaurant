@@ -10,11 +10,11 @@
         <div class="home-actions">
             <?php if (Auth::isLoggedIn()): ?>
                 <a href="<?= BASE_URL ?>/tables" class="btn-gold-premium">
-                    <i class="fas fa-desktop me-2"></i> VÀO HỆ THỐNG
+                    <i class="fas fa-desktop me-2"></i> ENTER SYSTEM
                 </a>
             <?php else: ?>
                 <a href="<?= BASE_URL ?>/auth/login" class="btn-gold-premium">
-                    <i class="fas fa-sign-in-alt me-2"></i> ĐĂNG NHẬP
+                    <i class="fas fa-sign-in-alt me-2"></i> LOGIN
                 </a>
             <?php endif; ?>
         </div>
