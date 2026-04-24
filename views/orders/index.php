@@ -1,13 +1,19 @@
-<?php // views/orders/index.php — Clean White Theme Order Detail View
+<?php
+// views/orders/index.php — Premium Order Detail View
+
 $draftItems = [];
 $confirmedItems = [];
+$pendingItems = [];
 $hasDraft = false;
 $isSplitAction = (isset($_GET['action']) && $_GET['action'] === 'split');
 
 if (!empty($items)) {
     foreach ($items as $item) {
-        if (($item['status'] ?? 'draft') === 'confirmed') {
+        $status = $item['status'] ?? 'draft';
+        if ($status === 'confirmed' || $status === 'cooking' || $status === 'served') {
             $confirmedItems[] = $item;
+        } elseif ($status === 'pending') {
+            $pendingItems[] = $item;
         } else {
             $draftItems[] = $item;
             $hasDraft = true;
@@ -19,346 +25,365 @@ if (!empty($items)) {
 <div class="page-content">
 
     <?php if (!$order): ?>
-        <!-- Empty State: No Order -->
-        <div class="empty-state py-5 text-center">
-            <i class="fas fa-receipt fa-4x mb-3 opacity-40"></i>
-            <h4 class="fw-bold mt-3">Bàn chưa có order</h4>
-            <p class="text-muted small mt-2">Quay lại danh sách order để bắt đầu phục vụ.</p>
-            <a href="<?= BASE_URL ?>/orders" class="btn btn-gold px-5 py-3 mt-4 shadow-lg">
-                <i class="fas fa-arrow-left me-2"></i>XEM DANH SÁCH ORDER
+        <div class="empty-items-state">
+            <i class="fas fa-receipt"></i>
+            <p>Bàn chưa có order</p>
+            <a href="<?= BASE_URL ?>/orders" class="bill-btn primary">
+                <i class="fas fa-arrow-left"></i> XEM DANH SÁCH ORDER
             </a>
         </div>
     <?php else: ?>
 
-        <!-- Table Identity Card -->
-        <div class="identity-card shadow-sm">
-            <div class="d-flex align-items-center">
-                <div class="id-icon">
-                    <span class="id-num"><?= e(str_replace('Bàn ', '', $table['name'])) ?></span>
-                </div>
-                <div class="id-main ms-3">
-                    <h2 class="mb-1">
-                        <?= e($table_display_name) ?>
-                        <?php if (($order['order_source'] ?? '') === 'customer_qr'): ?>
-                            <span class="badge bg-info text-white ms-2" style="font-size: 0.7rem; vertical-align: middle;">
-                                <i class="fas fa-qrcode me-1"></i> KHÁCH QUÉT QR
-                            </span>
-                        <?php endif; ?>
-                    </h2>
-                    <?php if (!empty($order['note'])): ?>
-                        <div class="badge bg-gold-light text-gold-dark mb-2 py-2 px-3 rounded-pill" style="font-size:0.75rem; border:1px solid var(--gold-light);">
-                            <i class="fas fa-info-circle me-1"></i> <?= e($order['note']) ?>
-                        </div>
+        <!-- Table Header -->
+        <div class="table-header-card">
+            <div class="table-badge">
+                <span class="table-badge-num"><?= e(str_replace(['Bàn ', 'Phòng '], '', $table['name'])) ?></span>
+            </div>
+            <div class="table-info">
+                <h1 class="table-title">
+                    <?= e($table_display_name) ?>
+                    <?php if (($order['order_source'] ?? '') === 'customer_qr'): ?>
+                        <span class="qr-source-badge">
+                            <i class="fas fa-qrcode"></i> KHÁCH QUÉT QR
+                        </span>
                     <?php endif; ?>
-                    <div class="d-flex gap-2 small">
-                        <span>
-                            <i class="fas fa-clock text-gold me-1"></i>
-                            <?= date('H:i', strtotime($order['opened_at'])) ?>
-                        </span>
-                        <span class="clickable-update-guest" onclick="Aurora.openModal('modalUpdateGuestCount')" title="Cập nhật số khách">
-                            <i class="fas fa-user-friends text-gold me-1"></i>
-                            <span id="displayGuestCount"><?= $order['guest_count'] ?> khách</span>
-                            <i class="fas fa-edit ms-1 opacity-50"></i>
-                        </span>
-                        <span>
-                            <i class="fas fa-user-circle text-gold me-1"></i>
-                            <?= e($order['waiter_name']) ?>
-                        </span>
+                </h1>
+                <div class="table-meta">
+                    <span class="meta-tag">
+                        <i class="fas fa-clock"></i>
+                        <?= date('H:i', strtotime($order['opened_at'])) ?>
+                    </span>
+                    <span class="meta-tag clickable" onclick="Aurora.openModal('modalUpdateGuestCount')">
+                        <i class="fas fa-user-friends"></i>
+                        <span id="displayGuestCount"><?= $order['guest_count'] ?> khách</span>
+                        <i class="fas fa-pen" style="font-size:0.6rem;opacity:0.5;"></i>
+                    </span>
+                    <span class="meta-tag">
+                        <i class="fas fa-user"></i>
+                        <?= e($order['waiter_name']) ?>
+                    </span>
+                </div>
+                <?php if (!empty($order['note'])): ?>
+                    <div class="order-note-banner" style="margin-top:10px;padding:8px 12px;">
+                        <i class="fas fa-info-circle"></i>
+                        <?= e($order['note']) ?>
                     </div>
-                </div>
-                <div class="id-actions ms-auto">
-                    <a href="<?= BASE_URL ?>/menu?table_id=<?= $table['id'] ?>&order_id=<?= $order['id'] ?>"
-                        class="btn btn-gold btn-sm">
-                        <i class="fas fa-plus me-1"></i> THÊM MÓN
-                    </a>
-                </div>
+                <?php endif; ?>
+            </div>
+            <div class="table-actions">
+                <a href="<?= BASE_URL ?>/menu?table_id=<?= $table['id'] ?>&order_id=<?= $order['id'] ?>" class="btn-add-item">
+                    <i class="fas fa-plus"></i> THÊM MÓN
+                </a>
             </div>
         </div>
 
-        <!-- Merge Suggestion Alert -->
+        <!-- Merge Suggestion -->
         <?php if (!empty($mergeSuggestion)): ?>
-            <div class="alert alert-warning" role="alert">
-                <i class="fas fa-exclamation-triangle fa-lg"></i>
-                <div><?= $mergeSuggestion ?></div>
-                <button type="button" class="btn btn-sm btn-ghost"
-                    onclick="Aurora.openModal('modalMergeAreaFromOrder')">
-                    <i class="fas fa-object-group me-1"></i> Ghép bàn
+            <div class="order-note-banner" style="background:#fef3c7;border-color:#fde68a;color:#92400e;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <?= $mergeSuggestion ?>
+                <button onclick="Aurora.openModal('modalMergeAreaFromOrder')" class="bill-btn secondary" style="padding:6px 12px;font-size:0.7rem;">
+                    <i class="fas fa-object-group"></i> Ghép bàn
                 </button>
             </div>
         <?php endif; ?>
 
-        <!-- Order Items Stream -->
-        <div class="order-stream">
-            <?php if ($isSplitAction): ?>
-                <div class="alert alert-info py-3 mb-4 shadow-sm border-0" style="border-radius: 12px; background: #e0f2fe; color: #0369a1;">
-                    <div class="d-flex align-items-center gap-3">
-                        <i class="fas fa-cut fa-2x opacity-50"></i>
-                        <div>
-                            <h5 class="fw-bold mb-1">CHẾ ĐỘ TÁCH BÀN / CHUYỂN MÓN</h5>
-                            <p class="small mb-0">Vui lòng chọn các món muốn tách sang bàn mới hoặc chuyển sang bàn khác.</p>
-                        </div>
-                        <a href="<?= BASE_URL ?>/orders?table_id=<?= $table['id'] ?>&order_id=<?= $order['id'] ?>" class="btn btn-sm btn-outline-secondary ms-auto">
-                            HỦY
-                        </a>
+        <!-- Split Mode Banner -->
+        <?php if ($isSplitAction): ?>
+            <div class="split-mode-banner">
+                <i class="fas fa-cut"></i>
+                <div class="split-mode-content">
+                    <h5>CHẾ ĐỘ TÁCH BÀN / CHUYỂN MÓN</h5>
+                    <p>Chọn các món muốn tách sang bàn mới</p>
+                </div>
+                <a href="<?= BASE_URL ?>/orders?table_id=<?= $table['id'] ?>&order_id=<?= $order['id'] ?>" class="bill-btn secondary" style="padding:8px 14px;font-size:0.8rem;">
+                    HỦY
+                </a>
+            </div>
+        <?php endif; ?>
+
+        <!-- Items Container -->
+        <div class="items-container">
+
+            <!-- Pending Items (QR Customer) -->
+            <?php if (!empty($pendingItems)): ?>
+                <div class="section-card">
+                    <div class="section-header pending">
+                        <div class="section-icon pending"><i class="fas fa-clock"></i></div>
+                        <span class="section-title pending">CHỜ XÁC NHẬN (QR khách gửi)</span>
+                    </div>
+                    <div class="section-body">
+                        <?php foreach ($pendingItems as $item): ?>
+                            <div class="item-row pending <?= $isSplitAction ? 'split-selectable' : '' ?>" onclick="<?= $isSplitAction ? 'toggleSplitItem(' . $item['id'] . ')' : '' ?>">
+                                <?php if ($isSplitAction): ?>
+                                    <div class="split-checkbox">
+                                        <input type="checkbox" name="split_items[]" value="<?= $item['id'] ?>" onclick="event.stopPropagation(); updateSplitCount();">
+                                    </div>
+                                <?php endif; ?>
+                                <div class="item-info">
+                                    <div class="item-name"><?= e($item['item_name']) ?></div>
+                                    <?php if ($item['note'] && !preg_match('/^Set:\s*.+$/', $item['note'])): ?>
+                                        <div class="item-note-chips">
+                                            <?php foreach (explode(',', $item['note']) as $n): $n = trim($n); if ($n): ?>
+                                                <span class="note-chip"><?= e($n) ?></span>
+                                            <?php endif; endforeach; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="qty-badge">x<?= $item['quantity'] ?></div>
+                                <div class="item-price">
+                                    <div class="item-price-amount"><?= formatPrice($item['item_price'] * $item['quantity']) ?></div>
+                                </div>
+                                <?php if (!$isSplitAction): ?>
+                                    <div class="item-actions">
+                                        <?php
+                                        $optsStr = $item['note_options'] ?? '';
+                                        $optsEnStr = $item['note_options_en'] ?? '';
+                                        $itOptsArr = array_filter(array_map('trim', explode(',', $optsStr)));
+                                        $itOptsEnArr = array_filter(array_map('trim', explode(',', $optsEnStr)));
+                                        $combinedOpts = [];
+                                        foreach ($itOptsArr as $idx => $optVal) {
+                                            $enVal = $itOptsEnArr[$idx] ?? '';
+                                            $combinedOpts[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
+                                        }
+                                        $itemOptsJson = json_encode($combinedOpts, JSON_UNESCAPED_UNICODE);
+                                        ?>
+                                        <button class="action-btn edit" onclick="event.stopPropagation(); openNoteModal(<?= $item['id'] ?>, <?= $order['id'] ?>, <?= htmlspecialchars($itemOptsJson) ?>, '<?= addslashes(e($item['item_name'])) ?>', '<?= addslashes(e($item['note'] ?? '')) ?>')" title="Ghi chú">
+                                            <i class="fas fa-pen"></i>
+                                        </button>
+                                        <button class="action-btn delete" onclick="event.stopPropagation(); removeItem(<?= $item['id'] ?>, <?= $order['id'] ?>)" title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                <?php endif; ?>
+                                <span class="item-status-badge pending"><i class="fas fa-clock"></i> Chờ xác nhận</span>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             <?php endif; ?>
 
-            <!-- Confirmed Items Section -->
-            <?php if (!empty($confirmedItems)): ?>
-                <div class="section-label">
-                    <i class="fas fa-check-circle me-1"></i> ĐÃ XÁC NHẬN
-                </div>
-                <div class="items-grid-confirmed">
-                    <?php
-                    // Group confirmed items by set
-                    $groupedConfirmedItems = [];
-                    foreach ($confirmedItems as $item) {
-                        $setNote = '';
-                        if (preg_match('/^Set:\s*(.+)$/', $item['note'] ?? '', $matches)) {
-                            $setNote = $matches[1];
-                        }
-                        $groupedConfirmedItems[$setNote][] = $item;
-                    }
-
-                    foreach ($groupedConfirmedItems as $setNote => $itemsInSet):
-                        ?>
-                        <?php if ($setNote): ?>
-                            <div class="set-label">
-                                <span class="badge-gold">
-                                    <i class="fas fa-layer-group me-1"></i> <?= e($setNote) ?>
-                                </span>
-                            </div>
-                        <?php endif; ?>
-
-                        <?php foreach ($itemsInSet as $item): ?>
-                            <div class="item-plate plate-confirmed <?= $isSplitAction ? 'split-selectable' : '' ?>" 
-                                 onclick="<?= $isSplitAction ? 'toggleSplitItem(' . $item['id'] . ')' : '' ?>">
-                                <?php if ($isSplitAction): ?>
-                                    <div class="split-checkbox">
-                                        <input type="checkbox" name="split_items[]" value="<?= $item['id'] ?>" id="chk-<?= $item['id'] ?>" onclick="event.stopPropagation(); updateSplitCount();">
-                                    </div>
-                                <?php endif; ?>
-                                <div class="plate-info">
-                                    <div class="plate-name">
-                                        <?= e($item['item_name']) ?>
-                                        <?php if (($item['status'] ?? '') === 'pending'): ?>
-                                            <span class="badge bg-warning text-dark ms-1" style="font-size: 0.6rem; vertical-align: middle;">QR: CHỜ XÁC NHẬN</span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <?php if ($item['note'] && !preg_match('/^Set:\s*.+$/', $item['note'])): ?>
-                                        <div class="plate-note" style="display:flex;align-items:center;gap:.3rem;flex-wrap:wrap;">
-                                            <i class="fas fa-comment-dots me-1"></i>
-                                            <?php foreach (explode(',', $item['note']) as $n): ?>
-                                                <?php $n = trim($n); if ($n): ?>
-                                                <span style="background:rgba(212,175,55,.12);color:var(--gold-dark,#785e0a);border-radius:12px;padding:.1rem .5rem;font-size:.72rem;font-weight:600;"><?= e($n) ?></span>
-                                                <?php endif; ?>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="plate-qty">x<?= $item['quantity'] ?></div>
-                                <div class="plate-price"><?= formatPrice($item['item_price'] * $item['quantity']) ?></div>
-                                <div class="plate-status">
-                                    <i class="fas fa-check-circle" title="Đã xác nhận"></i>
-                                    <?php if (!$isSplitAction): ?>
-                                    <?php
-                                        // Dùng note_options đã join sẵn từ model
-                                        $optsStr1 = $item['note_options'] ?? '';
-                                        $optsEnStr1 = $item['note_options_en'] ?? '';
-                                        $itOptsArr1 = array_filter(array_map('trim', explode(',', $optsStr1)));
-                                        $itOptsEnArr1 = array_filter(array_map('trim', explode(',', $optsEnStr1)));
-                                        
-                                        $combinedOpts1 = [];
-                                        foreach ($itOptsArr1 as $idx => $optVal) {
-                                            $enVal = $itOptsEnArr1[$idx] ?? '';
-                                            $combinedOpts1[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
-                                        }
-                                        $itemOptsJson = json_encode($combinedOpts1, JSON_UNESCAPED_UNICODE);
-                                    ?>
-                                    <button class="btn btn-link text-gold p-0" style="font-size:.8rem;"
-                                        onclick="openNoteModal(<?= $item['id'] ?>, <?= $order['id'] ?>, <?= htmlspecialchars($itemOptsJson) ?>, '<?= addslashes(e($item['item_name'])) ?>', '<?= addslashes(e($item['note'] ?? '')) ?>')" title="Ghi chú món">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-link text-danger p-0 ms-1" onclick="removeItem(<?= $item['id'] ?>, <?= $order['id'] ?>)" title="Xóa món">
-                                        <i class="fas fa-trash-alt" style="font-size: 0.8rem;"></i>
-                                    </button>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-
-            <!-- Draft Items Section -->
+            <!-- Draft Items -->
             <?php if (!empty($draftItems)): ?>
-                <div class="section-label text-warning mt-4">
-                    <i class="fas fa-clock me-1"></i> CHỜ XÁC NHẬN
-                </div>
-                <div class="items-grid-draft">
-                    <?php
-                    // Group draft items by set
-                    $groupedDraftItems = [];
-                    foreach ($draftItems as $item) {
-                        $setNote = '';
-                        if (preg_match('/^Set:\s*(.+)$/', $item['note'] ?? '', $matches)) {
-                            $setNote = $matches[1];
+                <div class="section-card">
+                    <div class="section-header draft">
+                        <div class="section-icon draft"><i class="fas fa-edit"></i></div>
+                        <span class="section-title draft">MÓN ĐANG CHỌN (Nháp)</span>
+                    </div>
+                    <div class="section-body">
+                        <?php
+                        $groupedDraft = [];
+                        foreach ($draftItems as $item) {
+                            $setNote = '';
+                            if (preg_match('/^Set:\s*(.+)$/', $item['note'] ?? '', $matches)) $setNote = $matches[1];
+                            $groupedDraft[$setNote][] = $item;
                         }
-                        $groupedDraftItems[$setNote][] = $item;
-                    }
-
-                    foreach ($groupedDraftItems as $setNote => $itemsInSet):
-                        ?>
-                        <?php if ($setNote): ?>
-                            <div class="set-label">
-                                <span class="badge-gold">
-                                    <i class="fas fa-layer-group me-1"></i> <?= e($setNote) ?>
-                                </span>
-                            </div>
-                        <?php endif; ?>
-
-                        <?php foreach ($itemsInSet as $item): ?>
-                            <div class="item-plate plate-draft <?= $isSplitAction ? 'split-selectable' : '' ?>"
-                                 onclick="<?= $isSplitAction ? 'toggleSplitItem(' . $item['id'] . ')' : '' ?>">
-                                <?php if ($isSplitAction): ?>
-                                    <div class="split-checkbox">
-                                        <input type="checkbox" name="split_items[]" value="<?= $item['id'] ?>" id="chk-<?= $item['id'] ?>" onclick="event.stopPropagation(); updateSplitCount();">
-                                    </div>
-                                <?php endif; ?>
-                                <div class="plate-info">
-                                    <div class="plate-name">
-                                        <?= e($item['item_name']) ?>
-                                        <?php if (($item['status'] ?? '') === 'pending'): ?>
-                                            <span class="badge bg-warning text-dark ms-1" style="font-size: 0.6rem; vertical-align: middle;">QR: CHỜ XÁC NHẬN</span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <?php if ($item['note'] && !preg_match('/^Set:\s*.+$/', $item['note'])): ?>
-                                        <div class="plate-note" style="display:flex;align-items:center;gap:.3rem;flex-wrap:wrap;">
-                                            <i class="fas fa-comment-dots me-1"></i>
-                                            <?php foreach (explode(',', $item['note']) as $n): ?>
-                                                <?php $n = trim($n); if ($n): ?>
-                                                <span style="background:rgba(212,175,55,.12);color:var(--gold-dark,#785e0a);border-radius:12px;padding:.1rem .5rem;font-size:.72rem;font-weight:600;"><?= e($n) ?></span>
-                                                <?php endif; ?>
-                                            <?php endforeach; ?>
+                        foreach ($groupedDraft as $setNote => $setItems):
+                            if ($setNote): ?>
+                                <div class="set-group-label">
+                                    <span class="set-badge"><i class="fas fa-layer-group"></i> <?= e($setNote) ?></span>
+                                </div>
+                            <?php endif;
+                            foreach ($setItems as $item): ?>
+                                <div class="item-row draft <?= $isSplitAction ? 'split-selectable' : '' ?>" onclick="<?= $isSplitAction ? 'toggleSplitItem(' . $item['id'] . ')' : '' ?>">
+                                    <?php if ($isSplitAction): ?>
+                                        <div class="split-checkbox">
+                                            <input type="checkbox" name="split_items[]" value="<?= $item['id'] ?>" onclick="event.stopPropagation(); updateSplitCount();">
                                         </div>
                                     <?php endif; ?>
+                                    <div class="item-info">
+                                        <div class="item-name"><?= e($item['item_name']) ?></div>
+                                        <?php if ($item['note'] && !preg_match('/^Set:\s*.+$/', $item['note'])): ?>
+                                            <div class="item-note-chips">
+                                                <?php foreach (explode(',', $item['note']) as $n): $n = trim($n); if ($n): ?>
+                                                    <span class="note-chip"><?= e($n) ?></span>
+                                                <?php endif; endforeach; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php if (!$isSplitAction): ?>
+                                        <div class="item-qty-controls">
+                                            <button class="qty-btn" onclick="event.stopPropagation(); changeQty(<?= $item['id'] ?>, <?= $order['id'] ?>, -1)">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <span class="qty-display" id="qty-<?= $item['id'] ?>"><?= $item['quantity'] ?></span>
+                                            <button class="qty-btn" onclick="event.stopPropagation(); changeQty(<?= $item['id'] ?>, <?= $order['id'] ?>, 1)">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="qty-badge">x<?= $item['quantity'] ?></div>
+                                    <?php endif; ?>
+                                    <div class="item-price">
+                                        <div class="item-price-amount"><?= formatPrice($item['item_price'] * $item['quantity']) ?></div>
+                                    </div>
+                                    <?php if (!$isSplitAction): ?>
+                                        <?php
+                                        $optsStr2 = $item['note_options'] ?? '';
+                                        $optsEnStr2 = $item['note_options_en'] ?? '';
+                                        $itOptsArr2 = array_filter(array_map('trim', explode(',', $optsStr2)));
+                                        $itOptsEnArr2 = array_filter(array_map('trim', explode(',', $optsEnStr2)));
+                                        $combinedOpts2 = [];
+                                        foreach ($itOptsArr2 as $idx => $optVal) {
+                                            $enVal = $itOptsEnArr2[$idx] ?? '';
+                                            $combinedOpts2[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
+                                        }
+                                        $itemOptsJson2 = json_encode($combinedOpts2, JSON_UNESCAPED_UNICODE);
+                                        ?>
+                                        <div class="item-actions">
+                                            <button class="action-btn edit" onclick="event.stopPropagation(); openNoteModal(<?= $item['id'] ?>, <?= $order['id'] ?>, <?= htmlspecialchars($itemOptsJson2) ?>, '<?= addslashes(e($item['item_name'])) ?>', '<?= addslashes(e($item['note'] ?? '')) ?>')" title="Ghi chú">
+                                                <i class="fas fa-pen"></i>
+                                            </button>
+                                            <button class="action-btn delete" onclick="event.stopPropagation(); removeItem(<?= $item['id'] ?>, <?= $order['id'] ?>)" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    <?php endif; ?>
+                                    <span class="item-status-badge draft"><i class="fas fa-edit"></i> Nháp</span>
                                 </div>
-                                <?php if (!$isSplitAction): ?>
-                                <?php
-                                    // Dùng note_options đã join sẵn từ model
-                                    $optsStr2 = $item['note_options'] ?? '';
-                                    $optsEnStr2 = $item['note_options_en'] ?? '';
-                                    $itOptsArr2 = array_filter(array_map('trim', explode(',', $optsStr2)));
-                                    $itOptsEnArr2 = array_filter(array_map('trim', explode(',', $optsEnStr2)));
-                                    
-                                    $combinedOpts2 = [];
-                                    foreach ($itOptsArr2 as $idx => $optVal) {
-                                        $enVal = $itOptsEnArr2[$idx] ?? '';
-                                        $combinedOpts2[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
-                                    }
-                                    $itemOptsJson2 = json_encode($combinedOpts2, JSON_UNESCAPED_UNICODE);
-                                ?>
-                                <div class="plate-controls">
-                                    <button class="q-btn" onclick="changeQty(<?= $item['id'] ?>, <?= $order['id'] ?>, -1)" title="Giảm">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <span class="q-val" id="qty-<?= $item['id'] ?>"><?= $item['quantity'] ?></span>
-                                    <button class="q-btn" onclick="changeQty(<?= $item['id'] ?>, <?= $order['id'] ?>, 1)" title="Tăng">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                                <?php else: ?>
-                                    <div class="plate-qty">x<?= $item['quantity'] ?></div>
-                                <?php endif; ?>
-                                <div class="plate-price-total"><?= formatPrice($item['item_price'] * $item['quantity']) ?></div>
-                                <?php if (!$isSplitAction): ?>
-                                <div style="display:flex;gap:.25rem;">
-                                    <button class="btn btn-link p-1" style="color:var(--gold);font-size:.82rem;"
-                                        onclick="openNoteModal(<?= $item['id'] ?>, <?= $order['id'] ?>, <?= htmlspecialchars($itemOptsJson2) ?>, '<?= addslashes(e($item['item_name'])) ?>', '<?= addslashes(e($item['note'] ?? '')) ?>')" title="Ghi chú">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="plate-del" onclick="removeItem(<?= $item['id'] ?>, <?= $order['id'] ?>)" title="Xóa món">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endforeach; ?>
+                            <?php endforeach;
+                        endforeach; ?>
+                    </div>
                 </div>
             <?php endif; ?>
 
-            <!-- Empty Items State -->
+            <!-- Confirmed items -->
+            <?php if (!empty($confirmedItems)): ?>
+                <div class="section-card">
+                    <div class="section-header confirmed">
+                        <div class="section-icon confirmed"><i class="fas fa-check-circle"></i></div>
+                        <span class="section-title confirmed">ĐÃ XÁC NHẬN (Đang làm)</span>
+                    </div>
+                    <div class="section-body">
+                        <?php
+                        $groupedConfirmed = [];
+                        foreach ($confirmedItems as $item) {
+                            $setNote = '';
+                            if (preg_match('/^Set:\s*(.+)$/', $item['note'] ?? '', $matches)) $setNote = $matches[1];
+                            $groupedConfirmed[$setNote][] = $item;
+                        }
+                        foreach ($groupedConfirmed as $setNote => $setItems):
+                            if ($setNote): ?>
+                                <div class="set-group-label">
+                                    <span class="set-badge"><i class="fas fa-layer-group"></i> <?= e($setNote) ?></span>
+                                </div>
+                            <?php endif;
+                            foreach ($setItems as $item):
+                                $itemStatus = $item['status'] ?? 'confirmed';
+                                $statusIcon = $itemStatus === 'cooking' ? 'fa-fire' : ($itemStatus === 'served' ? 'fa-check' : 'fa-check-circle');
+                                $statusText = $itemStatus === 'cooking' ? 'Đang nấu' : ($itemStatus === 'served' ? 'Đã phục vụ' : 'Đã xác nhận');
+                            ?>
+                                <div class="item-row confirmed <?= $isSplitAction ? 'split-selectable' : '' ?>" onclick="<?= $isSplitAction ? 'toggleSplitItem(' . $item['id'] . ')' : '' ?>">
+                                    <?php if ($isSplitAction): ?>
+                                        <div class="split-checkbox">
+                                            <input type="checkbox" name="split_items[]" value="<?= $item['id'] ?>" onclick="event.stopPropagation(); updateSplitCount();">
+                                        </div>
+                                    <?php endif; ?>
+                                    <div class="item-info">
+                                        <div class="item-name"><?= e($item['item_name']) ?></div>
+                                        <?php if ($item['note'] && !preg_match('/^Set:\s*.+$/', $item['note'])): ?>
+                                            <div class="item-note-chips">
+                                                <?php foreach (explode(',', $item['note']) as $n): $n = trim($n); if ($n): ?>
+                                                    <span class="note-chip"><?= e($n) ?></span>
+                                                <?php endif; endforeach; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="qty-badge">x<?= $item['quantity'] ?></div>
+                                    <div class="item-price">
+                                        <div class="item-price-amount"><?= formatPrice($item['item_price'] * $item['quantity']) ?></div>
+                                    </div>
+                                    <?php if (!$isSplitAction): ?>
+                                        <?php
+                                        $optsStr3 = $item['note_options'] ?? '';
+                                        $optsEnStr3 = $item['note_options_en'] ?? '';
+                                        $itOptsArr3 = array_filter(array_map('trim', explode(',', $optsStr3)));
+                                        $itOptsEnArr3 = array_filter(array_map('trim', explode(',', $optsEnStr3)));
+                                        $combinedOpts3 = [];
+                                        foreach ($itOptsArr3 as $idx => $optVal) {
+                                            $enVal = $itOptsEnArr3[$idx] ?? '';
+                                            $combinedOpts3[] = $enVal ? $optVal . ' / ' . $enVal : $optVal;
+                                        }
+                                        $itemOptsJson3 = json_encode($combinedOpts3, JSON_UNESCAPED_UNICODE);
+                                        ?>
+                                        <div class="item-actions">
+                                            <button class="action-btn edit" onclick="event.stopPropagation(); openNoteModal(<?= $item['id'] ?>, <?= $order['id'] ?>, <?= htmlspecialchars($itemOptsJson3) ?>, '<?= addslashes(e($item['item_name'])) ?>', '<?= addslashes(e($item['note'] ?? '')) ?>')" title="Ghi chú">
+                                                <i class="fas fa-pen"></i>
+                                            </button>
+                                            <button class="action-btn delete" onclick="event.stopPropagation(); removeItem(<?= $item['id'] ?>, <?= $order['id'] ?>)" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    <?php endif; ?>
+                                    <span class="item-status-badge confirmed"><i class="fas <?= $statusIcon ?>"></i> <?= $statusText ?></span>
+                                </div>
+                            <?php endforeach;
+                        endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <!-- Empty -->
             <?php if (empty($items)): ?>
-                <div class="card text-center py-5 opacity-40 border-dashed">
-                    <i class="fas fa-utensils fa-3x mb-3"></i>
-                    <p class="fw-bold">Chưa chọn món nào</p>
-                    <a href="<?= BASE_URL ?>/menu?table_id=<?= $table['id'] ?>&order_id=<?= $order['id'] ?>"
-                        class="btn btn-gold mt-3">
-                        <i class="fas fa-plus me-1"></i> CHỌN MÓN NGAY
+                <div class="empty-items-state">
+                    <i class="fas fa-utensils"></i>
+                    <p>Chưa có món nào được chọn</p>
+                    <a href="<?= BASE_URL ?>/menu?table_id=<?= $table['id'] ?>&order_id=<?= $order['id'] ?>" class="bill-btn primary">
+                        <i class="fas fa-plus"></i> CHỌN MÓN NGAY
                     </a>
                 </div>
             <?php endif; ?>
         </div>
 
-        <!-- Floating Bill Bar -->
-        <div class="bill-dock">
-            <div class="dock-summary">
+        <!-- Bill Footer -->
+        <div class="bill-footer-bar">
+            <div class="bill-card">
                 <?php if ($isSplitAction): ?>
-                    <div class="d-flex flex-column gap-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="dock-label">ĐÃ CHỌN ĐỂ TÁCH</div>
-                            <div class="dock-amount" id="splitCount">0 món</div>
-                        </div>
-                        <button type="button" class="btn btn-gold w-100 py-2 shadow-lg" onclick="openConfirmSplitModal()">
-                            <i class="fas fa-cut me-1"></i> XÁC NHẬN TÁCH MÓN
-                        </button>
-                    </div>
-                <?php else: ?>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="bill-header">
                         <div>
-                            <div class="dock-label">TỔNG TẠM TÍNH</div>
-                            <div class="dock-amount" id="orderTotal"><?= formatPrice($total) ?></div>
-                        </div>
-                        <div class="text-end">
-                            <div class="small text-muted">Đã bao gồm VAT</div>
+                            <div class="bill-total-label">Đã chọn để tách</div>
+                            <div class="bill-total-amount" id="splitCount">0 món</div>
                         </div>
                     </div>
-
-                    <div class="actions-container">
+                    <button class="bill-btn primary" onclick="openConfirmSplitModal()">
+                        <i class="fas fa-cut"></i> XÁC NHẬN TÁCH MÓN
+                    </button>
+                <?php else: ?>
+                    <div class="bill-header">
+                        <div>
+                            <div class="bill-total-label">Tổng tạm tính</div>
+                            <div class="bill-total-amount" id="orderTotal"><?= formatPrice($total) ?></div>
+                        </div>
+                        <div class="bill-vat-note">Đã bao gồm VAT</div>
+                    </div>
+                    <div class="bill-actions">
                         <?php if ($hasDraft): ?>
-                            <form method="POST" action="<?= BASE_URL ?>/orders/confirm">
+                            <form method="POST" action="<?= BASE_URL ?>/orders/confirm" style="width:100%;">
                                 <input type="hidden" name="table_id" value="<?= $table['id'] ?>">
                                 <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
-                            <button type="submit" class="btn btn-gold w-100 py-2 shadow-lg pulse-animation">
-                                <i class="fas fa-check-circle me-1"></i> XÁC NHẬN MÓN
-                            </button>
+                                <button type="submit" class="bill-btn primary pulse-animation">
+                                    <i class="fas fa-check-circle"></i> XÁC NHẬN MÓN
+                                </button>
                             </form>
                         <?php endif; ?>
-
-                        <div class="d-flex gap-2">
-                            <?php if ($total > 0): ?>
-                                <button class="btn btn-success-luxury w-100 py-2"
-                                    onclick="confirmPayment(<?= $table['id'] ?>, <?= $order['id'] ?>, <?= $total ?>)">
-                                    <i class="fas fa-credit-card me-1"></i> THANH TOÁN
+                        <?php if ($total > 0): ?>
+                            <div class="bill-btn-row">
+                                <button class="bill-btn success" onclick="confirmPayment(<?= $table['id'] ?>, <?= $order['id'] ?>, <?= $total ?>)">
+                                    <i class="fas fa-credit-card"></i> THANH TOÁN
                                 </button>
-                                <a href="<?= BASE_URL ?>/orders/print?order_id=<?= $order['id'] ?>" target="_blank"
-                                    class="btn btn-ghost py-2" style="min-width: 100px;">
+                                <a href="<?= BASE_URL ?>/orders/print?order_id=<?= $order['id'] ?>" target="_blank" class="bill-btn secondary">
                                     <i class="fas fa-print"></i>
                                 </a>
-                            <?php else: ?>
-                                <button class="btn btn-outline-danger w-100 py-2"
-                                    onclick="confirmClose(<?= $table['id'] ?>, <?= $order['id'] ?>)">
-                                    <i class="fas fa-door-closed me-1"></i> ĐÓNG BÀN
-                                </button>
-                            <?php endif; ?>
-                        </div>
-                        
+                            </div>
+                        <?php else: ?>
+                            <button class="bill-btn danger" onclick="confirmClose(<?= $table['id'] ?>, <?= $order['id'] ?>)">
+                                <i class="fas fa-door-closed"></i> ĐÓNG BÀN
+                            </button>
+                        <?php endif; ?>
                         <?php if ($total > 0): ?>
-                            <div class="mt-2 text-center">
-                                <a href="<?= BASE_URL ?>/orders?table_id=<?= $table['id'] ?>&order_id=<?= $order['id'] ?>&action=split" class="text-gold small fw-bold" style="text-decoration: none;">
-                                    <i class="fas fa-cut"></i> TÁCH BÀN / CHUYỂN MÓN
+                            <div class="bill-split-link">
+                                <a href="<?= BASE_URL ?>/orders?table_id=<?= $table['id'] ?>&order_id=<?= $order['id'] ?>&action=split">
+                                    <i class="fas fa-cut"></i> Tách bàn / Chuyển món
                                 </a>
                             </div>
                         <?php endif; ?>
@@ -374,167 +399,138 @@ if (!empty($items)) {
 
 <!-- Modal: Payment -->
 <div class="modal-backdrop" id="modalClose">
-    <div class="modal">
+    <div class="modal modal-premium" style="max-width:400px;">
         <div class="modal-header">
-            <h3><i class="fas fa-check-circle me-2"></i> THANH TOÁN</h3>
-            <button class="modal-close" data-modal-close type="button">
-                <i class="fas fa-times"></i>
-            </button>
+            <h3><i class="fas fa-credit-card me-2"></i> Thanh toán</h3>
+            <button class="modal-close" data-modal-close><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
-            <div id="paymentSummary" class="text-center mb-4">
-                <div class="text-muted small fw-bold text-uppercase">Cần thanh toán</div>
-                <div class="display-5 fw-bold text-gold py-2" id="modalTotalAmount"><?= formatPrice($total) ?></div>
+            <div style="text-align:center; margin-bottom:24px;">
+                <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700; letter-spacing:1px;">CẦN THANH TOÁN</div>
+                <div style="font-size:2rem; font-weight:800; color:var(--gold-dark); font-family:'Outfit'; margin-top:8px;" id="modalTotalAmount"><?= formatPrice($total) ?></div>
             </div>
-
             <form method="POST" action="<?= BASE_URL ?>/tables/close" id="formCloseTable">
                 <input type="hidden" name="table_id" id="closeTableId">
                 <input type="hidden" name="order_id" id="closeOrderId">
-                <input type="hidden" id="isQuickCancel" value="0">
-
-                <!-- Phương thức thanh toán -->
-                <div class="compact-pay-group mb-3">
-                    <label class="form-label mb-2">PHƯƠNG THỨC</label>
-                    <div class="method-grid-mini">
-                        <label class="m-card active" id="methodCash">
+                
+                <div style="margin-bottom:20px;">
+                    <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:10px;">PHƯƠNG THỨC</div>
+                    <div style="display:flex; gap:10px;">
+                        <label id="methodCash" style="flex:1; padding:14px; background:#f8fafc; border:2px solid var(--gold); border-radius:var(--radius); display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer;">
                             <input type="radio" name="payment_method" value="cash" checked onchange="updatePaymentMethodUI('cash')" style="display:none">
-                            <i class="fas fa-money-bill-wave"></i>
-                            <span>TIỀN MẶT</span>
+                            <i class="fas fa-money-bill-wave" style="font-size:1.2rem; color:var(--gold-dark);"></i>
+                            <span style="font-size:0.75rem; font-weight:700; color:var(--gold-dark);">TIỀN MẶT</span>
                         </label>
-                        <label class="m-card" id="methodTransfer">
+                        <label id="methodTransfer" style="flex:1; padding:14px; background:#f8fafc; border:2px solid #e5e5e5; border-radius:var(--radius); display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer;">
                             <input type="radio" name="payment_method" value="transfer" onchange="updatePaymentMethodUI('transfer')" style="display:none">
-                            <i class="fas fa-university"></i>
-                            <span>CHUYỂN KHOẢN</span>
+                            <i class="fas fa-university" style="font-size:1.2rem; color:#8a8a8a;"></i>
+                            <span style="font-size:0.75rem; font-weight:700; color:#8a8a8a;">CHUYỂN KHOẢN</span>
                         </label>
                     </div>
                 </div>
 
-                <!-- Tuỳ chọn kèm theo -->
-                <div class="compact-pay-group mb-4">
-                    <label class="form-label mb-2">XÁC NHẬN</label>
-                    <div class="option-stack">
-                        <div class="o-card" id="cardPaid" onclick="togglePaymentCheck('checkPaid')">
-                            <div class="o-icon"><i class="fas fa-check"></i></div>
-                            <div class="o-info">
-                                <strong>Đã nhận đủ tiền</strong>
-                                <small>Xác nhận thanh toán</small>
+                <div style="margin-bottom:24px;">
+                    <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:10px;">XÁC NHẬN</div>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <div id="cardPaid" onclick="togglePaymentCheck('checkPaid')" style="padding:12px 16px; background:#f8fafc; border:2px solid #e5e5e5; border-radius:var(--radius); display:flex; align-items:center; gap:12px; cursor:pointer;">
+                            <div style="width:32px; height:32px; background:#fff; border:2px solid #e5e5e5; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                                <i class="fas fa-check" style="color:#8a8a8a;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size:0.85rem; font-weight:700; color:var(--text);">Đã nhận đủ tiền</div>
+                                <div style="font-size:0.65rem; color:#8a8a8a;">Xác nhận thanh toán</div>
                             </div>
                             <input type="checkbox" id="checkPaid" required style="display:none">
                         </div>
-
-                        <div class="o-card" id="cardPrint" onclick="togglePaymentCheck('checkPrintBill')">
-                            <div class="o-icon"><i class="fas fa-print"></i></div>
-                            <div class="o-info">
-                                <strong>Xem hoá đơn</strong>
-                                <small>Sau khi hoàn tất</small>
+                        <div id="cardPrint" onclick="togglePaymentCheck('checkPrintBill')" style="padding:12px 16px; background:#f8fafc; border:2px solid #e5e5e5; border-radius:var(--radius); display:flex; align-items:center; gap:12px; cursor:pointer;">
+                            <div style="width:32px; height:32px; background:#fff; border:2px solid #e5e5e5; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                                <i class="fas fa-print" style="color:#8a8a8a;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size:0.85rem; font-weight:700; color:var(--text);">Xem hóa đơn</div>
+                                <div style="font-size:0.65rem; color:#8a8a8a;">Sau khi hoàn tất</div>
                             </div>
                             <input type="checkbox" id="checkPrintBill" style="display:none">
                         </div>
                     </div>
                 </div>
 
-                <style>
-                    /* Cấu trúc Modal thu gọn */
-                    #modalClose .modal { max-width: 380px; }
-                    #modalClose .modal-body { padding: 1.25rem; }
-                    
-                    .form-label { font-size: 0.65rem; letter-spacing: 1px; color: #94a3b8; font-weight: 800; }
-
-                    /* Grid Phương thức thanh toán mini */
-                    .method-grid-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-                    .m-card {
-                        background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px;
-                        padding: 0.75rem 0.5rem; display: flex; flex-direction: column;
-                        align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s;
-                    }
-                    .m-card i { font-size: 1rem; color: #94a3b8; }
-                    .m-card span { font-size: 0.7rem; font-weight: 800; color: #64748b; }
-                    
-                    .m-card.active { border-color: var(--gold); background: rgba(212,175,55,0.08); }
-                    .m-card.active i { color: var(--gold-dark); }
-                    .m-card.active span { color: var(--gold-dark); }
-
-                    /* Stack tuỳ chọn mini */
-                    .option-stack { display: flex; flex-direction: column; gap: 0.5rem; }
-                    .o-card {
-                        background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px;
-                        padding: 0.65rem 1rem; display: flex; align-items: center; gap: 0.75rem;
-                        cursor: pointer; transition: all 0.2s;
-                    }
-                    .o-icon {
-                        width: 32px; height: 32px; background: #fff; border: 1px solid #e2e8f0;
-                        border-radius: 8px; display: flex; align-items: center; justify-content: center;
-                        font-size: 0.85rem; color: #94a3b8; flex-shrink: 0;
-                    }
-                    .o-info { display: flex; flex-direction: column; line-height: 1.2; }
-                    .o-info strong { font-size: 0.8rem; color: #334155; }
-                    .o-info small { font-size: 0.65rem; color: #64748b; }
-
-                    /* Active States */
-                    #cardPaid.active { border-color: #22c55e; background: #f0fdf4; }
-                    #cardPaid.active .o-icon { background: #22c55e; color: #fff; border-color: #22c55e; }
-                    #cardPaid.active strong { color: #15803d; }
-
-                    #cardPrint.active { border-color: var(--gold); background: rgba(212,175,55,0.08); }
-                    #cardPrint.active .o-icon { background: var(--gold); color: #fff; border-color: var(--gold); }
-                    #cardPrint.active strong { color: var(--gold-dark); }
-                </style>
-
-                <script>
-                    function updatePaymentMethodUI(method) {
-                        document.getElementById('methodCash').classList.toggle('active', method === 'cash');
-                        document.getElementById('methodTransfer').classList.toggle('active', method === 'transfer');
-                    }
-                    function togglePaymentCheck(id) {
-                        const cb = document.getElementById(id);
-                        const card = id === 'checkPaid' ? document.getElementById('cardPaid') : document.getElementById('cardPrint');
-                        cb.checked = !cb.checked;
-                        card.classList.toggle('active', cb.checked);
-                    }
-                </script>
-
-                <button type="button" id="btnSubmitPayment" class="btn btn-gold w-100 py-2 shadow-lg"
-                    onclick="handleSubmitPayment(event)">
-                    <i class="fas fa-check-circle me-1"></i> HOÀN TẤT THANH TOÁN
+                <button type="button" id="btnSubmitPayment" class="bill-btn primary" onclick="handleSubmitPayment(event)" style="width:100%;">
+                    <i class="fas fa-check-circle"></i> HOÀN TẤT THANH TOÁN
                 </button>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Modal: Update Guest Count -->
+<script>
+function updatePaymentMethodUI(method) {
+    const cash = document.getElementById('methodCash');
+    const transfer = document.getElementById('methodTransfer');
+    if (method === 'cash') {
+        cash.style.borderColor = 'var(--gold)';
+        cash.style.background = 'rgba(197,160,89,0.08)';
+        cash.querySelector('i').style.color = 'var(--gold-dark)';
+        cash.querySelector('span').style.color = 'var(--gold-dark)';
+        transfer.style.borderColor = '#e5e5e5';
+        transfer.style.background = '#f8fafc';
+        transfer.querySelector('i').style.color = '#8a8a8a';
+        transfer.querySelector('span').style.color = '#8a8a8a';
+    } else {
+        transfer.style.borderColor = 'var(--gold)';
+        transfer.style.background = 'rgba(197,160,89,0.08)';
+        transfer.querySelector('i').style.color = 'var(--gold-dark)';
+        transfer.querySelector('span').style.color = 'var(--gold-dark)';
+        cash.style.borderColor = '#e5e5e5';
+        cash.style.background = '#f8fafc';
+        cash.querySelector('i').style.color = '#8a8a8a';
+        cash.querySelector('span').style.color = '#8a8a8a';
+    }
+}
+function togglePaymentCheck(id) {
+    const cb = document.getElementById(id);
+    const card = id === 'checkPaid' ? document.getElementById('cardPaid') : document.getElementById('cardPrint');
+    cb.checked = !cb.checked;
+    if (cb.checked) {
+        card.style.borderColor = id === 'checkPaid' ? '#10b981' : 'var(--gold)';
+        card.style.background = id === 'checkPaid' ? '#d1fae5' : 'rgba(197,160,89,0.08)';
+        card.querySelector('div:first-child').style.background = id === 'checkPaid' ? '#10b981' : 'var(--gold)';
+        card.querySelector('div:first-child').style.borderColor = id === 'checkPaid' ? '#10b981' : 'var(--gold)';
+        card.querySelector('i').style.color = '#fff';
+    } else {
+        card.style.borderColor = '#e5e5e5';
+        card.style.background = '#f8fafc';
+        card.querySelector('div:first-child').style.background = '#fff';
+        card.querySelector('div:first-child').style.borderColor = '#e5e5e5';
+        card.querySelector('i').style.color = '#8a8a8a';
+    }
+}
+</script>
+
+<!-- Modal: Guest Count -->
 <div class="modal-backdrop" id="modalUpdateGuestCount">
-    <div class="modal">
+    <div class="modal modal-premium" style="max-width:360px;">
         <div class="modal-header">
-            <h3><i class="fas fa-user-friends me-2"></i> Cập nhật số khách</h3>
-            <button class="modal-close" data-modal-close type="button">
-                <i class="fas fa-times"></i>
-            </button>
+            <h3><i class="fas fa-user-friends me-2"></i> Số khách</h3>
+            <button class="modal-close" data-modal-close><i class="fas fa-times"></i></button>
         </div>
-        <form method="POST" id="formUpdateGuestCount" class="modal-body">
+        <form id="formUpdateGuestCount" class="modal-body">
             <input type="hidden" name="order_id" value="<?= $order['id'] ?? '' ?>">
-            <p class="small text-muted mb-3">Chọn hoặc nhập số lượng khách thực tế tại bàn.</p>
-            
-            <div class="form-group mb-4">
-                <label class="form-label">SỐ LƯỢNG KHÁCH</label>
-                <div class="guest-selector-grid">
-                    <?php for ($i = 1; $i <= 12; $i++): ?>
-                        <label class="guest-option">
-                            <input type="radio" name="guest_count_radio" value="<?= $i ?>" 
-                                <?= $i == ($order['guest_count'] ?? 1) ? 'checked' : '' ?>>
-                            <span class="guest-option-span"><?= $i ?></span>
-                        </label>
-                    <?php endfor; ?>
-                </div>
-                <div class="d-flex align-items-center mt-3">
-                    <label class="me-3 small fw-bold">Hoặc nhập:</label>
-                    <input type="number" name="guest_count_input" class="form-control flex-grow-1" 
-                        min="1" value="<?= $order['guest_count'] ?? 1 ?>">
-                </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:16px;">Chọn số lượng khách tại bàn</div>
+            <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; margin-bottom:16px;">
+                <?php for ($i = 1; $i <= 12; $i++): ?>
+                    <label style="padding:10px; background:<?= $i == ($order['guest_count'] ?? 1) ? 'var(--gold)' : '#f8fafc' ?>; border:2px solid <?= $i == ($order['guest_count'] ?? 1) ? 'var(--gold)' : '#e5e5e5' ?>; border-radius:var(--radius); text-align:center; cursor:pointer; transition:all 0.15s;">
+                        <input type="radio" name="guest_count_radio" value="<?= $i ?>" <?= $i == ($order['guest_count'] ?? 1) ? 'checked' : '' ?> style="display:none" onchange="this.parentElement.style.background='var(--gold)'; this.parentElement.style.borderColor='var(--gold)'; this.parentElement.style.color='#fff';">
+                        <span style="font-size:0.9rem; font-weight:700; color:<?= $i == ($order['guest_count'] ?? 1) ? '#fff' : 'var(--text)' ?>;"><?= $i ?></span>
+                    </label>
+                <?php endfor; ?>
             </div>
-            
-            <button type="button" onclick="submitGuestCountUpdate()" class="btn btn-gold w-100 py-2 fw-bold">
-                <i class="fas fa-save me-1"></i> LƯU THAY ĐỔI
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-size:0.75rem; font-weight:700;">Hoặc nhập:</span>
+                <input type="number" name="guest_count_input" style="flex:1; padding:10px; border:2px solid #e5e5e5; border-radius:var(--radius); font-size:0.9rem; font-weight:700;" min="1" value="<?= $order['guest_count'] ?? 1 ?>">
+            </div>
+            <button type="button" onclick="submitGuestCountUpdate()" class="bill-btn primary" style="width:100%; margin-top:20px;">
+                <i class="fas fa-save"></i> LƯU
             </button>
         </form>
     </div>
@@ -542,83 +538,66 @@ if (!empty($items)) {
 
 <!-- Modal: Confirm Split -->
 <div class="modal-backdrop" id="modalConfirmSplit">
-    <div class="modal modal-premium" style="max-width: 450px;">
+    <div class="modal modal-premium" style="max-width:400px;">
         <div class="modal-header">
-            <h3><i class="fas fa-cut me-2"></i> XÁC NHẬN TÁCH</h3>
-            <button class="modal-close" data-modal-close type="button"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-cut me-2"></i> Tách bàn</h3>
+            <button class="modal-close" data-modal-close><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
-            <div class="mb-4 text-center">
-                <div class="small text-muted mb-1">MÓN ĐÃ CHỌN</div>
-                <div class="fw-bold h4" id="modalSplitCountText">0 món</div>
+            <div style="text-align:center; margin-bottom:20px;">
+                <div style="font-size:0.7rem; color:var(--text-muted);">MÓN ĐÃ CHỌN</div>
+                <div style="font-size:1.5rem; font-weight:800; color:var(--gold-dark); margin-top:4px;" id="modalSplitCountText">0 món</div>
             </div>
-
-            <div class="form-group mb-4">
-                <label class="form-label">CHỌN BÀN ĐÍCH</label>
-                <select id="splitTargetTableId" class="form-control" required>
+            <div style="margin-bottom:20px;">
+                <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:8px;">BÀN ĐÍCH</div>
+                <select id="splitTargetTableId" style="width:100%; padding:12px; border:2px solid #e5e5e5; border-radius:var(--radius); font-size:0.85rem;">
                     <option value="">-- Chọn bàn trống --</option>
                     <?php foreach ($grouped as $area => $tbls): ?>
                         <optgroup label="<?= e($area) ?>">
                             <?php foreach ($tbls as $t): ?>
                                 <?php if ($t['status'] === 'available' && empty($t['parent_id']) && $t['id'] != ($table['id'] ?? 0)): ?>
-                                    <option value="<?= $t['id'] ?>"><?= e($t['name']) ?> (Sức chứa: <?= $t['capacity'] ?>)</option>
+                                    <option value="<?= $t['id'] ?>"><?= e($t['name']) ?> (<?= $t['capacity'] ?> chỗ)</option>
                                 <?php endif; ?>
                             <?php endforeach; ?>
                         </optgroup>
                     <?php endforeach; ?>
-                    <option value="0">-- Tách ra bàn mới (tự động) --</option>
+                    <option value="0">-- Tách ra bàn mới --</option>
                 </select>
             </div>
-
-            <div class="form-group mb-4">
-                <label class="form-label">SỐ LƯỢNG KHÁCH (BÀN MỚI)</label>
-                <div class="guest-selector-grid">
+            <div style="margin-bottom:24px;">
+                <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:8px;">KHÁCH (BÀN MỚI)</div>
+                <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:8px;">
                     <?php for ($i = 1; $i <= 6; $i++): ?>
-                        <label class="guest-option">
-                            <input type="radio" name="split_guest_count" value="<?= $i ?>" <?= $i == 2 ? 'checked' : '' ?>>
-                            <span class="guest-option-span"><?= $i ?></span>
+                        <label style="padding:10px; background:<?= $i == 2 ? 'var(--gold)' : '#f8fafc' ?>; border:2px solid <?= $i == 2 ? 'var(--gold)' : '#e5e5e5' ?>; border-radius:var(--radius); text-align:center; cursor:pointer;">
+                            <input type="radio" name="split_guest_count" value="<?= $i ?>" <?= $i == 2 ? 'checked' : '' ?> style="display:none">
+                            <span style="font-size:0.85rem; font-weight:700; color:<?= $i == 2 ? '#fff' : 'var(--text)' ?>;"><?= $i ?></span>
                         </label>
                     <?php endfor; ?>
                 </div>
             </div>
-
-            <div class="d-grid gap-2">
-                <button type="button" class="btn btn-gold py-2 fw-bold" onclick="submitSplitOrder()">XÁC NHẬN TÁCH BÀN</button>
-                <button type="button" class="btn btn-ghost py-2" data-modal-close>HỦY</button>
-            </div>
+            <button class="bill-btn primary" onclick="submitSplitOrder()" style="width:100%;">
+                <i class="fas fa-cut"></i> XÁC NHẬN TÁCH
+            </button>
         </div>
     </div>
 </div>
 
-<style>
-    .split-selectable { cursor: pointer; position: relative; }
-    .split-selectable:hover { background: #f0f9ff !important; border-color: #7dd3fc !important; }
-    .split-checkbox { padding-right: 15px; display: flex; align-items: center; }
-    .split-checkbox input { width: 22px; height: 22px; cursor: pointer; accent-color: var(--gold); }
-    .item-plate.selected-for-split { background: #fefce8 !important; border-color: #fde047 !important; }
-</style>
-
-<!-- Modal: Ghi chú từng món -->
+<!-- Modal: Item Note -->
 <div class="modal-backdrop" id="modalItemNote" style="display:none;">
-    <div class="modal" style="max-width:420px;">
+    <div class="modal modal-premium" style="max-width:380px;">
         <div class="modal-header">
-            <h3><i class="fas fa-edit me-2"></i> Ghi chú món</h3>
-            <button class="modal-close" type="button" onclick="closeNoteModal()"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-pen me-2"></i> Ghi chú món</h3>
+            <button class="modal-close" onclick="closeNoteModal()"><i class="fas fa-times"></i></button>
         </div>
-        <div class="modal-body" style="display:flex;flex-direction:column;gap:1rem;">
-            <div id="note-item-name" style="font-weight:700;font-size:1rem;color:var(--text-primary);"></div>
-            <!-- Chip options từ admin -->
-            <div id="note-opts-container" style="display:flex;flex-wrap:wrap;gap:.45rem;"></div>
-            <!-- Text note tự do -->
-            <div class="form-group">
-                <label class="form-label" style="font-size:.75rem;">GHI CHÚ TỰ DO</label>
-                <input type="text" id="note-custom-text" class="form-control"
-                       placeholder="VD: Không hành phi, chín kỹ..." maxlength="120"
-                       style="font-size:.9rem;">
+        <div class="modal-body">
+            <div id="note-item-name" style="font-size:1rem; font-weight:700; color:var(--text); margin-bottom:16px;"></div>
+            <div id="note-opts-container" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;"></div>
+            <div>
+                <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:8px;">GHI CHÚ TỰ DO</div>
+                <input type="text" id="note-custom-text" placeholder="VD: Không hành, chín kỹ..." maxlength="120" style="width:100%; padding:12px; border:2px solid #e5e5e5; border-radius:var(--radius); font-size:0.85rem;">
             </div>
-            <button type="button" class="btn btn-gold btn-block py-3"
-                    onclick="submitItemNote()" id="btn-save-note">
-                <i class="fas fa-check me-2"></i> Lưu ghi chú
+            <button type="button" onclick="submitItemNote()" id="btn-save-note" class="bill-btn primary" style="width:100%; margin-top:20px;">
+                <i class="fas fa-check"></i> LƯU
             </button>
         </div>
     </div>
@@ -626,57 +605,38 @@ if (!empty($items)) {
 
 <!-- Modal: Merge Tables -->
 <div class="modal-backdrop" id="modalMergeAreaFromOrder">
-    <div class="modal">
+    <div class="modal modal-premium" style="max-width:360px;">
         <div class="modal-header">
             <h3><i class="fas fa-object-group me-2"></i> Ghép bàn</h3>
-            <button class="modal-close" data-modal-close type="button">
-                <i class="fas fa-times"></i>
-            </button>
+            <button class="modal-close" data-modal-close><i class="fas fa-times"></i></button>
         </div>
         <form id="targetForm" method="POST" action="<?= BASE_URL ?>/tables/merge" class="modal-body">
             <input type="hidden" name="parent_id" value="<?= $table['id'] ?? '' ?>">
-            <input type="hidden" name="redirect"
-                value="/orders?table_id=<?= $table['id'] ?? '' ?>&order_id=<?= $order['id'] ?? '' ?>">
-            
-            <p class="merge-message">
-                Chọn bàn trống cùng khu vực để ghép với <strong><?= e($table['name']) ?></strong>:
-            </p>
-            
-            <div class="form-group mb-4">
-                <label class="form-label">CHỌN BÀN TRỐNG</label>
-                <select name="child_id" class="form-control" required>
-                    <option value="">-- Chọn bàn --</option>
-                    <?php
-                    if (!empty($grouped)):
-                        $currentArea = $table['area'] ?? '';
-                        if (isset($grouped[$currentArea])):
-                            $tables = $grouped[$currentArea];
-                            foreach ($tables as $t):
-                                if ($t['status'] === 'available' && empty($t['parent_id']) && $t['id'] != ($table['id'] ?? 0)):
-                                    ?>
-                                    <option value="<?= $t['id'] ?>">
-                                        <?= e($t['name']) ?> (Sức chứa: <?= $t['capacity'] ?> ghế)
-                                    </option>
-                                    <?php
-                                endif;
-                            endforeach;
-                        endif;
-                    endif;
-                    ?>
-                </select>
+            <input type="hidden" name="redirect" value="/orders?table_id=<?= $table['id'] ?? '' ?>&order_id=<?= $order['id'] ?? '' ?>">
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:16px;">
+                Ghép bàn trống cùng khu vực với <strong><?= e($table['name']) ?></strong>
             </div>
-            
-            <button type="submit" class="btn btn-gold w-100 py-2 fw-bold">
-                <i class="fas fa-link me-1"></i> GHÉP BÀN NGAY
+            <select name="child_id" style="width:100%; padding:12px; border:2px solid #e5e5e5; border-radius:var(--radius); font-size:0.85rem;">
+                <option value="">-- Chọn bàn --</option>
+                <?php if (!empty($grouped)): $currentArea = $table['area'] ?? '';
+                    if (isset($grouped[$currentArea])):
+                        foreach ($grouped[$currentArea] as $t):
+                            if ($t['status'] === 'available' && empty($t['parent_id']) && $t['id'] != ($table['id'] ?? 0)): ?>
+                                <option value="<?= $t['id'] ?>"><?= e($t['name']) ?> (<?= $t['capacity'] ?> chỗ)</option>
+                            <?php endif;
+                        endforeach;
+                    endif;
+                endif; ?>
+            </select>
+            <button type="submit" class="bill-btn primary" style="width:100%; margin-top:20px;">
+                <i class="fas fa-link"></i> GHÉP BÀN
             </button>
         </form>
     </div>
 </div>
 
-<!-- External CSS -->
 <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/orders/index.css">
 
-<!-- Config -->
 <script>
 const ORDERS_CONFIG = {
     baseUrl: '<?= BASE_URL ?>',
@@ -684,26 +644,23 @@ const ORDERS_CONFIG = {
     orderId: <?= $order['id'] ?? 0 ?>
 };
 
-// ── Modal ghi chú từng món ─────────────────────────────────────────
 let _noteItemId = 0, _noteOrderId = 0, _noteOpts = [], _noteSelectedOpts = [];
 
 function openNoteModal(itemId, orderId, opts, itemName, currentNote) {
-    _noteItemId   = itemId;
-    _noteOrderId  = orderId;
-    _noteOpts     = opts || [];
+    _noteItemId = itemId;
+    _noteOrderId = orderId;
+    _noteOpts = opts || [];
     _noteSelectedOpts = [];
 
     document.getElementById('note-item-name').textContent = itemName;
 
-    // Phân tách note hiện tại thành opts đã chọn + text tự do
     const currentParts = currentNote ? currentNote.split(',').map(s => s.trim()).filter(Boolean) : [];
     const selectedOpts = currentParts.filter(p => _noteOpts.includes(p));
-    const freeText     = currentParts.filter(p => !_noteOpts.includes(p)).join(', ');
+    const freeText = currentParts.filter(p => !_noteOpts.includes(p)).join(', ');
 
     _noteSelectedOpts = [...selectedOpts];
     document.getElementById('note-custom-text').value = freeText;
 
-    // Render chips
     const container = document.getElementById('note-opts-container');
     container.innerHTML = '';
     if (_noteOpts.length > 0) {
@@ -712,36 +669,33 @@ function openNoteModal(itemId, orderId, opts, itemName, currentNote) {
             const chip = document.createElement('button');
             chip.type = 'button';
             chip.textContent = opt;
-            chip.className = 'note-opt-chip' + (isActive ? ' active' : '');
-            chip.style.cssText = `padding:.3rem .75rem;border-radius:20px;font-size:.82rem;border:1.5px solid ${isActive ? 'var(--gold)' : '#e2e8f0'};background:${isActive ? 'rgba(212,175,55,.15)' : '#f8fafc'};color:${isActive ? 'var(--gold-dark,#785e0a)' : '#64748b'};font-weight:${isActive ? '700' : '400'};cursor:pointer;transition:all .2s;`;
+            chip.className = 'note-chip';
+            chip.style.cssText = `padding:8px 14px; background:${isActive ? 'var(--gold)' : '#f8fafc'}; border:2px solid ${isActive ? 'var(--gold)' : '#e5e5e5'}; border-radius:20px; font-size:0.8rem; font-weight:700; color:${isActive ? '#fff' : 'var(--text)'}; cursor:pointer;`;
             chip.onclick = () => {
                 const idx = _noteSelectedOpts.indexOf(opt);
                 if (idx >= 0) {
                     _noteSelectedOpts.splice(idx, 1);
                     chip.style.background = '#f8fafc';
-                    chip.style.borderColor = '#e2e8f0';
-                    chip.style.color = '#64748b';
-                    chip.style.fontWeight = '400';
+                    chip.style.borderColor = '#e5e5e5';
+                    chip.style.color = 'var(--text)';
                 } else {
                     _noteSelectedOpts.push(opt);
-                    chip.style.background = 'rgba(212,175,55,.15)';
+                    chip.style.background = 'var(--gold)';
                     chip.style.borderColor = 'var(--gold)';
-                    chip.style.color = 'var(--gold-dark,#785e0a)';
-                    chip.style.fontWeight = '700';
+                    chip.style.color = '#fff';
                 }
             };
             container.appendChild(chip);
         });
     }
 
-    const modal = document.getElementById('modalItemNote');
-    modal.style.display = 'flex';
-    setTimeout(() => document.getElementById('note-custom-text').focus(), 150);
+    document.getElementById('modalItemNote').style.display = 'flex';
 }
 
 function closeNoteModal() {
     document.getElementById('modalItemNote').style.display = 'none';
 }
+
 document.getElementById('modalItemNote').addEventListener('click', function(e) {
     if (e.target === this) closeNoteModal();
 });
@@ -754,7 +708,7 @@ function submitItemNote() {
 
     const btn = document.getElementById('btn-save-note');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Đang lưu...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
 
     fetch(ORDERS_CONFIG.baseUrl + '/orders/update-note', {
         method: 'POST',
@@ -767,18 +721,17 @@ function submitItemNote() {
             closeNoteModal();
             location.reload();
         } else {
-            alert(data.message || 'Lỗi lưu ghi chú');
+            alert(data.message || 'Lỗi');
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check me-2"></i> Lưu ghi chú';
+            btn.innerHTML = '<i class="fas fa-check"></i> LƯU';
         }
     })
     .catch(() => {
-        alert('Lỗi kết nối!');
+        alert('Lỗi kết nối');
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-check me-2"></i> Lưu ghi chú';
+        btn.innerHTML = '<i class="fas fa-check"></i> LƯU';
     });
 }
 </script>
 
-<!-- External JavaScript -->
 <script src="<?= BASE_URL ?>/public/js/orders/index.js"></script>
