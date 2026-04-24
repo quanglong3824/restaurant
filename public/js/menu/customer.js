@@ -180,7 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('frozenOverlay')?.style.setProperty('display', 'none');
         // Update header location indicator for DEV_MODE
         updateHeaderLocationIndicator('dev', 'DEV MODE');
-        document.getElementById('headerLocStatus')?.style.setProperty('display', 'flex');
     }
     
     createLocationIndicator();
@@ -202,14 +201,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── Location Status Indicator ────────────────────────────
 function createLocationIndicator() {
-    // Hide old floating indicator - now using header chip
-    if (document.getElementById('locStatusIndicator')) {
-        document.getElementById('locStatusIndicator').style.display = 'none';
-    }
+    // Remove old floating indicator if exists (legacy)
+    const oldIndicator = document.getElementById('locStatusIndicator');
+    if (oldIndicator) oldIndicator.remove();
     
     // Show header location chip
     const headerChip = document.getElementById('headerLocStatus');
-    if (headerChip && !CUSTOMER_CONFIG.devMode) {
+    if (headerChip) {
         headerChip.style.display = 'flex';
     }
 }
@@ -1255,40 +1253,100 @@ function initCategoryPillClick() {
 // ════════════════════════════════════════════════════════════════
 // SWIPE GESTURE - Hide/Show Header
 // ════════════════════════════════════════════════════════════════
+let _headerHidden = false;
+
 function initSwipeGesture() {
-    let touchStartY = 0;
-    let touchEndY = 0;
-    const minSwipeDistance = 50; // Minimum distance for swipe
     const header = document.getElementById('menuHeader');
-    const categoryNav = document.querySelector('.category-nav');
-    
     if (!header) return;
     
-    // Handle touch start
+    // Calculate correct sticky top values based on current header state
+    updateStickyPositions();
+    
+    // Touch-based swipe detection
+    let touchStartY = 0;
+    let touchStartX = 0;
+    let touchStartTime = 0;
+    
     document.addEventListener('touchstart', (e) => {
+        if (e.target.closest('.modal-backdrop, .sidebar-left, .sidebar-overlay, button, input, textarea, .cart-bar')) return;
         touchStartY = e.changedTouches[0].screenY;
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartTime = Date.now();
     }, { passive: true });
     
-    // Handle touch end
     document.addEventListener('touchend', (e) => {
-        touchEndY = e.changedTouches[0].screenY;
-        handleSwipe();
+        if (e.target.closest('.modal-backdrop, .sidebar-left, .sidebar-overlay, button, input, textarea, .cart-bar')) return;
+        
+        const touchEndY = e.changedTouches[0].screenY;
+        const touchEndX = e.changedTouches[0].screenX;
+        const diffY = touchEndY - touchStartY;
+        const diffX = Math.abs(touchEndX - touchStartX);
+        const elapsed = Date.now() - touchStartTime;
+        
+        // Only trigger on vertical-dominant swipes that are long enough and fast enough
+        if (Math.abs(diffY) < 40 || diffX > Math.abs(diffY) * 0.8 || elapsed > 800) return;
+        
+        if (diffY < -40) {
+            // Swipe UP → hide header
+            header.classList.add('header-hidden');
+            _headerHidden = true;
+            updateStickyPositions();
+        } else if (diffY > 40) {
+            // Swipe DOWN → show header
+            header.classList.remove('header-hidden');
+            _headerHidden = false;
+            updateStickyPositions();
+        }
     }, { passive: true });
     
-    function handleSwipe() {
-        const swipeDistance = touchEndY - touchStartY;
-        
-        // Swipe DOWN (show header)
-        if (swipeDistance > minSwipeDistance) {
-            header.classList.remove('header-hidden');
-            if (categoryNav) categoryNav.style.top = '120px';
-        }
-        
-        // Swipe UP (hide header)
-        if (swipeDistance < -minSwipeDistance) {
-            header.classList.add('header-hidden');
-            if (categoryNav) categoryNav.style.top = '64px';
-        }
+    // Scroll-based: auto-hide when scrolling down, show when scrolling up
+    let lastScrollY = window.scrollY;
+    let scrollTicking = false;
+    
+    window.addEventListener('scroll', () => {
+        if (scrollTicking) return;
+        scrollTicking = true;
+        requestAnimationFrame(() => {
+            const currentScrollY = window.scrollY;
+            if (currentScrollY > 80 && currentScrollY > lastScrollY) {
+                if (!_headerHidden) {
+                    header.classList.add('header-hidden');
+                    _headerHidden = true;
+                    updateStickyPositions();
+                }
+            } else if (currentScrollY < lastScrollY - 5) {
+                if (_headerHidden) {
+                    header.classList.remove('header-hidden');
+                    _headerHidden = false;
+                    updateStickyPositions();
+                }
+            }
+            lastScrollY = currentScrollY;
+            scrollTicking = false;
+        });
+    }, { passive: true });
+}
+
+function updateStickyPositions() {
+    const header = document.getElementById('menuHeader');
+    const typeTabBar = document.getElementById('typeTabBar');
+    const categoryNav = document.querySelector('.category-nav');
+    
+    const isHidden = header && header.classList.contains('header-hidden');
+    
+    // Compute actual header height (0 if hidden, otherwise measure)
+    let headerH = 0;
+    if (!isHidden && header) {
+        headerH = header.offsetHeight || 60;
+    }
+    const tabBarH = typeTabBar ? (typeTabBar.offsetHeight || 48) : 0;
+    
+    if (typeTabBar) {
+        typeTabBar.style.top = headerH + 'px';
+    }
+    
+    if (categoryNav) {
+        categoryNav.style.top = (headerH + tabBarH) + 'px';
     }
 }
 

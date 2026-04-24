@@ -332,6 +332,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     <style>
         /* Adjust header padding for dev banner */
         .menu-header { padding-top: 40px !important; }
+        .menu-header.header-hidden { padding-top: 0 !important; }
     </style>
     <?php endif; ?>
 
@@ -349,7 +350,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
                 <!-- Location Status Chip -->
-                <div id="headerLocStatus" class="header-loc-chip" onclick="showLocationInfo()" style="display:none;">
+                <div id="headerLocStatus" class="header-loc-chip" onclick="showLocationInfo()">
                     <div class="loc-chip-dot"></div>
                     <span class="loc-chip-label">Định vị</span>
                 </div>
