@@ -432,14 +432,19 @@ button {
     letter-spacing: -0.5px;
 }
 
-.section-title-en {
-    font-size: 0.8rem;
+.section-title-vi {
+    font-size: 0.75rem;
     color: var(--text-light);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    font-weight: 500;
     display: block;
-    margin-top: 4px;
+    margin-top: 2px;
+}
+
+.item-name-vi {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 500;
+    margin-top: 2px;
 }
 
 .menu-list {

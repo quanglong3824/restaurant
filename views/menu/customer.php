@@ -641,9 +641,11 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
             <?php if (!isset($grouped[$cat['id']])) continue; ?>
             <section class="menu-section" id="cat-<?= $cat['id'] ?>" data-type="<?= $cat['menu_type'] ?>">
                 <div class="section-header">
-                    <h2 class="section-title"><?= e($cat['name']) ?></h2>
                     <?php if (!empty($cat['name_en'])): ?>
-                        <span class="section-title-en"><?= e($cat['name_en']) ?></span>
+                        <h2 class="section-title"><?= e($cat['name_en']) ?></h2>
+                        <span class="section-title-vi"><?= e($cat['name']) ?></span>
+                    <?php else: ?>
+                        <h2 class="section-title"><?= e($cat['name']) ?></h2>
                     <?php endif; ?>
                 </div>
                 <div class="menu-list">
@@ -677,11 +679,15 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 
                             <div class="item-info">
                                 <div class="item-main-row">
-                                    <h3 class="item-name"><?= e($item['name']) ?></h3>
+                                    <?php if (!empty($item['name_en'])): ?>
+                                        <h3 class="item-name"><?= e($item['name_en']) ?></h3>
+                                    <?php else: ?>
+                                        <h3 class="item-name"><?= e($item['name']) ?></h3>
+                                    <?php endif; ?>
                                     <span class="item-price"><?= formatPrice($item['price']) ?></span>
                                 </div>
                                 <?php if (!empty($item['name_en'])): ?>
-                                    <div class="item-name-en"><?= e($item['name_en']) ?></div>
+                                    <div class="item-name-vi"><?= e($item['name']) ?></div>
                                 <?php endif; ?>
                                 <?php if (!empty($item['description'])): ?>
                                     <p class="item-desc"><?= e($item['description']) ?></p>
