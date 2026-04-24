@@ -24,37 +24,51 @@ class AdminRealtimeController extends Controller
     {
         Auth::requireRole(ROLE_ADMIN, ROLE_IT);
 
-        // Đồng bộ trạng thái bàn
-        $this->tableModel->syncStatuses();
+        try {
+            // Đồng bộ trạng thái bàn
+            $this->tableModel->syncStatuses();
 
-        // Lấy tất cả bàn đang bận và chi tiết order
-        $rawOrders = $this->orderModel->getRealtimeOrders();
-        $orders = [];
+            // Lấy tất cả bàn đang bận và chi tiết order
+            $rawOrders = $this->orderModel->getRealtimeOrders();
+            $orders = [];
 
-        foreach ($rawOrders as $order) {
-            $order['items'] = $this->orderModel->getItems($order['id']);
-            $order['full_name'] = $this->tableModel->getFullDisplayName($order['table_id']);
-            $order['rounds'] = $this->calculateOrderRounds($order['items']);
-            $orders[] = $order;
+            foreach ($rawOrders as $order) {
+                $order['items'] = $this->orderModel->getItems($order['id']);
+                $order['full_name'] = $this->tableModel->getFullDisplayName($order['table_id']);
+                $order['rounds'] = $this->calculateOrderRounds($order['items']);
+                $orders[] = $order;
+            }
+
+            // Lấy bàn trống để modal mở bàn
+            $availableTables = $this->tableModel->getAvailable();
+
+            // Lấy menu items để modal thêm món
+            require_once BASE_PATH . '/models/MenuItem.php';
+            $menuModel = new MenuItem();
+            $menuItems = $menuModel->getAllActive();
+
+            $this->view('layouts/admin', [
+                'view' => 'admin/realtime/index',
+                'pageTitle' => 'Quản lý Thời gian thực',
+                'pageSubtitle' => 'Theo dõi tình trạng các bàn đang phục vụ',
+                'orders' => $orders,
+                'counts' => $this->tableModel->countByStatus(),
+                'availableTables' => $availableTables,
+                'menuItems' => $menuItems,
+            ]);
+        } catch (Exception $e) {
+            error_log("AdminRealtimeController::index error: " . $e->getMessage());
+            $this->view('layouts/admin', [
+                'view' => 'admin/realtime/index',
+                'pageTitle' => 'Quản lý Thời gian thực',
+                'pageSubtitle' => 'Lỗi: ' . $e->getMessage(),
+                'orders' => [],
+                'counts' => ['available' => 0, 'occupied' => 0],
+                'availableTables' => [],
+                'menuItems' => [],
+                'error' => $e->getMessage()
+            ]);
         }
-
-        // Lấy bàn trống để modal mở bàn
-        $availableTables = $this->tableModel->getAvailable();
-
-        // Lấy menu items để modal thêm món
-        require_once BASE_PATH . '/models/MenuItem.php';
-        $menuModel = new MenuItem();
-        $menuItems = $menuModel->getAllActive();
-
-        $this->view('layouts/admin', [
-            'view' => 'admin/realtime/index',
-            'pageTitle' => 'Quản lý Thời gian thực',
-            'pageSubtitle' => 'Theo dõi tình trạng các bàn đang phục vụ',
-            'orders' => $orders,
-            'counts' => $this->tableModel->countByStatus(),
-            'availableTables' => $availableTables,
-            'menuItems' => $menuItems,
-        ]);
     }
 
     /**
@@ -64,39 +78,56 @@ class AdminRealtimeController extends Controller
     {
         Auth::requireRole(ROLE_ADMIN, ROLE_IT);
 
-        // Đồng bộ trạng thái bàn
-        $this->tableModel->syncStatuses();
+        try {
+            // Đồng bộ trạng thái bàn
+            $this->tableModel->syncStatuses();
 
-        $rawOrders = $this->orderModel->getRealtimeOrders();
-        $orders = [];
+            $rawOrders = $this->orderModel->getRealtimeOrders();
+            $orders = [];
 
-        foreach ($rawOrders as $order) {
-            $order['items'] = $this->orderModel->getItems($order['id']);
-            $order['rounds'] = $this->calculateOrderRounds($order['items']);
-            $order['full_name'] = $this->tableModel->getFullDisplayName($order['table_id']);
-            $order['opened_at_fmt'] = date('H:i', strtotime($order['opened_at']));
-            $order['closed_at_fmt'] = $order['closed_at'] ? date('H:i', strtotime($order['closed_at'])) : null;
-            $order['total_fmt'] = formatPrice($order['total']);
-            $order['waiter_name'] = $order['waiter_name'] ?? '';
-            
-            // Tính toán thời gian Idle (nếu chưa có món nào)
-            $order['is_idle'] = empty($order['items']);
-            $order['idle_seconds'] = $order['is_idle'] ? (time() - strtotime($order['opened_at'])) : 0;
-            
-            // Format items prices
-            foreach ($order['items'] as &$it) {
-                $it['item_name'] = $it['item_name'] ?? $it['name'] ?? '';
-                $it['item_price_fmt'] = formatPrice($it['item_price']);
-                $it['subtotal_fmt'] = formatPrice($it['item_price'] * $it['quantity']);
+            foreach ($rawOrders as $order) {
+                $order['items'] = $this->orderModel->getItems($order['id']);
+                $order['rounds'] = $this->calculateOrderRounds($order['items']);
+                $order['full_name'] = $this->tableModel->getFullDisplayName($order['table_id']);
+                $order['opened_at_fmt'] = date('H:i', strtotime($order['opened_at']));
+                $order['closed_at_fmt'] = $order['closed_at'] ? date('H:i', strtotime($order['closed_at'])) : null;
+                $order['total_fmt'] = formatPrice($order['total']);
+                $order['waiter_name'] = $order['waiter_name'] ?? '';
+                
+                // Tính toán thời gian Idle (nếu chưa có món nào)
+                $order['is_idle'] = empty($order['items']);
+                $order['idle_seconds'] = $order['is_idle'] ? (time() - strtotime($order['opened_at'])) : 0;
+                
+                // Format items prices
+                foreach ($order['items'] as &$it) {
+                    $it['item_name'] = $it['item_name'] ?? $it['name'] ?? '';
+                    $it['item_price_fmt'] = formatPrice($it['item_price']);
+                    $it['subtotal_fmt'] = formatPrice($it['item_price'] * $it['quantity']);
+                }
+                $orders[] = $order;
             }
-            $orders[] = $order;
+            
+            $this->json([
+                'ok' => true, 
+                'data' => $orders,
+                'counts' => $this->tableModel->countByStatus(),
+                'debug' => [
+                    'raw_count' => count($rawOrders),
+                    'processed_count' => count($orders),
+                    'timestamp' => date('Y-m-d H:i:s')
+                ]
+            ]);
+        } catch (Exception $e) {
+            error_log("AdminRealtimeController::data error: " . $e->getMessage());
+            $this->json([
+                'ok' => false,
+                'message' => $e->getMessage(),
+                'debug' => [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]
+            ], 500);
         }
-        
-        $this->json([
-            'ok' => true, 
-            'data' => $orders,
-            'counts' => $this->tableModel->countByStatus()
-        ]);
     }
 
     /**

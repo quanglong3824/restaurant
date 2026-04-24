@@ -2,6 +2,14 @@
 // views/admin/realtime/index.php — Professional POS-Style Monitoring with Full Inline Actions
 ?>
 
+<!-- Debug Info -->
+<div style="background:#ffeb3b; color:#000; padding:8px; font-family:monospace; font-size:11px; margin-bottom:10px;">
+    DEBUG: orders=<?= count($orders ?? []) ?> | counts=<?= json_encode($counts ?? []) ?> | availableTables=<?= count($availableTables ?? []) ?> | menuItems=<?= count($menuItems ?? []) ?>
+    <?php if (isset($error)): ?>
+        <br><span style="color:#f00">ERROR: <?= e($error) ?></span>
+    <?php endif; ?>
+</div>
+
 <div class="pos-monitor light-theme">
     <!-- Top Command Bar -->
     <div class="command-bar">
