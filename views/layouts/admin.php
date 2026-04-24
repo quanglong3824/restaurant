@@ -64,6 +64,22 @@
                         <i class="fas fa-satellite-dish"></i>
                         <span>Giám sát trực tiếp</span>
                     </a>
+                    <a href="<?= BASE_URL ?>/tables" class="nav-item <?= activeClass('/tables') ?>">
+                        <i class="fas fa-chair"></i>
+                        <span>Quản lý bàn</span>
+                    </a>
+                    <a href="<?= BASE_URL ?>/menu" class="nav-item <?= activeClass('/menu') ?>">
+                        <i class="fas fa-book-open"></i>
+                        <span>Menu phục vụ</span>
+                    </a>
+                    <a href="<?= BASE_URL ?>/orders" class="nav-item <?= activeClass('/orders') ?>">
+                        <i class="fas fa-receipt"></i>
+                        <span>Đơn hàng đang bận</span>
+                    </a>
+                    <a href="<?= BASE_URL ?>/notifications" class="nav-item <?= activeClass('/notifications') ?>">
+                        <i class="fas fa-bell"></i>
+                        <span>Thông báo bàn</span>
+                    </a>
                     <a href="<?= BASE_URL ?>/admin/realtime/qr-sessions" class="nav-item <?= activeClass('/admin/realtime/qr-sessions') ?>">
                         <i class="fas fa-mobile-alt"></i>
                         <span>Giám sát phiên QR</span>

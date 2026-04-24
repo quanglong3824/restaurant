@@ -27,13 +27,19 @@
             </div>
         </div>
 
-        <div class="sync-box">
-            <div class="sync-timer">
-                <span id="reloadCount">8</span>s
+        <div class="command-actions">
+            <a href="<?= BASE_URL ?>/tables" class="cmd-btn primary">
+                <i class="fas fa-door-open"></i>
+                <span>MỞ BÀN MỚI</span>
+            </a>
+            <div class="sync-box">
+                <div class="sync-timer">
+                    <span id="reloadCount">8</span>s
+                </div>
+                <button onclick="refreshData()" class="refresh-circle-btn">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
             </div>
-            <button onclick="refreshData()" class="refresh-circle-btn">
-                <i class="fas fa-sync-alt"></i>
-            </button>
         </div>
     </div>
 
@@ -83,6 +89,17 @@
     .stat-divider { width: 1px; height: 35px; background: var(--pos-border); }
 
     .sync-box { display: flex; align-items: center; gap: 12px; }
+    .command-actions { display: flex; align-items: center; gap: 16px; }
+    .cmd-btn {
+        display: flex; align-items: center; gap: 8px;
+        padding: 10px 18px; border-radius: 10px; font-size: 0.75rem; font-weight: 800;
+        cursor: pointer; transition: all 0.2s; border: none; text-decoration: none;
+    }
+    .cmd-btn.primary {
+        background: var(--pos-accent); color: #ffffff;
+    }
+    .cmd-btn.primary:hover { box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3); transform: translateY(-1px); }
+    
     .sync-timer { 
         width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--pos-border);
         display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; color: var(--pos-text-muted);
@@ -155,15 +172,22 @@
         flex: 1; padding: 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 800;
         cursor: pointer; transition: all 0.2s; border: none;
         display: flex; align-items: center; justify-content: center; gap: 8px;
+        text-decoration: none;
     }
     .btn-pos-primary { background: var(--pos-text); color: #ffffff; }
     .btn-pos-primary:hover { background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .btn-pos-primary:active { transform: scale(0.98); }
+    .btn-pos-gold { background: var(--pos-accent); color: #ffffff; }
+    .btn-pos-gold:hover { box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3); }
+    .btn-pos-outline { background: transparent; color: var(--pos-text); border: 2px solid var(--pos-border); }
+    .btn-pos-outline:hover { background: var(--pos-bg); border-color: var(--pos-text); }
     
     @media (max-width: 768px) {
         .system-stats { display: none; }
         .pos-grid { grid-template-columns: 1fr; padding: 15px; }
-        .command-bar { padding: 10px 20px; }
+        .command-bar { padding: 10px 20px; flex-wrap: wrap; gap: 12px; }
+        .command-actions { order: 3; width: 100%; justify-content: center; }
+        .action-row { flex-wrap: wrap; }
     }
 
     /* Custom Scrollbar for Light Theme */
@@ -293,9 +317,20 @@
                             </div>
                         </div>
                         <div class="action-row">
-                            <button onclick="dismissOrder(${order.id})" class="btn-pos btn-pos-primary">
-                                <i class="fas fa-check-circle"></i> HOÀN TẤT & LƯU TRỮ
-                            </button>
+                            ${isClosed 
+                                ? `<button onclick="dismissOrder(${order.id})" class="btn-pos btn-pos-primary">
+                                    <i class="fas fa-archive"></i> LƯU TRỮ
+                                   </button>`
+                                : `<a href="<?= BASE_URL ?>/orders?table_id=${order.table_id}&order_id=${order.id}" class="btn-pos btn-pos-outline">
+                                    <i class="fas fa-eye"></i> CHI TIẾT
+                                   </a>
+                                   <a href="<?= BASE_URL ?>/menu?table_id=${order.table_id}&order_id=${order.id}" class="btn-pos btn-pos-outline">
+                                    <i class="fas fa-plus"></i> THÊM MÓN
+                                   </a>
+                                   <a href="<?= BASE_URL ?>/orders?table_id=${order.table_id}&order_id=${order.id}" class="btn-pos btn-pos-gold">
+                                    <i class="fas fa-credit-card"></i> THANH TOÁN
+                                   </a>`
+                            }
                         </div>
                     </div>
                 </div>
