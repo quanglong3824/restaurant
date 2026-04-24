@@ -693,9 +693,28 @@ function showItemDetail(item) {
     }
     
     currentItem = { ...item, quantity: 1, note: '' };
-    document.getElementById('detailName').textContent = typeof currentLang !== 'undefined' && currentLang === 'en' && item.name_en ? item.name_en : item.name;
+    // Hiển thị tên tiếng Anh ưu tiên, tiếng Việt nhỏ dưới
+    const detailNameEl = document.getElementById('detailName');
+    const detailNameViEl = document.getElementById('detailNameVi');
+    
+    if (item.name_en) {
+        detailNameEl.textContent = item.name_en;
+        detailNameViEl.textContent = item.name;
+        detailNameViEl.style.display = 'block';
+    } else {
+        detailNameEl.textContent = item.name;
+        detailNameViEl.textContent = '';
+        detailNameViEl.style.display = 'none';
+    }
+    
     document.getElementById('detailPrice').textContent = formatCurrency(item.price);
-    document.getElementById('detailDesc').textContent = item.description || 'No description for this item.';
+    // Mô tả ưu tiên tiếng Anh
+    const detailDescEl = document.getElementById('detailDesc');
+    if (item.description_en) {
+        detailDescEl.textContent = item.description_en;
+    } else {
+        detailDescEl.textContent = item.description || 'No description for this item.';
+    }
     document.getElementById('detailQty').textContent = '1';
     document.getElementById('detailNote').value = '';
     

@@ -827,7 +827,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
         <div class="modal-body">
             <div style="margin-bottom:1rem;">
                 <h2 id="detailName" class="playfair" style="margin:0 0 4px;font-size:1.4rem;font-weight:800;"></h2>
-                <div id="detailNameEn" class="item-name-en"></div>
+                <div id="detailNameVi" class="item-name-vi"></div>
                 <div id="detailPrice" class="item-price" style="font-size:1.2rem;font-weight:800;color:var(--gold-dark);"></div>
                 <p id="detailDesc" class="item-desc" style="margin-top:8px;font-size:.875rem;color:#64748b;line-height:1.5;"></p>
             </div>
