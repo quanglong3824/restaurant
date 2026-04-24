@@ -104,9 +104,13 @@ function updateCartUI(data) {
                 </div>`;
             if (btnContainer) btnContainer.innerHTML = `<button disabled class="cart-action-btn ghost w-100">BÀN CHƯA CÓ MÓN</button>`;
         } else {
-            let draftsHtml = ''; let confirmedHtml = ''; let draftCount = 0;
+            let draftsHtml = ''; let pendingHtml = ''; let confirmedHtml = ''; let draftCount = 0;
             data.items.forEach(it => {
                 const isDraft = it.status === 'draft';
+                const isPending = it.status === 'pending';
+                const isConfirmed = it.status === 'confirmed';
+                const isCooking = it.status === 'cooking';
+                const isServed = it.status === 'served';
                 // Render note chips
                 const noteParts = (it.note || '').split(',').map(s => s.trim()).filter(Boolean);
                 const noteHtml = noteParts.length
@@ -150,16 +154,22 @@ function updateCartUI(data) {
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             ` : ''}
-                            <span class="cart-item-status ${it.status}" style="font-size:0.7rem; padding:2px 6px; border-radius:4px; font-weight:700; text-transform:uppercase;">
-                                ${it.status === 'confirmed' ? '<i class="fas fa-check-circle"></i> ĐÃ XÁC NHẬN' : (it.status === 'pending' ? '<i class="fas fa-clock"></i> CHỜNV' : 'NHÁP')}
+                            <span class="cart-item-status ${it.status}" style="font-size:0.7rem; padding:2px 8px; border-radius:6px; font-weight:700;">
+                                ${isConfirmed ? '<i class="fas fa-check-circle" style="color:#10b981;"></i> Đã xác nhận' : 
+                                  (isPending ? '<i class="fas fa-clock" style="color:#f59e0b;"></i> Chờ xác nhận' : 
+                                  (isCooking ? '<i class="fas fa-fire" style="color:#ef4444;"></i> Đang nấu' : 
+                                  (isServed ? '<i class="fas fa-check" style="color:#10b981;"></i> Đã phục vụ' : 
+                                  '<i class="fas fa-edit" style="color:#94a3b8;"></i> Nháp')))}
                             </span>
                         </div>
                     </div>
                 </div>`;
 
-                if (it.status === 'draft') {
+                if (isDraft) {
                     draftsHtml += itemHtml;
                     draftCount++;
+                } else if (isPending) {
+                    pendingHtml += itemHtml;
                 } else {
                     confirmedHtml += itemHtml;
                 }
@@ -167,10 +177,13 @@ function updateCartUI(data) {
 
             let finalHtml = '';
             if (draftsHtml) {
-                finalHtml += `<div class="section-label"><i class="fas fa-edit"></i> Món đang chọn (nháp)</div>${draftsHtml}`;
+                finalHtml += `<div class="section-label"><i class="fas fa-edit"></i> Món đang chọn (Nháp)</div>${draftsHtml}`;
+            }
+            if (pendingHtml) {
+                finalHtml += `<div class="section-label" style="color:#f59e0b"><i class="fas fa-clock"></i> Chờ xác nhận (QR khách gửi)</div>${pendingHtml}`;
             }
             if (confirmedHtml) {
-                finalHtml += `<div class="section-label"><i class="fas fa-check-circle"></i> Đã xác nhận (Đang làm)</div><div class="confirmed-section">${confirmedHtml}</div>`;
+                finalHtml += `<div class="section-label"><i class="fas fa-check-circle" style="color:#10b981"></i> Đã xác nhận (Đang làm)</div><div class="confirmed-section">${confirmedHtml}</div>`;
             }
             body.innerHTML = finalHtml;
 
