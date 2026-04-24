@@ -893,8 +893,8 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                             <?php endif; ?>
                             <div class="bill-item-status <?= $oi['status'] ?>">
                                 <?php
-                                $statusTxt = ['confirmed'=>'✅ Đã xác nhận','pending'=>'⏳ Chờ xác nhận','draft'=>'📝 Chờ xác nhận'];
-                                $statusTxtEn = ['confirmed'=>'✅ Confirmed','pending'=>'⏳ Pending','draft'=>'📝 Draft'];
+                                $statusTxt = ['confirmed'=>'Đã xác nhận','pending'=>'Chờ xác nhận','draft'=>'Chờ xác nhận'];
+                                $statusTxtEn = ['confirmed'=>'Confirmed','pending'=>'Pending','draft'=>'Draft'];
                                 echo $currentLang === 'en' ? ($statusTxtEn[$oi['status']] ?? $oi['status']) : ($statusTxt[$oi['status']] ?? $oi['status']);
                                 ?>
                             </div>
