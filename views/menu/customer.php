@@ -141,7 +141,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 <!-- ══════════════════════════════════════════════════════
      CSS
 ═══════════════════════════════════════════════════════ -->
-<link rel="stylesheet" href="<?= BASE_URL ?>/public/css/menu/customer.css">
+<link rel="stylesheet" href="<?= BASE_URL ?>/public/css/menu/customer.css?v=<?= time() ?>">
 <style>
 /* ── Location Overlay ── */
 .loc-overlay {
