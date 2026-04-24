@@ -15,6 +15,25 @@
         </div>
     </div>
 
+    <!-- Area Filter Buttons -->
+    <?php if ($type === 'table' && !empty($groupedTables)): ?>
+    <div class="area-filter-container" style="grid-column: 1 / -1; margin-bottom: 1rem;">
+        <div class="area-filter-label" style="font-weight: 600; margin-bottom: 0.5rem; color: #666;">
+            <i class="fas fa-filter"></i> Lọc khu vực:
+        </div>
+        <div class="area-filter-buttons" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            <button type="button" class="area-filter-btn active" data-area="all">
+                <i class="fas fa-th-large"></i> Tất cả
+            </button>
+            <?php foreach (array_keys($groupedTables) as $area): ?>
+                <button type="button" class="area-filter-btn" data-area="<?= e($area) ?>">
+                    <?= e($area) ?>
+                </button>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <!-- Table list -->
     <div class="card">
         <div class="card-header">
@@ -277,6 +296,42 @@
 </div>
 
 <style>
+    /* Area Filter Button Styles */
+    .area-filter-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.5rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 20px;
+        background: #fff;
+        color: #666;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .area-filter-btn:hover {
+        border-color: var(--gold);
+        color: var(--gold-dark);
+        background: rgba(212, 175, 55, 0.05);
+    }
+
+    .area-filter-btn.active {
+        border-color: var(--gold);
+        background: var(--gold);
+        color: #fff;
+    }
+
+    .area-filter-btn i {
+        font-size: 0.85rem;
+    }
+
+    .area-group-row {
+        transition: display 0.2s ease;
+    }
+
     /* QR Modal Styles */
     .modal {
         display: none;
@@ -601,8 +656,57 @@
         closeBulkPrintModal();
     }
 
-    // Area checkbox handling
+    // Area Filter Button handling
     document.addEventListener('DOMContentLoaded', () => {
+        // Area filter buttons
+        const filterButtons = document.querySelectorAll('.area-filter-btn');
+        const tableRows = document.querySelectorAll('.table-row');
+        const groupHeaderRows = document.querySelectorAll('tr[style*="background-color: #f8fafc"]');
+        
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const selectedArea = this.dataset.area;
+                
+                // Update active button state
+                filterButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Filter table rows and group headers
+                if (selectedArea === 'all') {
+                    // Show all
+                    tableRows.forEach(row => row.style.display = '');
+                    groupHeaderRows.forEach(row => row.style.display = '');
+                } else {
+                    // Filter by area
+                    tableRows.forEach(row => {
+                        if (row.dataset.area === selectedArea) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                    
+                    // Filter group headers (they contain the area name in their content)
+                    groupHeaderRows.forEach(row => {
+                        const areaText = row.querySelector('h3');
+                        if (areaText && areaText.textContent.includes(selectedArea)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                }
+                
+                // Update visible count in badge
+                const visibleRows = document.querySelectorAll('.table-row:not([style*="display: none"])');
+                const countBadge = document.querySelector('.badge-gold');
+                if (countBadge) {
+                    const typeText = '<?= $type === 'room' ? 'phòng' : 'bàn' ?>';
+                    countBadge.textContent = `${visibleRows.length} ${typeText}`;
+                }
+            });
+        });
+        
         // Area checkboxes
         document.querySelectorAll('.area-checkbox').forEach(areaCheckbox => {
             areaCheckbox.addEventListener('change', function() {
