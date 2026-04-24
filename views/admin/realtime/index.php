@@ -682,10 +682,13 @@ function updateCartUI() {
                 </div>
             </div>
         `;
-    });
-    
-    container.innerHTML = html;
-    countEl.textContent = addItemsCart.reduce((sum, i) => sum + i.qty, 0) + ' món';
+});
+        
+        container.innerHTML = html;
+    } catch (err) {
+        console.error('Render error:', err);
+        container.innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi hiển thị</h3><p>${err.message}</p></div>`;
+    }
 }
 
 function changeCartItemQty(id, delta) {
@@ -945,14 +948,26 @@ async function refreshData() {
 
     try {
         const res = await fetch(BASE_URL + '/admin/realtime/data?t=' + Date.now());
-        const data = await res.json();
         
-        if (data.ok) {
+        if (!res.ok) {
+            console.error('HTTP Error:', res.status, res.statusText);
+            container.innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi kết nối (${res.status})</h3><p>Vui lòng kiểm tra lại.</p></div>`;
+            return;
+        }
+        
+        const data = await res.json();
+        console.log('POS Data received:', data); // Debug
+        
+        if (data && data.ok && Array.isArray(data.data)) {
             updateStats(data);
             renderPOSGrid(data.data);
+        } else {
+            console.error('Invalid data format:', data);
+            document.getElementById('realtimeListContainer').innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi dữ liệu</h3><p>${data?.message || 'Không thể tải dữ liệu'}</p></div>`;
         }
     } catch (err) {
         console.error('Lỗi POS Sync:', err);
+        document.getElementById('realtimeListContainer').innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi kết nối</h3><p>${err.message || 'Không thể kết nối server'}</p></div>`;
     } finally {
         if (btn) btn.innerHTML = '<i class="fas fa-sync-alt"></i>';
         isRefreshing = false;
@@ -961,18 +976,30 @@ async function refreshData() {
 }
 
 function updateStats(data) {
-    document.getElementById('statOccupied').textContent = data.counts.occupied;
-    document.getElementById('statAvailable').textContent = data.counts.available;
+    if (!data || !data.counts) {
+        console.error('Invalid stats data:', data);
+        return;
+    }
+    
+    document.getElementById('statOccupied').textContent = data.counts.occupied || 0;
+    document.getElementById('statAvailable').textContent = data.counts.available || 0;
     
     let tempTotal = 0;
-    data.data.forEach(o => { if (o.status === 'open') tempTotal += parseFloat(o.total || 0); });
+    if (Array.isArray(data.data)) {
+        data.data.forEach(o => { if (o.status === 'open') tempTotal += parseFloat(o.total || 0); });
+    }
     document.getElementById('statTempRevenue').textContent = new Intl.NumberFormat('vi-VN').format(tempTotal) + 'đ';
     
-    fetch(BASE_URL + '/notifications/count')
-    .then(r => r.json())
-    .then(d => {
-        if (d.ok) document.getElementById('statNotif').textContent = d.count || 0;
-    });
+    // Notifications count - optional
+    const notifEl = document.getElementById('statNotif');
+    if (notifEl) {
+        fetch(BASE_URL + '/notifications/count')
+        .then(r => r.json())
+        .then(d => {
+            if (d && d.ok) notifEl.textContent = d.count || 0;
+        })
+        .catch(e => console.log('Notifications fetch error:', e));
+    }
 }
 
 function formatPrice(n) {
@@ -981,7 +1008,13 @@ function formatPrice(n) {
 
 function renderPOSGrid(orders) {
     const container = document.getElementById('realtimeListContainer');
-    if (orders.length === 0) {
+    
+    if (!container) {
+        console.error('Container not found');
+        return;
+    }
+    
+    if (!Array.isArray(orders) || orders.length === 0) {
         container.innerHTML = `
             <div class="pos-loader">
                 <i class="fas fa-utensils fa-3x mb-3 opacity-10"></i>
@@ -992,21 +1025,22 @@ function renderPOSGrid(orders) {
         return;
     }
 
-    let html = '';
-    orders.forEach(order => {
-        const isClosed = (order.status === 'closed');
-        const isIdle = order.is_idle && !isClosed;
-        const totalValue = parseFloat(order.total || 0);
-        
-        const statusTag = isClosed ? 'closed' : (isIdle ? 'idle' : 'open');
-        const statusText = isClosed ? 'Đã thanh toán' : (isIdle ? 'Đang chờ' : 'Đang ăn');
-        
-        let idleBadge = '';
-        if (isIdle) {
-            const remaining = Math.max(0, 300 - order.idle_seconds);
-            const min = Math.floor(remaining / 60);
-            const sec = remaining % 60;
-            const color = remaining < 60 ? 'var(--pos-danger)' : 'var(--pos-warning)';
+    try {
+        let html = '';
+        orders.forEach(order => {
+            const isClosed = (order.status === 'closed');
+            const isIdle = order.is_idle && !isClosed;
+            const totalValue = parseFloat(order.total || 0);
+            
+            const statusTag = isClosed ? 'closed' : (isIdle ? 'idle' : 'open');
+            const statusText = isClosed ? 'Đã thanh toán' : (isIdle ? 'Đang chờ' : 'Đang ăn');
+            
+            let idleBadge = '';
+            if (isIdle) {
+                const remaining = Math.max(0, 300 - order.idle_seconds);
+                const min = Math.floor(remaining / 60);
+                const sec = remaining % 60;
+                const color = remaining < 60 ? 'var(--pos-danger)' : 'var(--pos-warning)';
             idleBadge = `<div style="color:${color}; font-weight:800; font-size:0.75rem; margin-top:8px;">
                 <i class="fas fa-clock"></i> HUỶ SAU: ${min}:${sec < 10 ? '0'+sec : sec}
             </div>`;
