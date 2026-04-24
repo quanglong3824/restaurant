@@ -2,14 +2,6 @@
 // views/admin/realtime/index.php — Professional POS-Style Monitoring with Full Inline Actions
 ?>
 
-<!-- Debug Info -->
-<div style="background:#ffeb3b; color:#000; padding:8px; font-family:monospace; font-size:11px; margin-bottom:10px;">
-    DEBUG: orders=<?= count($orders ?? []) ?> | counts=<?= json_encode($counts ?? []) ?> | availableTables=<?= count($availableTables ?? []) ?> | menuItems=<?= count($menuItems ?? []) ?>
-    <?php if (isset($error)): ?>
-        <br><span style="color:#f00">ERROR: <?= e($error) ?></span>
-    <?php endif; ?>
-</div>
-
 <div class="pos-monitor light-theme">
     <!-- Top Command Bar -->
     <div class="command-bar">
@@ -955,14 +947,10 @@ async function refreshData() {
     const container = document.getElementById('realtimeListContainer');
     const btn = document.querySelector('.refresh-circle-btn');
     
-    console.log('refreshData called, container:', container); // Debug
-    
     if (btn) btn.innerHTML = '<i class="fas fa-sync fa-spin"></i>';
 
     try {
         const res = await fetch(BASE_URL + '/admin/realtime/data?t=' + Date.now());
-        
-        console.log('Fetch response:', res.status); // Debug
         
         if (!res.ok) {
             console.error('HTTP Error:', res.status, res.statusText);
@@ -971,7 +959,6 @@ async function refreshData() {
         }
         
         const data = await res.json();
-        console.log('POS Data received:', data); // Debug
         
         if (data && data.ok && Array.isArray(data.data)) {
             updateStats(data);
