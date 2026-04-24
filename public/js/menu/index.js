@@ -104,25 +104,52 @@ function updateCartUI(data) {
                 </div>`;
             if (btnContainer) btnContainer.innerHTML = `<button disabled class="cart-action-btn ghost w-100">BÀN CHƯA CÓ MÓN</button>`;
         } else {
-            let draftsHtml = ''; let pendingHtml = ''; let confirmedHtml = ''; let draftCount = 0;
+            let draftsHtml = '';
+            let pendingHtml = '';
+            let confirmedHtml = '';
+            let draftCount = 0;
+            
             data.items.forEach(it => {
-                const isDraft = it.status === 'draft';
-                const isPending = it.status === 'pending';
-                const isConfirmed = it.status === 'confirmed';
-                const isCooking = it.status === 'cooking';
-                const isServed = it.status === 'served';
+                // Defensive: normalize status, handle null/undefined
+                const status = String(it.status || 'draft').toLowerCase().trim();
+                
+                // Skip cancelled items
+                if (status === 'cancelled') return;
+                
+                // Determine category
+                const isDraft = status === 'draft';
+                const isPending = status === 'pending';
+                const isConfirmed = status === 'confirmed';
+                const isCooking = status === 'cooking';
+                const isServed = status === 'served';
+                const isProcessing = isConfirmed || isCooking || isServed;
+                
                 // Render note chips
                 const noteParts = (it.note || '').split(',').map(s => s.trim()).filter(Boolean);
                 const noteHtml = noteParts.length
                     ? `<div style="display:flex;flex-wrap:wrap;gap:.3rem;margin:.2rem 0;">${noteParts.map(n => `<span style="background:rgba(212,175,55,.13);color:var(--gold-dark,#785e0a);border-radius:12px;padding:.1rem .45rem;font-size:.68rem;font-weight:700;">${n}</span>`).join('')}</div>`
                     : '';
-                // item_options để truyền vào modal
+                
                 const opts = JSON.stringify(it.item_options || []);
                 const currentNote = (it.note || '').replace(/'/g, "\\'");
+                
+                // Build status badge HTML
+                let statusBadgeHtml = '';
+                if (isConfirmed) {
+                    statusBadgeHtml = '<i class="fas fa-check-circle" style="color:#10b981;"></i> Đã xác nhận';
+                } else if (isPending) {
+                    statusBadgeHtml = '<i class="fas fa-clock" style="color:#f59e0b;"></i> Chờ xác nhận';
+                } else if (isCooking) {
+                    statusBadgeHtml = '<i class="fas fa-fire" style="color:#ef4444;"></i> Đang nấu';
+                } else if (isServed) {
+                    statusBadgeHtml = '<i class="fas fa-check" style="color:#10b981;"></i> Đã phục vụ';
+                } else {
+                    statusBadgeHtml = '<i class="fas fa-edit" style="color:#94a3b8;"></i> Nháp';
+                }
 
                 const itemHtml = `<div class="cart-item-row" data-item-id="${it.id}">
                     <div style="display:flex; align-items:center; gap:0.5rem; flex:1;">
-                        ${(isConfirmed || isCooking || isServed) ? `
+                        ${isProcessing ? `
                         <input type="checkbox" class="item-select-cb" 
                                 data-item-id="${it.id}" 
                                 onchange="toggleSplitButton()"
@@ -156,23 +183,20 @@ function updateCartUI(data) {
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             ` : ''}
-                            <span class="cart-item-status ${it.status}" style="font-size:0.7rem; padding:2px 8px; border-radius:6px; font-weight:700;">
-                                ${isConfirmed ? '<i class="fas fa-check-circle" style="color:#10b981;"></i> Đã xác nhận' : 
-                                  (isPending ? '<i class="fas fa-clock" style="color:#f59e0b;"></i> Chờ xác nhận' : 
-                                  (isCooking ? '<i class="fas fa-fire" style="color:#ef4444;"></i> Đang nấu' : 
-                                  (isServed ? '<i class="fas fa-check" style="color:#10b981;"></i> Đã phục vụ' : 
-                                  '<i class="fas fa-edit" style="color:#94a3b8;"></i> Nháp')))}
+                            <span class="cart-item-status ${status}" style="font-size:0.7rem; padding:2px 8px; border-radius:6px; font-weight:700;">
+                                ${statusBadgeHtml}
                             </span>
                         </div>
                     </div>
                 </div>`;
 
+                // Categorize item to correct section
                 if (isDraft) {
                     draftsHtml += itemHtml;
                     draftCount++;
                 } else if (isPending) {
                     pendingHtml += itemHtml;
-                } else {
+                } else if (isProcessing) {
                     confirmedHtml += itemHtml;
                 }
             });

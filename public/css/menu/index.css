@@ -460,6 +460,23 @@ html, body {
     background: rgba(16, 185, 129, 0.15);
 }
 
+.cart-item-status.confirmed i,
+.cart-item-status.served i {
+    color: #10b981;
+}
+
+.cart-item-status.cooking i {
+    color: #ef4444;
+}
+
+.cart-item-status.pending i {
+    color: #f59e0b;
+}
+
+.cart-item-status.draft i {
+    color: #94a3b8;
+}
+
 .confirmed-section {
     border-left: 3px solid #10b981;
     padding-left: 8px;

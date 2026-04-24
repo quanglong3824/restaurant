@@ -183,9 +183,9 @@
                     </div>
                 <?php else: ?>
                     <?php 
-                        $draftItems     = array_filter($orderItems, fn($it) => $it['status'] === 'draft');
-                        $confirmedItems = array_filter($orderItems, fn($it) => $it['status'] === 'confirmed');
-                        $pendingItems   = array_filter($orderItems, fn($it) => $it['status'] === 'pending');
+                        $draftItems     = array_filter($orderItems, fn($it) => ($it['status'] ?? 'draft') === 'draft');
+                        $pendingItems   = array_filter($orderItems, fn($it) => ($it['status'] ?? '') === 'pending');
+                        $confirmedItems = array_filter($orderItems, fn($it) => in_array(($it['status'] ?? ''), ['confirmed', 'cooking', 'served']));
                         $draftCount     = count($draftItems);
                     ?>
                     <?php if ($draftCount > 0): ?>
@@ -257,8 +257,23 @@
                     <?php endif; ?>
 
                     <?php if (!empty($confirmedItems)): ?>
-                        <div class="section-label"><i class="fas fa-check-circle"></i> Đã gửi</div>
-                        <?php foreach ($confirmedItems as $it): ?>
+                        <div class="section-label"><i class="fas fa-check-circle" style="color:#10b981"></i> Đã xác nhận (Đang làm)</div>
+                        <div class="confirmed-section">
+                        <?php foreach ($confirmedItems as $it): 
+                            $status = $it['status'] ?? 'confirmed';
+                            $statusBadge = '';
+                            $statusIcon = '';
+                            if ($status === 'confirmed') {
+                                $statusBadge = 'Đã xác nhận';
+                                $statusIcon = 'fa-check-circle';
+                            } elseif ($status === 'cooking') {
+                                $statusBadge = 'Đang nấu';
+                                $statusIcon = 'fa-fire';
+                            } elseif ($status === 'served') {
+                                $statusBadge = 'Đã phục vụ';
+                                $statusIcon = 'fa-check';
+                            }
+                        ?>
                             <div class="cart-item-row" data-item-id="<?= $it['id'] ?>">
                                 <div style="display:flex; align-items:center; gap:0.5rem; flex:1;">
                                     <input type="checkbox" class="item-select-cb" 
@@ -272,10 +287,13 @@
                                 </div>
                                 <div style="text-align:right;">
                                     <div class="cart-item-price"><?= formatPrice($it['item_price'] * $it['quantity']) ?></div>
-                                    <span class="cart-item-status confirmed">Đã gửi</span>
+                                    <span class="cart-item-status <?= $status ?>">
+                                        <i class="fas <?= $statusIcon ?>"></i> <?= $statusBadge ?>
+                                    </span>
                                 </div>
                             </div>
                         <?php endforeach; ?>
+                        </div>
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
