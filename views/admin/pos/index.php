@@ -836,18 +836,13 @@ const POS = {
     currentTableId: null
 };
 
-console.log('POS initialized', POS);
-
 // ── Tab Switching ───────────────────────────────────────────
 function switchTab(tab) {
-    console.log('switchTab called with:', tab);
-    
     document.querySelectorAll('.pos-tab').forEach(function(t) {
         t.classList.remove('active');
     });
     
     const activeTab = document.querySelector('.pos-tab[data-tab="' + tab + '"]');
-    console.log('activeTab element:', activeTab);
     if (activeTab) {
         activeTab.classList.add('active');
     }
@@ -857,9 +852,7 @@ function switchTab(tab) {
     });
     
     const tabId = 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1);
-    console.log('tabId:', tabId);
     const tabContent = document.getElementById(tabId);
-    console.log('tabContent element:', tabContent);
     if (tabContent) {
         tabContent.style.display = 'block';
     }
@@ -869,12 +862,9 @@ document.querySelectorAll('.pos-tab').forEach(function(tabEl) {
     tabEl.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('Tab clicked:', this.dataset.tab);
         switchTab(this.dataset.tab);
     });
 });
-
-console.log('Tab listeners attached, count:', document.querySelectorAll('.pos-tab').length);
 
 function viewOrder(tableId) {
     window.location.href = POS.baseUrl + '/admin/pos?tab=order&table_id=' + tableId;
