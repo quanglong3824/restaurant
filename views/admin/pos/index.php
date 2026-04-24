@@ -479,10 +479,35 @@ foreach (array_keys($grouped) as $a) {
                     </div>
                 </div>
             <?php else: ?>
-                <div style="text-align:center;padding:40px">
-                    <i class="fas fa-receipt fa-3x" style="color:#d4af37;opacity:0.3"></i>
-                    <h3 style="margin-top:16px;color:#64748b">Chưa chọn order</h3>
-                    <p style="color:#94a3b8;font-size:0.85rem">Click vào bàn ở tab "Sơ đồ bàn" để xem chi tiết</p>
+                <div class="pos-header">
+                    <h2><i class="fas fa-receipt"></i> Chọn Order</h2>
+                </div>
+                <div class="order-select-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding:16px">
+                    <?php if (empty($realtimeOrders)): ?>
+                        <div style="text-align:center;padding:40px;color:#64748b">
+                            <i class="fas fa-receipt fa-3x" style="opacity:0.3"></i>
+                            <h3 style="margin-top:16px">Không có order đang hoạt động</h3>
+                            <p style="font-size:0.85rem">Mở bàn mới từ tab "Sơ đồ bàn"</p>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($realtimeOrders as $ro): ?>
+                            <div class="order-select-card" onclick="viewOrder(<?= $ro['table_id'] ?>)" style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:12px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#d4af37'" onmouseout="this.style.borderColor='#e2e8f0'">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                                    <span style="font-weight:800;color:#1e293b"><?= e($ro['full_name']) ?></span>
+                                    <span style="font-size:0.75rem;color:#64748b"><?= $ro['opened_at_fmt'] ?></span>
+                                </div>
+                                <div style="font-size:0.8rem;color:#64748b">
+                                    <?= $ro['guest_count'] ?? 0 ?> khách | <?= count($ro['items']) ?> món
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                                    <span style="font-weight:800;color:#d4af37"><?= $ro['total_fmt'] ?></span>
+                                    <span class="order-status-badge <?= $ro['status'] ?? 'active' ?>" style="font-size:0.65rem;padding:2px 8px;border-radius:6px;background:#dcfce7;color:#16a34a">
+                                        <?= ucfirst($ro['status'] ?? 'active') ?>
+                                    </span>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>
