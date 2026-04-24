@@ -325,11 +325,30 @@ if (!empty($items)) {
 
             <!-- Empty -->
             <?php if (empty($items)): ?>
-                <div class="empty-items-state">
-                    <i class="fas fa-utensils"></i>
-                    <p>Chưa có món nào được chọn</p>
-                    <a href="<?= BASE_URL ?>/menu?table_id=<?= $table['id'] ?>&order_id=<?= $order['id'] ?>" class="bill-btn primary">
-                        <i class="fas fa-plus"></i> CHỌN MÓN NGAY
+                <div class="empty-items-state-premium">
+                    <div class="empty-illustration">
+                        <div class="empty-icon-wrapper">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="empty-decor-lines">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <h3 class="empty-title">Bàn đã mở - Chưa chọn món</h3>
+                    <p class="empty-subtitle">Nhấn "Thêm món" để bắt đầu phục vụ khách</p>
+                    <div class="empty-tips">
+                        <div class="tip-item">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Chọn món từ menu hoặc khách quét QR tự gọi</span>
+                        </div>
+                        <div class="tip-item">
+                            <i class="fas fa-check-double"></i>
+                            <span>Xác nhận món trước khi gửi bếp</span>
+                        </div>
+                    </div>
+                    <a href="<?= BASE_URL ?>/menu?table_id=<?= $table['id'] ?>&order_id=<?= $order['id'] ?>" class="empty-cta-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>CHỌN MÓN NGAY</span>
                     </a>
                 </div>
             <?php endif; ?>
