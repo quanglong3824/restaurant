@@ -115,6 +115,11 @@ button {
     z-index: 100;
     backdrop-filter: blur(20px);
     background: rgba(255, 255, 255, 0.95);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-header.header-hidden {
+    transform: translateY(-100%);
 }
 
 .header-top {
@@ -122,6 +127,87 @@ button {
     justify-content: space-between;
     align-items: center;
     gap: 12px;
+}
+
+/* Header Location Status Chip */
+.header-loc-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    padding: 6px 12px 6px 8px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-loc-chip:active {
+    transform: scale(0.95);
+}
+
+.header-loc-chip .loc-chip-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #f59e0b;
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.header-loc-chip .loc-chip-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #94a3b8;
+    white-space: nowrap;
+    transition: color 0.3s;
+    letter-spacing: 0.3px;
+}
+
+.header-loc-chip.loc-granted .loc-chip-dot {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+    animation: locPulse 2s infinite;
+}
+
+.header-loc-chip.loc-granted .loc-chip-label {
+    color: #10b981;
+}
+
+.header-loc-chip.loc-denied .loc-chip-dot {
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+.header-loc-chip.loc-denied .loc-chip-label {
+    color: #ef4444;
+}
+
+.header-loc-chip.loc-checking .loc-chip-dot {
+    background: #f59e0b;
+    animation: locBlink 1s infinite;
+}
+
+.header-loc-chip.loc-dev .loc-chip-dot {
+    background: #8b5cf6;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+}
+
+.header-loc-chip.loc-dev .loc-chip-label {
+    color: #8b5cf6;
+}
+
+@keyframes locPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+@keyframes locBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
 }
 
 .brand-logo h1 {
@@ -227,6 +313,7 @@ button {
     -webkit-backdrop-filter: blur(16px);
     padding: 12px 0;
     border-bottom: 1px solid var(--border-light);
+    transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .category-nav-inner {
@@ -684,6 +771,20 @@ button {
         width: 32px;
         height: 32px;
         font-size: 1rem;
+    }
+    
+    /* Header location chip responsive */
+    .header-loc-chip {
+        padding: 5px 10px 5px 6px;
+    }
+    
+    .header-loc-chip .loc-chip-label {
+        font-size: 0.6rem;
+    }
+    
+    .header-loc-chip .loc-chip-dot {
+        width: 8px;
+        height: 8px;
     }
 }
 

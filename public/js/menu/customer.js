@@ -178,6 +178,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('locationOverlay')?.style.setProperty('display', 'none');
         document.getElementById('menuWrapper')?.style.setProperty('display', 'block');
         document.getElementById('frozenOverlay')?.style.setProperty('display', 'none');
+        // Update header location indicator for DEV_MODE
+        updateHeaderLocationIndicator('dev', 'DEV MODE');
+        document.getElementById('headerLocStatus')?.style.setProperty('display', 'flex');
     }
     
     createLocationIndicator();
@@ -189,6 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCategoryNav();
     setupSearch();
     updateCartUI();
+    initSwipeGesture();
     
     // Automatically show bill if coming from status page's 'Check Bill' button
     if (CUSTOMER_CONFIG.showBill && typeof showBillTam === 'function') {
@@ -198,158 +202,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── Location Status Indicator ────────────────────────────
 function createLocationIndicator() {
-    if (document.getElementById('locStatusIndicator')) return;
-    
-    // In DEV_MODE, show a special indicator
-    if (CUSTOMER_CONFIG.devMode) {
-        const indicator = document.createElement('div');
-        indicator.id = 'locStatusIndicator';
-        indicator.innerHTML = `
-            <div class="loc-dot" style="background:#8b5cf6;box-shadow:0 0 8px rgba(139,92,246,0.6);"></div>
-            <span class="loc-label" style="color:#8b5cf6;">DEV MODE</span>
-        `;
-        document.body.appendChild(indicator);
-        
-        // Add click to show dev info
-        indicator.addEventListener('click', () => {
-            showToast('🔧 DEV MODE: Kiểm tra vị trí đã tắt. Bạn có thể test từ bất kỳ đâu.');
-        });
-        
-        // Add dev mode styles
-        const style = document.createElement('style');
-        style.textContent = `
-            #locStatusIndicator {
-                position: fixed;
-                bottom: 90px;
-                left: 12px;
-                z-index: 9998;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                background: rgba(139, 92, 246, 0.15);
-                backdrop-filter: blur(10px);
-                padding: 6px 12px 6px 8px;
-                border-radius: 50px;
-                box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-                cursor: pointer;
-                transition: all 0.3s ease;
-                font-family: inherit;
-                border: 1px solid rgba(139, 92, 246, 0.4);
-            }
-            #locStatusIndicator:active { transform: scale(0.95); }
-            #locStatusIndicator .loc-dot {
-                width: 10px; height: 10px;
-                border-radius: 50%;
-                animation: devPulse 2s infinite;
-                flex-shrink: 0;
-            }
-            #locStatusIndicator .loc-label {
-                font-size: 0.7rem;
-                font-weight: 800;
-                white-space: nowrap;
-                letter-spacing: 0.5px;
-            }
-            @keyframes devPulse {
-                0%, 100% { transform: scale(1); opacity: 1; }
-                50% { transform: scale(1.3); opacity: 0.7; }
-            }
-        `;
-        document.head.appendChild(style);
-        return;
+    // Hide old floating indicator - now using header chip
+    if (document.getElementById('locStatusIndicator')) {
+        document.getElementById('locStatusIndicator').style.display = 'none';
     }
     
-    const indicator = document.createElement('div');
-    indicator.id = 'locStatusIndicator';
-    indicator.innerHTML = `
-        <div class="loc-dot"></div>
-        <span class="loc-label">Định vị</span>
-    `;
-    document.body.appendChild(indicator);
+    // Show header location chip
+    const headerChip = document.getElementById('headerLocStatus');
+    if (headerChip && !CUSTOMER_CONFIG.devMode) {
+        headerChip.style.display = 'flex';
+    }
+}
 
-    // Add styles
-    const style = document.createElement('style');
-    style.id = 'locIndicatorStyles';
-    style.textContent = `
-        #locStatusIndicator {
-            position: fixed;
-            bottom: 90px;
-            left: 12px;
-            z-index: 9998;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(10px);
-            padding: 6px 12px 6px 8px;
-            border-radius: 50px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-        #locStatusIndicator:active { transform: scale(0.95); }
-        #locStatusIndicator .loc-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            background: #f59e0b;
-            box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
-            transition: all 0.3s;
-            flex-shrink: 0;
-        }
-        #locStatusIndicator .loc-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: #94a3b8;
-            white-space: nowrap;
-            transition: color 0.3s;
-        }
-        #locStatusIndicator.loc-granted .loc-dot {
-            background: #10b981;
-            box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
-            animation: locPulse 2s infinite;
-        }
-        #locStatusIndicator.loc-granted .loc-label { color: #10b981; }
-        #locStatusIndicator.loc-denied .loc-dot {
-            background: #ef4444;
-            box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
-        }
-        #locStatusIndicator.loc-denied .loc-label { color: #ef4444; }
-        #locStatusIndicator.loc-checking .loc-dot {
-            background: #f59e0b;
-            animation: locBlink 1s infinite;
-        }
-        @keyframes locPulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; }
-        }
-        @keyframes locBlink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-    `;
-    document.head.appendChild(style);
-
-    // Kiểm tra trạng thái ban đầu
-    updateLocationIndicator('checking', t('locationChecking'));
-    
-    // Click vào indicator để xem chi tiết
-    indicator.addEventListener('click', () => {
-        const isVerified = localStorage.getItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`) === 'true';
-        if (isVerified) {
-            showToast(t('locationVerified'));
-        } else {
-            showToast(t('locationNotVerified'));
-        }
-    });
+// Update header location indicator
+function updateHeaderLocationIndicator(status, label) {
+    const el = document.getElementById('headerLocStatus');
+    if (!el) return;
+    el.className = 'header-loc-chip'; // reset
+    el.classList.add(`loc-${status}`);
+    const labelEl = el.querySelector('.loc-chip-label');
+    if (labelEl) labelEl.textContent = label || 'Định vị';
 }
 
 function updateLocationIndicator(status, label) {
-    const el = document.getElementById('locStatusIndicator');
-    if (!el) return;
-    el.className = ''; // reset
-    el.classList.add(`loc-${status}`);
-    const labelEl = el.querySelector('.loc-label');
-    if (labelEl) labelEl.textContent = label || 'Định vị';
+    // Update header chip instead of floating indicator
+    updateHeaderLocationIndicator(status, label);
+}
+
+// Show location info on chip click
+function showLocationInfo() {
+    const isVerified = localStorage.getItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`) === 'true';
+    if (isVerified) {
+        showToast(t('locationVerified'));
+    } else {
+        showToast(t('locationNotVerified'));
+    }
 }
 
 let locationWatcher = null;
@@ -364,22 +251,22 @@ async function startLocationWatcher() {
             const permStatus = await navigator.permissions.query({ name: 'geolocation' });
             if (permStatus.state === 'denied') {
                 console.warn('Geolocation permission denied, skipping watcher');
-                updateLocationIndicator('denied', 'Bị từ chối');
+                updateHeaderLocationIndicator('denied', 'Bị từ chối');
                 return;
             }
             if (permStatus.state === 'granted') {
-                updateLocationIndicator('granted', 'Đã xác thực');
+                updateHeaderLocationIndicator('granted', 'Đã xác thực');
             }
             // Listen for permission changes
             permStatus.onchange = () => {
                 if (permStatus.state === 'denied') {
-                    updateLocationIndicator('denied', 'Bị từ chối');
+                    updateHeaderLocationIndicator('denied', 'Bị từ chối');
                     if (locationWatcher !== null) {
                         navigator.geolocation.clearWatch(locationWatcher);
                         locationWatcher = null;
                     }
                 } else if (permStatus.state === 'granted') {
-                    updateLocationIndicator('granted', 'Đã xác thực');
+                    updateHeaderLocationIndicator('granted', 'Đã xác thực');
                 }
             };
         }
@@ -402,7 +289,7 @@ async function startLocationWatcher() {
             
             if (distance > CUSTOMER_CONFIG.maxDistance) {
                 // Out of range -> Freeze everything
-                updateLocationIndicator('denied', `Ngoài phạm vi (${Math.round(distance)}m)`);
+                updateHeaderLocationIndicator('denied', `Ngoài phạm vi (${Math.round(distance)}m)`);
                 if (frozenOverlay) {
                     frozenOverlay.style.display = 'flex';
                     if (frozenDistVal) frozenDistVal.textContent = Math.round(distance);
@@ -410,7 +297,7 @@ async function startLocationWatcher() {
                 }
             } else {
                 // Back in range -> Unfreeze
-                updateLocationIndicator('granted', `OK (${Math.round(distance)}m)`);
+                updateHeaderLocationIndicator('granted', `OK (${Math.round(distance)}m)`);
                 if (frozenOverlay) {
                     frozenOverlay.style.display = 'none';
                     document.body.style.overflow = '';
@@ -437,14 +324,14 @@ function checkLocation() {
     if (localStorage.getItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`) === 'true') {
         if (overlay) overlay.style.display = 'none';
         if (wrapper) wrapper.style.display = 'block';
-        updateLocationIndicator('granted', 'Đã xác thực');
+        updateHeaderLocationIndicator('granted', 'Đã xác thực');
         return;
     }
 
     // Force overlay visible if not verified
     if (overlay) overlay.style.display = 'flex';
     if (wrapper) wrapper.style.display = 'none';
-    updateLocationIndicator('checking', 'Chưa xác thực');
+    updateHeaderLocationIndicator('checking', 'Chưa xác thực');
 
     const requestLocation = async (isInitial = false) => {
         // Only update button state if not an initial silent check
@@ -454,12 +341,12 @@ function checkLocation() {
                 btn.disabled = true;
             }
             if (errorEl) errorEl.style.display = 'none';
-            updateLocationIndicator('checking', 'Đang kiểm tra...');
+            updateHeaderLocationIndicator('checking', 'Đang kiểm tra...');
         }
 
         if (!navigator.geolocation) {
             if (isInitial !== true) showLocError("Trình duyệt không hỗ trợ định vị.");
-            updateLocationIndicator('denied', 'Không hỗ trợ');
+            updateHeaderLocationIndicator('denied', 'Không hỗ trợ');
             return;
         }
 
@@ -469,12 +356,12 @@ function checkLocation() {
                 const perm = await navigator.permissions.query({ name: 'geolocation' });
                 if (perm.state === 'denied') {
                     // Quyền bị từ chối → không gọi getCurrentPosition (tránh popup)
-                    updateLocationIndicator('denied', 'Bị từ chối');
+                    updateHeaderLocationIndicator('denied', 'Bị từ chối');
                     return;
                 }
                 if (perm.state === 'prompt') {
                     // Quyền chưa được cấp → không gọi silent check (chờ user bấm nút)
-                    updateLocationIndicator('checking', 'Chờ xác thực');
+                    updateHeaderLocationIndicator('checking', 'Chờ xác thực');
                     return;
                 }
                 // perm.state === 'granted' → tiếp tục kiểm tra khoảng cách
@@ -497,43 +384,27 @@ function checkLocation() {
                 const liveDist = document.getElementById('liveDistance');
                 const distVal = document.getElementById('distVal');
                 if (liveDist && distVal) {
-                    distVal.textContent = Math.round(distance);
                     liveDist.style.display = 'inline-flex';
+                    distVal.textContent = Math.round(distance);
+                    
                     // Color code based on distance
                     if (distance > CUSTOMER_CONFIG.maxDistance) {
-                        liveDist.style.background = 'rgba(239, 68, 68, 0.1)';
-                        liveDist.style.color = '#f87171';
-                        liveDist.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                        liveDist.classList.add('err');
                     } else {
-                        liveDist.style.background = 'rgba(16, 185, 129, 0.1)';
-                        liveDist.style.color = '#10b981';
-                        liveDist.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                        liveDist.classList.remove('err');
                     }
                 }
 
-                // If this was an initial check, stop here. 
-                // Wait for user to click button for final gatekeep.
-                if (isInitial === true) return;
-
-
                 if (distance > CUSTOMER_CONFIG.maxDistance) {
                     showLocError(`Bạn đang ở xa nhà hàng (${Math.round(distance)}m). Vui lòng quét mã tại bàn.`);
-                    updateLocationIndicator('denied', `Xa (${Math.round(distance)}m)`);
+                    updateHeaderLocationIndicator('denied', `Xa (${Math.round(distance)}m)`);
                 } else {
-                    // Xác thực thành công — lưu trạng thái + visitor token vào localStorage
+                    // Success - hide overlay, show menu
                     localStorage.setItem(`locationVerified_table_${CUSTOMER_CONFIG.tableId}`, 'true');
-
-                    // Lưu visitor token vào localStorage ĐỊNH DANH TOÀN CỤC THIẾT BỊ
-                    const _vt = _getCookie('qr_visitor_token');
-                    if (_vt) {
-                        localStorage.setItem('qr_global_device_id', _vt);
-                        localStorage.setItem(`qr_vt_${CUSTOMER_CONFIG.tableId}`, _vt);
-                    }
-                    if (btn) {
-                        btn.innerHTML = '<i class="fas fa-check-circle me-2"></i> XÁC THỰC THÀNH CÔNG!';
-                        btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                    }
-                    updateLocationIndicator('granted', `OK (${Math.round(distance)}m)`);
+                    if (overlay) overlay.style.display = 'none';
+                    if (wrapper) wrapper.style.display = 'block';
+                    if (btn) btn.innerHTML = '<i class="fas fa-check me-2"></i> XÁC THỰC THÀNH CÔNG!';
+                    updateHeaderLocationIndicator('granted', `OK (${Math.round(distance)}m)`);
                     startLocationWatcher();
                     setTimeout(() => {
                         if (overlay) {
@@ -1379,6 +1250,46 @@ function initCategoryPillClick() {
             }
         });
     });
+}
+
+// ════════════════════════════════════════════════════════════════
+// SWIPE GESTURE - Hide/Show Header
+// ════════════════════════════════════════════════════════════════
+function initSwipeGesture() {
+    let touchStartY = 0;
+    let touchEndY = 0;
+    const minSwipeDistance = 50; // Minimum distance for swipe
+    const header = document.getElementById('menuHeader');
+    const categoryNav = document.querySelector('.category-nav');
+    
+    if (!header) return;
+    
+    // Handle touch start
+    document.addEventListener('touchstart', (e) => {
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+    
+    // Handle touch end
+    document.addEventListener('touchend', (e) => {
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+    }, { passive: true });
+    
+    function handleSwipe() {
+        const swipeDistance = touchEndY - touchStartY;
+        
+        // Swipe DOWN (show header)
+        if (swipeDistance > minSwipeDistance) {
+            header.classList.remove('header-hidden');
+            if (categoryNav) categoryNav.style.top = '120px';
+        }
+        
+        // Swipe UP (hide header)
+        if (swipeDistance < -minSwipeDistance) {
+            header.classList.add('header-hidden');
+            if (categoryNav) categoryNav.style.top = '64px';
+        }
+    }
 }
 
 // Initialize everything when DOM is ready

@@ -336,7 +336,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     <?php endif; ?>
 
     <!-- Header - Compact -->
-    <header class="menu-header">
+    <header class="menu-header" id="menuHeader">
         <div class="header-top">
             <div style="display:flex;align-items:center;gap:12px;">
                 <button class="sidebar-toggle-btn-header" id="sidebarToggleBtnHeader" onclick="toggleSidebar()">
@@ -348,6 +348,11 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
+                <!-- Location Status Chip -->
+                <div id="headerLocStatus" class="header-loc-chip" onclick="showLocationInfo()" style="display:none;">
+                    <div class="loc-chip-dot"></div>
+                    <span class="loc-chip-label">Định vị</span>
+                </div>
                 <button id="langToggle" onclick="toggleLanguage()" class="lang-toggle-btn">
                     <i class="fas fa-globe me-1"></i><span id="langText">EN</span>
                 </button>
