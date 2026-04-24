@@ -4,13 +4,13 @@
 $currentLang = $_COOKIE['aurora_lang'] ?? $_SESSION['lang'] ?? 'vi';
 $isEn = $currentLang === 'en';
 
-// Text translations
+// Text translations - Song ngữ Anh-Việt
 $t = [
-    'order_sent' => $isEn ? 'Order Sent!' : 'Order đã được gửi! / Order Sent!',
+    'order_sent' => $isEn ? 'Order Sent!' : 'Đơn hàng đã được gửi! / Order Sent!',
     'wait_message' => $isEn ? 'Please wait for staff confirmation and service.' : 'Vui lòng đợi nhân viên xác nhận và phục vụ. / Please wait for confirmation.',
-    'order_details' => $isEn ? 'Order Details' : 'Chi tiết Order / Order Details',
-    'order_number' => $isEn ? 'Order #' : 'Đơn / Order #',
-    'qty' => $isEn ? 'x' : 'x',
+    'order_details' => $isEn ? 'Order Details' : 'Chi tiết đơn hàng / Order Details',
+    'order_number' => $isEn ? 'Order #' : 'Đơn hàng / Order #',
+    'qty' => $isEn ? 'Qty' : 'SL / Qty',
     'total' => $isEn ? 'Total' : 'Tổng cộng / Total',
     'add_more' => $isEn ? 'ORDER MORE' : 'GỌI THÊM MÓN / ORDER MORE',
     'check_bill' => $isEn ? 'CHECK BILL' : 'KIỂM TRA HÓA ĐƠN / CHECK BILL',
@@ -19,8 +19,8 @@ $t = [
     'cooking' => $isEn ? 'Cooking' : 'Đang chế biến / Cooking',
     'served' => $isEn ? 'Served' : 'Đã phục vụ / Served',
     'cancelled' => $isEn ? 'Cancelled' : 'Đã hủy / Cancelled',
-    'thank_you' => $isEn ? 'Thank you for your order!' : 'Cảm ơn bạn đã đặt món! / Thank you!',
-    'preparing' => $isEn ? 'Our kitchen is preparing your dishes' : 'Bếp đang chuẩn bị món cho bạn / Kitchen is preparing your dishes',
+    'thank_you' => $isEn ? 'Thank you for your order!' : 'Cảm ơn bạn đã đặt món! / Thank you for your order!',
+    'preparing' => $isEn ? 'Our kitchen is preparing your dishes' : 'Bếp đang chuẩn bị món cho bạn / Our kitchen is preparing your dishes',
     'estimated_time' => $isEn ? 'Estimated Time' : 'Thời gian dự kiến / Estimated Time',
     'minutes' => $isEn ? 'min' : 'phút / min',
 ];
@@ -134,7 +134,7 @@ $t = [
         <!-- Location Status Indicator -->
         <div id="locStatusIndicator" class="loc-indicator">
             <div class="loc-dot"></div>
-            <span class="loc-text">Đã xác thực / Verified</span>
+            <span class="loc-text"><?= $isEn ? 'Verified' : 'Đã xác thực / Verified' ?></span>
         </div>
     </div>
 
