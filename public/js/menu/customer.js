@@ -80,7 +80,10 @@ const MESSAGES = {
         bill: 'Bill',
         payment: 'Payment',
         refresh: 'Làm mới',
-        myTables: 'Bàn của tôi'
+        myTables: 'Bàn của tôi',
+        paymentProcessing: 'Đang xử lý Thanh Toán',
+        paymentWaitStaff: 'Vui lòng chờ nhân viên mang hóa đơn đến bàn.',
+        paymentAutoRedirect: 'Hệ thống tự động chuyển trang khi hoàn tất!'
     },
     en: {
         devMode: 'DEV MODE: Location checking disabled. You can test from anywhere.',
@@ -152,7 +155,10 @@ const MESSAGES = {
         bill: 'Bill',
         payment: 'Payment',
         refresh: 'Refresh',
-        myTables: 'My Tables'
+        myTables: 'My Tables',
+        paymentProcessing: 'Processing Payment',
+        paymentWaitStaff: 'Please wait for staff to bring the bill to your table.',
+        paymentAutoRedirect: 'Page will auto-redirect when completed!'
     }
 };
 
@@ -1005,13 +1011,20 @@ async function callWaiter(type) {
 function showPaymentOverlay() {
     let overlay = document.getElementById('paymentLoadingOverlay');
     if (!overlay) {
+        const lang = getCurrentLang();
+        const isEn = lang === 'en';
+        const title = isEn ? 'Processing Payment' : 'Đang xử lý Thanh Toán';
+        const titleSub = isEn ? 'Processing Payment' : 'Đang xử lý Thanh Toán';
+        const msg1 = isEn ? 'Please wait for staff to bring the bill to your table.' : 'Vui lòng chờ nhân viên mang hóa đơn đến bàn.';
+        const msg2 = isEn ? 'Page will auto-redirect when completed!' : 'Hệ thống tự động chuyển trang khi hoàn tất!';
+        
         overlay = document.createElement('div');
         overlay.id = 'paymentLoadingOverlay';
         overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:99999; display:flex; flex-direction:column; justify-content:center; align-items:center; backdrop-filter:blur(5px); animation:fadeIn 0.3s;';
         overlay.innerHTML = `
             <div class="spinner" style="width:50px; height:50px; border-width:4px; border-color:#d4af37 transparent #d4af37 transparent; margin-bottom:20px;"></div>
-            <h3 style="color:#1e293b; font-weight:800; font-family:'Playfair Display', serif; text-align:center;">Đang xử lý Thanh Toán</h3>
-            <p style="color:#64748b; font-size:0.9rem; margin-top:10px; text-align:center; max-width:80%;">Vui lòng chờ nhân viên mang hóa đơn đến bàn. <br>Hệ thống tự động chuyển trang khi hoàn tất!</p>
+            <h3 style="color:#1e293b; font-weight:800; font-family:'Playfair Display', serif; text-align:center;">${title}</h3>
+            <p style="color:#64748b; font-size:0.9rem; margin-top:10px; text-align:center; max-width:80%;">${msg1}<br>${msg2}</p>
         `;
         document.body.appendChild(overlay);
     }
