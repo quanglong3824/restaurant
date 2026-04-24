@@ -16,10 +16,10 @@
     </div>
 
     <!-- Area Filter Buttons -->
-    <?php if ($type === 'table' && !empty($groupedTables)): ?>
+    <?php if (!empty($groupedTables)): ?>
     <div class="area-filter-container" style="grid-column: 1 / -1; margin-bottom: 1rem;">
         <div class="area-filter-label" style="font-weight: 600; margin-bottom: 0.5rem; color: #666;">
-            <i class="fas fa-filter"></i> Lọc khu vực:
+            <i class="fas fa-filter"></i> Lọc <?= $type === 'room' ? 'tầng' : 'khu vực' ?>:
         </div>
         <div class="area-filter-buttons" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
             <button type="button" class="area-filter-btn active" data-area="all">
