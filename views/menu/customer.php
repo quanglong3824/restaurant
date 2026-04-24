@@ -231,7 +231,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     opacity:.5;pointer-events:none;position:relative;
 }
 .item-unavailable::after {
-    content:'Hết hàng';position:absolute;inset:0;display:flex;
+    content:'Out of stock';position:absolute;inset:0;display:flex;
     align-items:center;justify-content:center;
     background:rgba(255,255,255,.7);border-radius:inherit;
     font-weight:800;color:#94a3b8;font-size:.8rem;
@@ -350,13 +350,13 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                 <!-- Location Status Chip -->
                 <div id="headerLocStatus" class="header-loc-chip" onclick="showLocationInfo()">
                     <div class="loc-chip-dot"></div>
-                    <span class="loc-chip-label">Định vị</span>
+                    <span class="loc-chip-label">Location</span>
                 </div>
                 <button id="langToggle" onclick="toggleLanguage()" class="lang-toggle-btn">
                     <i class="fas fa-globe me-1"></i><span id="langText">EN</span>
                 </button>
                 <div class="table-info">
-                    <span class="table-label"><?= $isRoomService ? 'PHÒNG' : 'BÀN' ?></span>
+                    <span class="table-label"><?= $isRoomService ? 'ROOM' : 'TABLE' ?></span>
                     <span class="table-number"><?= e($table['name']) ?></span>
                 </div>
             </div>
@@ -403,7 +403,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     <div class="menu-search-container">
         <div class="menu-search-bar">
             <i class="fas fa-search"></i>
-            <input type="text" id="menuSearch" placeholder="Tìm món (tên Việt / English)...">
+            <input type="text" id="menuSearch" placeholder="Search (Vietnamese / English name)...">
             <button id="btnClearSearch" style="display:none;background:none;border:none;color:#94a3b8;cursor:pointer;padding:0 4px;" onclick="clearMenuSearch()">
                 <i class="fas fa-times"></i>
             </button>
@@ -702,7 +702,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                                         <i class="fas fa-plus"></i>
                                     </button>
                                     <?php else: ?>
-                                    <span style="font-size:.72rem;color:#94a3b8;font-weight:700;">Hết hàng</span>
+                                    <span style="font-size:.72rem;color:#94a3b8;font-weight:700;">Out of stock</span>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -715,16 +715,16 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
         <?php if (empty($activeCategories)): ?>
         <div class="menu-empty-state">
             <i class="fas fa-utensils"></i>
-            <p style="font-weight:700;font-size:1rem;">Chưa có thực đơn</p>
-            <p style="font-size:.85rem;">Vui lòng liên hệ nhân viên để được hỗ trợ</p>
+            <p style="font-weight:700;font-size:1rem;">No menu available</p>
+            <p style="font-size:.85rem;">Please contact staff for assistance</p>
         </div>
         <?php endif; ?>
 
         <div id="searchNoResult" class="menu-empty-state" style="display:none;">
             <i class="fas fa-search"></i>
-            <p style="font-weight:700;font-size:1rem;">Không tìm thấy món phù hợp</p>
+            <p style="font-weight:700;font-size:1rem;">No dishes found matching your search</p>
             <button onclick="clearMenuSearch()" style="background:none;border:1.5px solid #e2e8f0;border-radius:20px;padding:8px 20px;cursor:pointer;font-weight:600;color:#64748b;margin-top:8px;">
-                Xoá tìm kiếm
+                Clear search
             </button>
         </div>
     </main>
