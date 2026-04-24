@@ -434,6 +434,14 @@ $isEn = $currentLang === 'en';
 </style>
 
 <script>
+const isEn = <?= $isEn ? 'true' : 'false' ?>;
+const jsTexts = {
+    time: isEn ? 'Time' : 'Thời gian',
+    total: isEn ? 'Total' : 'Tổng cộng',
+    itemList: isEn ? 'Order Items' : 'Danh sách món',
+    noItems: isEn ? 'No items' : 'Không có món nào'
+};
+
 function showOrderDetail(order) {
     const content = document.getElementById('orderDetailContent');
     let html = '<div class="order-detail-items">';
@@ -441,24 +449,24 @@ function showOrderDetail(order) {
     // Order info
     html += '<div style="background:#f8fafc;padding:12px;border-radius:12px;margin-bottom:1rem;">';
     html += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;">';
-    html += '<span style="color:#64748b;font-size:0.8rem;">Thời gian</span>';
+    html += '<span style="color:#64748b;font-size:0.8rem;">' + jsTexts.time + '</span>';
     html += '<span style="font-weight:600;">' + new Date(order.created_at).toLocaleString('vi-VN') + '</span>';
     html += '</div>';
     html += '<div style="display:flex;justify-content:space-between;">';
-    html += '<span style="color:#64748b;font-size:0.8rem;">Tổng cộng</span>';
+    html += '<span style="color:#64748b;font-size:0.8rem;">' + jsTexts.total + '</span>';
     html += '<span style="font-weight:700;color:var(--gold,#d4af37);font-size:1.1rem;">' + order.total_formatted + '</span>';
     html += '</div>';
     html += '</div>';
     
     // Items
-    html += '<h4 style="margin-bottom:1rem;font-size:0.9rem;color:#64748b;text-transform:uppercase;">Danh sách món</h4>';
+    html += '<h4 style="margin-bottom:1rem;font-size:0.9rem;color:#64748b;text-transform:uppercase;">' + jsTexts.itemList + '</h4>';
     
     if (order.items && order.items.length > 0) {
         order.items.forEach(function(item) {
             html += '<div class="order-detail-item">';
             html += '<div class="detail-qty">' + item.quantity + '</div>';
             html += '<div class="detail-info">';
-            html += '<div class="detail-name">' + (<?= $isEn ? 'true' : 'false' ?> && item.item_name_en ? item.item_name_en : item.item_name) + '</div>';
+            html += '<div class="detail-name">' + (isEn && item.item_name_en ? item.item_name_en : item.item_name) + '</div>';
             if (item.note) {
                 html += '<div class="detail-note"><i class="fas fa-pen"></i> ' + item.note + '</div>';
             }
@@ -467,7 +475,7 @@ function showOrderDetail(order) {
             html += '</div>';
         });
     } else {
-        html += '<p style="text-align:center;color:#94a3b8;padding:2rem;">Không có món nào</p>';
+        html += '<p style="text-align:center;color:#94a3b8;padding:2rem;">' + jsTexts.noItems + '</p>';
     }
     
     html += '</div>';
