@@ -654,7 +654,7 @@ function togglePaymentCheck(id) {
     </div>
 </div>
 
-<link rel="stylesheet" href="<?= BASE_URL ?>/public/css/orders/index.css">
+<link rel="stylesheet" href="<?= BASE_URL ?>/public/css/orders/index.css?v=2.2.5">
 
 <script>
 const ORDERS_CONFIG = {
