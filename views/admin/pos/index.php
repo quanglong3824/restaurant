@@ -160,6 +160,65 @@ foreach (array_keys($grouped) as $a) {
 }
 </style>
 
+<script>
+function switchTab(tab) {
+    var tabEls = document.querySelectorAll('.pos-tab');
+    for (var i = 0; i < tabEls.length; i++) {
+        tabEls[i].classList.remove('active');
+    }
+    
+    var activeTab = document.querySelector('.pos-tab[data-tab="' + tab + '"]');
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+    
+    var contentEls = document.querySelectorAll('.tab-content');
+    for (var j = 0; j < contentEls.length; j++) {
+        contentEls[j].style.display = 'none';
+    }
+    
+    var tabId = 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1);
+    var tabContent = document.getElementById(tabId);
+    if (tabContent) {
+        tabContent.style.display = 'block';
+    }
+}
+
+function openModal(id) {
+    var modal = document.getElementById(id);
+    if (modal) modal.classList.add('is-open');
+}
+
+function closeModal(id) {
+    var modal = document.getElementById(id);
+    if (modal) modal.classList.remove('is-open');
+}
+
+function closeAllModals() {
+    var modals = document.querySelectorAll('.modal-backdrop');
+    for (var i = 0; i < modals.length; i++) {
+        modals[i].classList.remove('is-open');
+    }
+}
+
+function handleFloorCard(tableId, isOccupied, tableName) {
+    if (typeof POS !== 'undefined') POS.currentTableId = tableId;
+    
+    if (isOccupied) {
+        viewOrder(tableId);
+    } else {
+        var el = document.getElementById('openTableName');
+        if (el) el.textContent = tableName;
+        openModal('modalOpenTable');
+    }
+}
+
+function viewOrder(tableId) {
+    var baseUrl = typeof POS !== 'undefined' ? POS.baseUrl : '<?= BASE_URL ?>';
+    window.location.href = baseUrl + '/admin/pos?tab=order&table_id=' + tableId;
+}
+</script>
+
 <div class="pos-dashboard">
     <div class="pos-sidebar">
         <div class="pos-tabs">
@@ -921,44 +980,6 @@ var splitGuestCount = 2;
 var currentNoteItemId = 0;
 var selectedNoteOptions = [];
 
-function switchTab(tab) {
-    var tabEls = document.querySelectorAll('.pos-tab');
-    for (var i = 0; i < tabEls.length; i++) {
-        tabEls[i].classList.remove('active');
-    }
-    
-    var activeTab = document.querySelector('.pos-tab[data-tab="' + tab + '"]');
-    if (activeTab) {
-        activeTab.classList.add('active');
-    }
-    
-    var contentEls = document.querySelectorAll('.tab-content');
-    for (var j = 0; j < contentEls.length; j++) {
-        contentEls[j].style.display = 'none';
-    }
-    
-    var tabId = 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1);
-    var tabContent = document.getElementById(tabId);
-    if (tabContent) {
-        tabContent.style.display = 'block';
-    }
-}
-
-function viewOrder(tableId) {
-    window.location.href = POS.baseUrl + '/admin/pos?tab=order&table_id=' + tableId;
-}
-
-function handleFloorCard(tableId, isOccupied, tableName) {
-    POS.currentTableId = tableId;
-    
-    if (isOccupied) {
-        viewOrder(tableId);
-    } else {
-        document.getElementById('openTableName').textContent = tableName;
-        openModal('modalOpenTable');
-    }
-}
-
 function changeMenuType(type) {
     window.location.href = POS.baseUrl + '/admin/pos?tab=menu&menu_type=' + type + '&order_id=' + POS.orderId;
 }
@@ -991,23 +1012,6 @@ function filterMenuCategory(tabEl) {
         } else {
             cards[j].style.display = 'none';
         }
-    }
-}
-
-function openModal(id) {
-    var modal = document.getElementById(id);
-    if (modal) modal.classList.add('is-open');
-}
-
-function closeModal(id) {
-    var modal = document.getElementById(id);
-    if (modal) modal.classList.remove('is-open');
-}
-
-function closeAllModals() {
-    var modals = document.querySelectorAll('.modal-backdrop');
-    for (var i = 0; i < modals.length; i++) {
-        modals[i].classList.remove('is-open');
     }
 }
 
