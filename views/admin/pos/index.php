@@ -183,23 +183,6 @@ foreach (array_keys($grouped) as $a) {
             </div>
         </div>
     </div>
-            <div class="pos-tab <?= $tab === 'menu' ? 'active' : '' ?>" data-tab="menu">
-                <i class="fas fa-utensils"></i> Menu
-            </div>
-            <div class="pos-tab <?= $tab === 'order' ? 'active' : '' ?>" data-tab="order">
-                <i class="fas fa-receipt"></i> Order
-            </div>
-            <div class="pos-tab <?= $tab === 'notif' ? 'active' : '' ?>" data-tab="notif">
-                <i class="fas fa-bell"></i> Thông báo
-                <?php if ($notifStats['unread'] > 0): ?>
-                    <span style="background:#ef4444;color:white;padding:2px 6px;border-radius:10px;font-size:0.65rem"><?= $notifStats['unread'] ?></span>
-                <?php endif; ?>
-            </div>
-            <div class="pos-tab <?= $tab === 'realtime' ? 'active' : '' ?>" data-tab="realtime">
-                <i class="fas fa-satellite-dish"></i> Realtime
-            </div>
-        </div>
-    </div>
 
     <div class="pos-content">
         <!-- FLOOR TAB -->
