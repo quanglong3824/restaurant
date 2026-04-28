@@ -156,7 +156,7 @@ function handleSubmitPayment(e) {
     
     fetch(ORDERS_CONFIG.baseUrl + '/tables/close', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
         body: params
     })
     .then(r => {
