@@ -957,10 +957,21 @@ async function refreshData() {
         }
         
         const data = await res.json();
+        console.log('Realtime data received:', data);
         
-        if (data && data.ok && Array.isArray(data.data)) {
+        if (data && data.ok) {
             updateStats(data);
-            renderPOSGrid(data.data);
+            if (Array.isArray(data.data) && data.data.length > 0) {
+                renderPOSGrid(data.data);
+            } else {
+                container.innerHTML = `
+                    <div class="pos-loader">
+                        <i class="fas fa-utensils fa-3x" style="opacity:0.2"></i>
+                        <h3 style="font-weight:800; color:var(--pos-text);">KHÔNG CÓ ORDER</h3>
+                        <p style="color:var(--pos-text-muted)">Không có bàn đang phục vụ</p>
+                    </div>
+                `;
+            }
         } else {
             console.error('Invalid data format:', data);
             if (container) container.innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi dữ liệu</h3><p>${data?.message || 'Không thể tải dữ liệu'}</p></div>`;
@@ -976,6 +987,7 @@ async function refreshData() {
 }
 
 function updateStats(data) {
+    console.log('Updating stats with:', data);
     if (!data || !data.counts) {
         console.error('Invalid stats data:', data);
         return;
@@ -986,7 +998,9 @@ function updateStats(data) {
     
     let tempTotal = 0;
     if (Array.isArray(data.data)) {
-        data.data.forEach(o => { if (o.status === 'open') tempTotal += parseFloat(o.total || 0); });
+        data.data.forEach(o => { 
+            if (o.status === 'open') tempTotal += parseFloat(o.total || 0); 
+        });
     }
     document.getElementById('statTempRevenue').textContent = new Intl.NumberFormat('vi-VN').format(tempTotal) + 'đ';
     
@@ -1007,6 +1021,7 @@ function formatPrice(n) {
 }
 
 function renderPOSGrid(orders) {
+    console.log('renderPOSGrid called with:', orders);
     const container = document.getElementById('realtimeListContainer');
     
     if (!container) {
@@ -1015,11 +1030,12 @@ function renderPOSGrid(orders) {
     }
     
     if (!Array.isArray(orders) || orders.length === 0) {
+        console.log('No orders to render');
         container.innerHTML = `
             <div class="pos-loader">
-                <i class="fas fa-utensils fa-3x mb-3 opacity-10"></i>
+                <i class="fas fa-utensils fa-3x" style="opacity:0.2"></i>
                 <h3 style="font-weight:800; color:var(--pos-text);">KHÔNG CÓ DỮ LIỆU</h3>
-                <p class="small text-muted">Hệ thống đang chờ đơn hàng mới...</p>
+                <p style="color:var(--pos-text-muted)">Hệ thống đang chờ đơn hàng mới...</p>
             </div>
         `;
         return;
@@ -1029,7 +1045,7 @@ function renderPOSGrid(orders) {
         let html = '';
         orders.forEach(order => {
             const isClosed = (order.status === 'closed');
-            const isIdle = order.is_idle && !isClosed;
+            const isIdle = (order.is_idle === true || order.is_idle === 1) && !isClosed;
             const totalValue = parseFloat(order.total || 0);
             
             const statusTag = isClosed ? 'closed' : (isIdle ? 'idle' : 'open');
