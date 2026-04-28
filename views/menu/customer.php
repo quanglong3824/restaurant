@@ -1,6 +1,4 @@
-<?php // views/menu/customer.php — Customer Digital Menu
-$currentLang = $_COOKIE['aurora_lang'] ?? 'vi';
-// Xác định ngữ cảnh phục vụ dựa trên type của bàn/phòng
+<?php // views/menu/customer.php — Customer Digital Menu (English Only)
 $isRoomService = isset($table['type']) && $table['type'] === 'room';
 $contextLabel  = $isRoomService ? 'ROOM SERVICE' : 'RESTAURANT';
 $contextIcon   = $isRoomService ? 'fa-bed' : 'fa-utensils';
@@ -347,9 +345,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                     <div class="loc-chip-dot"></div>
                     <span class="loc-chip-label">Location</span>
                 </div>
-                <button id="langToggle" onclick="toggleLanguage()" class="lang-toggle-btn">
-                    <i class="fas fa-globe me-1"></i><span id="langText">EN</span>
-                </button>
+                
                 <div class="table-info">
                     <span class="table-label"><?= $isRoomService ? 'ROOM' : 'TABLE' ?></span>
                     <span class="table-number"><?= e($table['name']) ?></span>
@@ -367,10 +363,10 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     ?>
     <?php if (count($presentTypes) > 1): ?>
     <div class="type-tab-bar" id="typeTabBar">
-        <button class="type-tab active" data-type="all"><span class="lang" data-vi="TẤT CẢ / ALL" data-en="ALL">TẤT CẢ / ALL</span></button>
+        <button class="type-tab active" data-type="all"><span>ALL</span></button>
         <?php foreach ($presentTypes as $tp): if (!isset($typeLabels[$tp])) continue; ?>
             <button class="type-tab" data-type="<?= $tp ?>">
-                <span class="lang" data-vi="<?= strtoupper($typeLabels[$tp]) ?> / <?= strtoupper($typeLabelsEn[$tp]) ?>" data-en="<?= strtoupper($typeLabelsEn[$tp]) ?>"><?= strtoupper($typeLabels[$tp]) ?> / <?= strtoupper($typeLabelsEn[$tp]) ?></span>
+                <span><?= strtoupper($typeLabelsEn[$tp]) ?></span>
             </button>
         <?php endforeach; ?>
     </div>
@@ -380,15 +376,12 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     <nav class="category-nav">
         <div class="category-nav-inner">
             <a href="javascript:void(0)" class="cat-pill active" data-category="all">
-                <span class="lang" data-vi="Tất cả / All" data-en="All">Tất cả / All</span>
+                <span>All</span>
             </a>
             <?php foreach ($sortedCategories as $cat): ?>
                 <a href="#cat-<?= $cat['id'] ?>" class="cat-pill"
                    data-category="<?= $cat['id'] ?>" data-type="<?= $cat['menu_type'] ?>">
-                    <span class="lang-vi"><?= e($cat['name']) ?></span>
-                    <?php if (!empty($cat['name_en'])): ?>
-                        <span class="lang-en" style="display:none;"><?= e($cat['name_en']) ?></span>
-                    <?php endif; ?>
+                    <?= !empty($cat['name_en']) ? e($cat['name_en']) : e($cat['name']) ?>
                 </a>
             <?php endforeach; ?>
         </div>
@@ -741,30 +734,24 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
         <nav class="sidebar-nav">
             <a href="javascript:void(0)" class="sidebar-item" onclick="callWaiter('support'); toggleSidebar()">
                 <i class="fas fa-<?= $isRoomService ? 'concierge-bell' : 'hand-paper' ?>"></i>
-                <span class="lang" data-vi="Gọi nhân viên / <?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?>" data-en="<?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?>">Gọi nhân viên / <?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?></span>
+                <span><?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?></span>
             </a>
             <a href="javascript:void(0)" class="sidebar-item <?= $hasItems ? 'has-items' : '' ?>" onclick="<?= $hasItems ? 'showBillTam()' : "callWaiter('payment')" ?>; toggleSidebar()">
                 <i class="fas fa-file-invoice-dollar"></i>
-                <span class="lang" data-vi="<?= $hasItems ? 'Hoá đơn / Bill' : 'Thanh toán / Payment' ?>" data-en="<?= $hasItems ? 'Bill' : 'Payment' ?>"><?= $hasItems ? 'Hoá đơn / Bill' : 'Thanh toán / Payment' ?></span>
+                <span><?= $hasItems ? 'Bill' : 'Payment' ?></span>
                 <?php if ($hasItems): ?>
                     <span class="sidebar-badge"></span>
                 <?php endif; ?>
             </a>
             <a href="javascript:void(0)" class="sidebar-item" onclick="showHistoryModal(); toggleSidebar()">
                 <i class="fas fa-history"></i>
-                <span class="lang" data-vi="Lịch sử / History" data-en="History">Lịch sử / History</span>
+                <span>History</span>
             </a>
             <a href="javascript:void(0)" class="sidebar-item" onclick="window.location.reload()">
                 <i class="fas fa-sync-alt"></i>
-                <span class="lang" data-vi="Làm mới / Refresh" data-en="Refresh">Làm mới / Refresh</span>
+                <span>Refresh</span>
             </a>
         </nav>
-        <div class="sidebar-footer">
-            <button id="langToggleSidebar" onclick="toggleLanguage()" class="lang-toggle-sidebar">
-                <i class="fas fa-globe"></i>
-                <span id="langTextSidebar">EN</span>
-            </button>
-        </div>
     </aside>
     
 
@@ -776,7 +763,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
             <span class="cart-badge" id="cartCount">0</span>
         </div>
         <div class="cart-info">
-            <span class="cart-label"><span class="lang" data-vi="Giỏ hàng / Your cart" data-en="Your cart / Giỏ hàng">Giỏ hàng / Your cart</span></span>
+            <span class="cart-label">Your cart</span>
             <span class="cart-total" id="cartTotal">0₫</span>
         </div>
         <div class="cart-bar-arrow">
@@ -790,23 +777,23 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     <div class="modal modal-bottom">
         <div class="modal-drag-handle"><span></span></div>
         <div class="modal-header">
-            <h3><i class="fas fa-shopping-cart me-2"></i> <span class="lang" data-vi="Chi tiết đơn hàng / Order Details" data-en="Order Details / Chi tiết đơn hàng">Chi tiết đơn hàng / Order Details</span></h3>
+            <h3><i class="fas fa-shopping-cart me-2"></i> Order Details</h3>
             <button class="modal-close" onclick="toggleCartModal()"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
             <div id="cartItemsList" class="cart-items-container"></div>
             <div class="order-notes-box mt-3" style="margin-top:1rem;">
-                <label class="lang" data-vi="GHI CHÚ ĐƠN HÀNG / ORDER NOTES" data-en="ORDER NOTES / GHI CHÚ ĐƠN HÀNG" style="font-size:.72rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">GHI CHÚ ĐƠN HÀNG / ORDER NOTES</label>
-                <textarea id="orderNotes" placeholder="VD: Không lấy hành, ít cay... / e.g., No onion, less spicy..."></textarea>
+                <label style="font-size:.72rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">ORDER NOTES</label>
+                <textarea id="orderNotes" placeholder="e.g., No onion, less spicy..."></textarea>
             </div>
         </div>
         <div class="modal-footer">
             <div class="total-summary">
-                <span class="lang" data-vi="Tổng cộng / Total" data-en="Total / Tổng cộng">Tổng cộng / Total</span>
+                <span>Total</span>
                 <strong id="modalCartTotal">0₫</strong>
             </div>
             <button class="btn-submit-order" id="btnSubmitOrder" onclick="submitOrder()">
-                <i class="fas fa-paper-plane me-2"></i> <span class="lang" data-vi="XÁC NHẬN ĐẶT MÓN / CONFIRM ORDER" data-en="CONFIRM ORDER / XÁC NHẬN ĐẶT MÓN">XÁC NHẬN ĐẶT MÓN / CONFIRM ORDER</span>
+                <i class="fas fa-paper-plane me-2"></i> CONFIRM ORDER
             </button>
         </div>
     </div>
@@ -827,8 +814,8 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                 <p id="detailDesc" class="item-desc" style="margin-top:8px;font-size:.875rem;color:#64748b;line-height:1.5;"></p>
             </div>
             <div id="detailOptsWrap" style="display:none;margin-bottom:1.25rem;">
-                <label class="lang" data-vi="Tuỳ chọn nhanh / Quick Options" data-en="Quick Options / Tuỳ chọn nhanh" style="font-size:.72rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:block;">
-                    Tuỳ chọn nhanh / Quick Options
+                <label style="font-size:.72rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:block;">
+                    Quick Options
                 </label>
                 <div id="detailOptsContainer" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
             </div>
@@ -840,13 +827,13 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                 </div>
                 <div class="note-input-box">
                     <i class="fas fa-edit"></i>
-                    <input type="text" id="detailNote" placeholder="Ghi chú thêm / e.g., No onion, less spicy...">
+                    <input type="text" id="detailNote" placeholder="e.g., No onion, less spicy...">
                 </div>
             </div>
         </div>
         <div class="modal-footer">
             <button class="btn-submit-order w-100" id="btnAddOrder" onclick="addFromDetail()">
-                <i class="fas fa-cart-plus me-2"></i> <span class="lang" data-vi="THÊM VÀO ĐƠN HÀNG / ADD TO ORDER" data-en="ADD TO ORDER / THÊM VÀO ĐƠN HÀNG">THÊM VÀO ĐƠN HÀNG / ADD TO ORDER</span>
+                <i class="fas fa-cart-plus me-2"></i> ADD TO ORDER
             </button>
         </div>
     </div>
@@ -856,13 +843,13 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 <div id="historyModal" class="modal-backdrop hidden">
     <div class="modal modal-bottom modal-premium">
         <div class="modal-header">
-            <h3><i class="fas fa-history me-2"></i> <span class="lang" data-vi="Lịch Sử Đơn Hàng / Order History" data-en="Order History / Lịch Sử Đơn Hàng">Lịch Sử Đơn Hàng / Order History</span></h3>
+            <h3><i class="fas fa-history me-2"></i> Order History</h3>
             <button class="modal-close" onclick="closeHistoryModal()"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body" id="historyModalContent">
             <div style="text-align:center;padding:2rem;color:#94a3b8;">
                 <i class="fas fa-spinner fa-spin" style="font-size:2rem;margin-bottom:1rem;"></i>
-                <p class="lang" data-vi="Đang tải lịch sử... / Loading history..." data-en="Loading history... / Đang tải lịch sử...">Đang tải lịch sử... / Loading history...</p>
+                <p>Loading history...</p>
             </div>
         </div>
     </div>
@@ -872,7 +859,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 <div id="billTamModal" class="modal-backdrop hidden">
     <div class="modal modal-bottom modal-premium">
         <div class="modal-header">
-            <h3><i class="fas fa-file-invoice-dollar me-2"></i> <span class="lang" data-vi="Hoá đơn tạm tính / Preliminary Bill" data-en="Preliminary Bill / Hoá đơn tạm tính">Hoá đơn tạm tính / Preliminary Bill</span></h3>
+            <h3><i class="fas fa-file-invoice-dollar me-2"></i> Preliminary Bill</h3>
             <button class="modal-close" onclick="closeBillTam()"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
@@ -883,7 +870,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                         <div class="bill-item">
                             <div class="bill-item-main">
                                 <span class="bill-qty"><?= $oi['quantity'] ?>x</span>
-                                <span class="bill-name lang" data-vi="<?= e($oi['item_name']) ?>" data-en="<?= e(!empty($oi['item_name_en']) ? $oi['item_name_en'] : $oi['item_name']) ?>"><?= e($currentLang === 'en' && !empty($oi['item_name_en']) ? $oi['item_name_en'] : $oi['item_name']) ?></span>
+                                <span class="bill-name"><?= !empty($oi['item_name_en']) ? e($oi['item_name_en']) : e($oi['item_name']) ?></span>
                                 <span class="bill-price"><?= formatPrice($oi['item_price'] * $oi['quantity']) ?></span>
                             </div>
                             <?php if (!empty($oi['note'])): ?>
@@ -893,30 +880,29 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                             <?php endif; ?>
                             <div class="bill-item-status <?= $oi['status'] ?>">
                                 <?php
-                                $statusTxt = ['confirmed'=>'Đã xác nhận','pending'=>'Chờ xác nhận','draft'=>'Chờ xác nhận'];
                                 $statusTxtEn = ['confirmed'=>'Confirmed','pending'=>'Pending','draft'=>'Draft'];
-                                echo $currentLang === 'en' ? ($statusTxtEn[$oi['status']] ?? $oi['status']) : ($statusTxt[$oi['status']] ?? $oi['status']);
+                                echo $statusTxtEn[$oi['status']] ?? $oi['status'];
                                 ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
                     <div class="bill-summary">
                         <div class="bill-total-row">
-                            <span class="lang" data-vi="Tổng tiền món / Subtotal" data-en="Subtotal / Tổng tiền món">Tổng tiền món / Subtotal</span>
+                            <span>Subtotal</span>
                             <strong><?= formatPrice($orderTotal) ?></strong>
                         </div>
                     </div>
                 <?php else: ?>
                     <div class="menu-empty-state">
                         <i class="fas fa-receipt"></i>
-                        <p class="lang" data-vi="Bàn chưa có món nào được gọi. / No items ordered yet." data-en="No items ordered yet. / Bàn chưa có món nào được gọi.">Bàn chưa có món nào được gọi. / No items ordered yet.</p>
+                        <p>No items ordered yet.</p>
                     </div>
                 <?php endif; ?>
             </div>
         </div>
         <div class="modal-footer" style="display:flex;flex-direction:column;gap:.5rem;">
             <button class="btn-gold w-100" onclick="callWaiter('payment')">
-                <i class="fas fa-hand-holding-usd me-2"></i> <span class="lang" data-vi="YÊU CẦU THANH TOÁN / REQUEST PAYMENT" data-en="REQUEST PAYMENT / YÊU CẦU THANH TOÁN">YÊU CẦU THANH TOÁN / REQUEST PAYMENT</span>
+                <i class="fas fa-hand-holding-usd me-2"></i> REQUEST PAYMENT
             </button>
             <button class="btn-ghost w-100" onclick="closeBillTam()">
                 <span class="lang" data-vi="TIẾP TỤC ĐẶT MÓN / CONTINUE ORDERING" data-en="CONTINUE ORDERING / TIẾP TỤC ĐẶT MÓN">TIẾP TỤC ĐẶT MÓN / CONTINUE ORDERING</span>
@@ -1115,180 +1101,5 @@ function closeBillTam() {
     document.getElementById('billTamModal').classList.add('hidden');
     document.body.style.overflow = '';
 }
-
-/* ── Language Toggle VI/EN ── */
-let currentLang = localStorage.getItem('aurora_lang') || 'vi';
-
-function toggleLanguage() {
-    currentLang = currentLang === 'vi' ? 'en' : 'vi';
-    localStorage.setItem('aurora_lang', currentLang);
-    document.cookie = "aurora_lang=" + currentLang + "; path=/; max-age=31536000; SameSite=Lax";
-    applyLanguage(currentLang);
-}
-
-function applyLanguage(lang) {
-    document.documentElement.lang = lang;
-    // Update toggle button text
-    const langText = document.getElementById('langText');
-    if (langText) langText.textContent = lang === 'vi' ? 'EN' : 'VI';
-    
-    // Update elements with class="lang" and data-vi/data-en attributes
-    document.querySelectorAll('.lang').forEach(el => {
-        const text = lang === 'vi' ? el.getAttribute('data-vi') : el.getAttribute('data-en');
-        if (text) el.textContent = text;
-    });
-    
-    // Update category pills
-    document.querySelectorAll('.cat-pill').forEach(pill => {
-        const viEl = pill.querySelector('.lang-vi');
-        const enEl = pill.querySelector('.lang-en');
-        if (viEl && enEl) {
-            viEl.style.display = lang === 'vi' ? '' : 'none';
-            enEl.style.display = lang === 'en' ? '' : 'none';
-        }
-    });
-    
-    // Update section titles
-    document.querySelectorAll('.section-header').forEach(header => {
-        const viTitle = header.querySelector('.section-title');
-        const enTitle = header.querySelector('.section-title-en');
-        if (viTitle && enTitle) {
-            viTitle.style.display = '';
-            enTitle.style.display = lang === 'en' ? '' : 'none';
-        }
-    });
-    
-    // Update item names
-    document.querySelectorAll('.menu-item-card').forEach(card => {
-        const nameEl = card.querySelector('.item-name');
-        const nameEnEl = card.querySelector('.item-name-en');
-        if (nameEnEl) {
-            if (lang === 'en' && nameEnEl.textContent.trim()) {
-                nameEl.style.display = 'none';
-                nameEnEl.style.display = 'block';
-                nameEnEl.style.fontWeight = '700';
-                nameEnEl.style.fontSize = '0.9rem';
-                nameEnEl.style.color = 'var(--text-dark)';
-            } else {
-                nameEl.style.display = '';
-                nameEnEl.style.display = '';
-                nameEnEl.style.fontWeight = '';
-                nameEnEl.style.fontSize = '';
-                nameEnEl.style.color = '';
-            }
-        }
-    });
-    
-    // Update context banner text
-    const ctxText = document.querySelector('.ctx-text');
-    if (ctxText) {
-        if (lang === 'en') {
-            ctxText.textContent = ctxText.getAttribute('data-en') || 'Room service menu — Order will be delivered to your room';
-        } else {
-            const isRoom = <?= $isRoomService ? 'true' : 'false' ?>;
-            ctxText.textContent = isRoom ? 'Thực đơn phục vụ tại phòng — Đặt món sẽ được mang đến tận nơi' : 'Thực đơn nhà hàng — Đặt món ngay tại bàn và chờ phục vụ';
-        }
-    }
-    
-    // Update search placeholder
-    const searchEl = document.getElementById('menuSearch');
-    if (searchEl) {
-        searchEl.placeholder = lang === 'vi' ? 'Tìm món (tên Việt / English)...' : 'Search for dishes (Vietnamese / English)...';
-    }
-    
-    // Update cart label
-    const cartLabelEl = document.querySelector('.cart-label');
-    if (cartLabelEl) {
-        cartLabelEl.textContent = lang === 'vi' ? 'Giỏ hàng / Your cart' : 'Your cart / Giỏ hàng';
-    }
-    
-    // Update view cart arrow
-    const cartBarArrow = document.querySelector('.cart-bar-arrow');
-    if (cartBarArrow) {
-        cartBarArrow.innerHTML = '<i class="fas fa-chevron-right"></i>';
-    }
-    
-    // Update FAB labels
-    document.querySelectorAll('.fab-label').forEach(label => {
-        const text = lang === 'vi' ? label.getAttribute('data-vi') : label.getAttribute('data-en');
-        if (text) label.textContent = text;
-    });
-    
-    // Update location overlay
-    document.querySelectorAll('#locationOverlay .loc-title, #locationOverlay h3').forEach(el => {
-        const text = lang === 'vi' ? el.getAttribute('data-vi') : el.getAttribute('data-en');
-        if (text) el.textContent = text;
-    });
-    
-    document.querySelectorAll('#locationOverlay .loc-desc').forEach(el => {
-        const text = lang === 'vi' ? el.getAttribute('data-vi') : el.getAttribute('data-en');
-        if (text) el.textContent = text;
-    });
-    
-    document.querySelectorAll('#locationOverlay .loc-benefits span').forEach(el => {
-        const text = lang === 'vi' ? el.getAttribute('data-vi') : el.getAttribute('data-en');
-        if (text) el.textContent = text;
-    });
-    
-    document.querySelectorAll('#locationOverlay .loc-privacy').forEach(el => {
-        const text = lang === 'vi' ? el.getAttribute('data-vi') : el.getAttribute('data-en');
-        if (text) el.textContent = text;
-    });
-    
-    // Update frozen overlay
-    const frozenTitle = document.querySelector('#frozenOverlay h3');
-    if (frozenTitle) {
-        frozenTitle.textContent = lang === 'vi' ? 'BẠN ĐÃ RỜI KHỎI KHU VỰC' : 'YOU HAVE LEFT THE AREA';
-    }
-    
-    const frozenSub = document.querySelector('#frozenOverlay .loc-sub');
-    if (frozenSub) {
-        frozenSub.textContent = lang === 'vi' ? 'Thực đơn tạm thời bị khoá để bảo mật đơn hàng' : 'Menu is temporarily locked for order security';
-    }
-    
-    const frozenHint = document.querySelector('#frozenOverlay .loc-hint');
-    if (frozenHint) {
-        frozenHint.textContent = lang === 'vi' ? 'Vui lòng quay lại khu vực để tiếp tục' : 'Please return to the area to continue';
-    }
-    
-    // Update cart modal empty state
-    const cartEmptyText = document.querySelector('#cartItemsList .text-muted');
-    if (cartEmptyText) {
-        cartEmptyText.textContent = lang === 'vi' ? 'Giỏ hàng đang trống.' : 'Your cart is empty.';
-    }
-    
-    // Update item detail modal
-    const detailDescDefault = document.getElementById('detailDesc');
-    if (detailDescDefault && !currentItem) {
-        detailDescDefault.textContent = lang === 'vi' ? 'Không có mô tả cho món ăn này.' : 'No description for this item.';
-    }
-    
-    const notePlaceholder = document.getElementById('detailNote');
-    if (notePlaceholder) {
-        notePlaceholder.placeholder = lang === 'vi' ? 'Ghi chú thêm / e.g., No onion, less spicy...' : 'Additional notes / VD: Không lấy hành, ít cay...';
-    }
-    
-    const orderNotesLabel = document.querySelector('.order-notes-box label');
-    if (orderNotesLabel) {
-        orderNotesLabel.textContent = lang === 'vi' ? 'GHI CHÚ ĐƠN HÀNG / ORDER NOTES' : 'ORDER NOTES / GHI CHÚ ĐƠN HÀNG';
-    }
-    
-    const orderNotesTextarea = document.getElementById('orderNotes');
-    if (orderNotesTextarea) {
-        orderNotesTextarea.placeholder = lang === 'vi' ? 'VD: Không lấy hành, ít cay... / e.g., No onion, less spicy...' : 'e.g., No onion, less spicy... / VD: Không lấy hành, ít cay...';
-    }
-}
-
-// Apply language on page load
-(function initLanguage() {
-    // Wait for DOM to be ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            applyLanguage(currentLang);
-        });
-    } else {
-        applyLanguage(currentLang);
-    }
-})();
 </script>
 <script src="<?= BASE_URL ?>/public/js/menu/customer.js?v=<?= time() ?>" defer></script>

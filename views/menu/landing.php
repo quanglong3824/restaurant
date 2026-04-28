@@ -1,8 +1,5 @@
 <?php
-// views/menu/landing.php — Landing Page cho Khách Hàng
-// Hiển thị lịch sử đơn hàng từ cookie bền vững
-$currentLang = $_COOKIE['aurora_lang'] ?? 'vi';
-$isEn = $currentLang === 'en';
+// views/menu/landing.php — Landing Page for Customers (English Only)
 $visitorToken = $_COOKIE['qr_visitor_token'] ?? '';
 $hasHistory = !empty($orders) && count($orders) > 0;
 ?>
@@ -36,7 +33,6 @@ $hasHistory = !empty($orders) && count($orders) > 0;
         body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text-dark); }
         .playfair { font-family: 'Playfair Display', serif; }
 
-        /* Hero Section */
         .hero-section {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             min-height: 50vh;
@@ -121,7 +117,6 @@ $hasHistory = !empty($orders) && count($orders) > 0;
             background: rgba(255,255,255,0.2);
         }
 
-        /* History Section */
         .history-section {
             padding: 2rem;
             max-width: 800px;
@@ -167,7 +162,6 @@ $hasHistory = !empty($orders) && count($orders) > 0;
             margin-bottom: 1.5rem;
         }
 
-        /* Order Cards */
         .order-cards {
             display: flex;
             flex-direction: column;
@@ -296,8 +290,6 @@ $hasHistory = !empty($orders) && count($orders) > 0;
             color: #fff;
         }
 
-        /* Table Selection */
-        /* Info Box */
         .info-box {
             background: linear-gradient(135deg, var(--gold-light), rgba(197, 160, 89, 0.05));
             border: 1px solid var(--gold);
@@ -326,7 +318,6 @@ $hasHistory = !empty($orders) && count($orders) > 0;
             line-height: 1.6;
         }
 
-        /* Modal */
         .modal-backdrop {
             position: fixed;
             inset: 0;
@@ -421,7 +412,6 @@ $hasHistory = !empty($orders) && count($orders) > 0;
         .detail-note { font-size: 0.75rem; color: var(--text-light); font-style: italic; }
         .detail-price { font-weight: 700; color: var(--gold); font-size: 0.9rem; }
 
-        /* Responsive */
         @media (max-width: 480px) {
             .hero-logo h1 { font-size: 2rem; }
             .hero-section { min-height: 40vh; padding: 1.5rem; }
@@ -430,7 +420,6 @@ $hasHistory = !empty($orders) && count($orders) > 0;
     </style>
 </head>
 <body>
-    <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-logo">
             <h1 class="playfair">AURORA</h1>
@@ -450,7 +439,6 @@ $hasHistory = !empty($orders) && count($orders) > 0;
         </div>
     </section>
 
-    <!-- History Section -->
     <?php if ($hasHistory): ?>
     <section class="history-section" id="historySection">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
@@ -487,7 +475,7 @@ $hasHistory = !empty($orders) && count($orders) > 0;
                     ?>
                         <div class="preview-item">
                             <span class="qty"><?= $item['quantity'] ?>x</span>
-                            <span class="name"><?= $isEn && !empty($item['item_name_en']) ? e($item['item_name_en']) : e($item['item_name']) ?></span>
+                            <span class="name"><?= !empty($item['item_name_en']) ? e($item['item_name_en']) : e($item['item_name']) ?></span>
                         </div>
                     <?php endfor; ?>
                     <?php if ($itemCount > 3): ?>
@@ -524,7 +512,6 @@ $hasHistory = !empty($orders) && count($orders) > 0;
     </section>
     <?php endif; ?>
 
-    <!-- Info Box: Hướng dẫn -->
     <section class="history-section">
         <div class="info-box">
             <i class="fas fa-qrcode"></i>
@@ -536,7 +523,6 @@ $hasHistory = !empty($orders) && count($orders) > 0;
         </div>
     </section>
 
-    <!-- Order Detail Modal -->
     <div class="modal-backdrop" id="orderDetailModal">
         <div class="modal">
             <div class="modal-header">
@@ -544,27 +530,23 @@ $hasHistory = !empty($orders) && count($orders) > 0;
                 <button class="modal-close" onclick="closeOrderDetail()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body" id="orderDetailContent">
-                <!-- Content will be populated by JS -->
             </div>
         </div>
     </div>
 
     <script>
-        // Scroll to history
         function scrollToHistory() {
             document.getElementById('historySection').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // Show order detail
         function showOrderDetail(order) {
             const content = document.getElementById('orderDetailContent');
             let html = '<div class="order-detail-items">';
             
-            // Order info
             html += '<div style="background:#f8fafc;padding:12px;border-radius:12px;margin-bottom:1rem;">';
             html += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;">';
             html += '<span style="color:#64748b;font-size:0.8rem;">Time</span>';
-            html += '<span style="font-weight:600;">' + new Date(order.created_at).toLocaleString('vi-VN') + '</span>';
+            html += '<span style="font-weight:600;">' + new Date(order.created_at).toLocaleString('en-US') + '</span>';
             html += '</div>';
             html += '<div style="display:flex;justify-content:space-between;">';
             html += '<span style="color:#64748b;font-size:0.8rem;">Total</span>';
@@ -572,7 +554,6 @@ $hasHistory = !empty($orders) && count($orders) > 0;
             html += '</div>';
             html += '</div>';
             
-            // Items
             html += '<h4 style="margin-bottom:1rem;font-size:0.9rem;color:#64748b;text-transform:uppercase;">Items</h4>';
             
             if (order.items && order.items.length > 0) {
@@ -580,7 +561,7 @@ $hasHistory = !empty($orders) && count($orders) > 0;
                     html += '<div class="order-detail-item">';
                     html += '<div class="detail-qty">' + item.quantity + '</div>';
                     html += '<div class="detail-info">';
-                    html += '<div class="detail-name">' + (<?= $isEn ? 'true' : 'false' ?> && item.item_name_en ? item.item_name_en : item.item_name) + '</div>';
+                    html += '<div class="detail-name">' + (item.item_name_en || item.item_name) + '</div>';
                     if (item.note) {
                         html += '<div class="detail-note"><i class="fas fa-pen"></i> ' + item.note + '</div>';
                     }
@@ -605,17 +586,15 @@ $hasHistory = !empty($orders) && count($orders) > 0;
         }
 
         function formatPrice(amount) {
-            return new Intl.NumberFormat('vi-VN').format(amount) + '₫';
+            return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
         }
 
-        // Close modal on outside click
         document.getElementById('orderDetailModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeOrderDetail();
             }
         });
 
-        // Check URL params for table selection
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
             const tableId = urlParams.get('table_id');

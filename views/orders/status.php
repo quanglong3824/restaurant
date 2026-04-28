@@ -1,113 +1,18 @@
 <?php 
-// views/orders/status.php — Order Status for Customers (Bilingual)
-// Xác định ngôn ngữ hiện tại
-$currentLang = $_COOKIE['aurora_lang'] ?? $_SESSION['lang'] ?? 'vi';
-$isEn = $currentLang === 'en';
-
-// Text translations - Song ngữ Việt/Anh (hardcoded để tránh lộ key)
-$TEXT = [
-    'order_sent_vi' => 'Đã gửi đơn hàng!',
-    'order_sent_en' => 'Order Sent!',
-    'order_details_vi' => 'Chi tiết đơn hàng',
-    'order_details_en' => 'Order Details',
-    'order_number_vi' => 'Đơn hàng #',
-    'order_number_en' => 'Order #',
-    'subtotal_vi' => 'Tổng tiền món',
-    'subtotal_en' => 'Subtotal',
-    'add_more_vi' => 'TIẾP TỤC ĐẶT MÓN',
-    'add_more_en' => 'ORDER MORE',
-    'check_bill_vi' => 'XEM HOÁ ĐƠN',
-    'check_bill_en' => 'CHECK BILL',
-    'pending_vi' => 'Chờ xác nhận',
-    'pending_en' => 'Pending',
-    'confirmed_vi' => 'Đã xác nhận',
-    'confirmed_en' => 'Confirmed',
-    'cooking_vi' => 'Đang nấu',
-    'cooking_en' => 'Cooking',
-    'served_vi' => 'Đã phục vụ',
-    'served_en' => 'Served',
-    'cancelled_vi' => 'Đã hủy',
-    'cancelled_en' => 'Cancelled',
-    'thank_you_vi' => 'Cảm ơn bạn đã đặt món!',
-    'thank_you_en' => 'Thank you for your order!',
-    'preparing_vi' => 'Nhân viên đang xác nhận đơn hàng',
-    'preparing_en' => 'Staff is confirming your order',
-    'verified_vi' => 'Đã xác minh',
-    'verified_en' => 'Verified',
-    'order_notes_vi' => 'Ghi chú',
-    'order_notes_en' => 'Note',
-];
-
+// views/orders/status.php — Order Status for Customers (English Only)
 ?>
 <!DOCTYPE html>
-<html lang="<?= $isEn ? 'en' : 'vi' ?>">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $TEXT['order_sent_' . $currentLang] ?? '' ?> - Aurora Restaurant</title>
+    <title>Order Sent! - Aurora Restaurant</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/orders/status.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Additional inline styles for bilingual display */
-        .bilingual-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-        .bilingual-header .vi-text {
-            color: var(--text-dark);
-            font-size: 1rem;
-        }
-        .bilingual-header .en-text {
-            color: var(--text-light);
-            font-size: 0.8rem;
-            font-style: italic;
-        }
-        .lang-en .bilingual-header .vi-text {
-            color: var(--text-light);
-            font-size: 0.8rem;
-            font-style: italic;
-        }
-        .lang-en .bilingual-header .en-text {
-            color: var(--text-dark);
-            font-size: 1rem;
-            font-style: normal;
-        }
-        
-        .bilingual-text {
-            display: inline;
-        }
-        .bilingual-text .vi-text {
-            color: var(--text-dark);
-        }
-        .bilingual-text .en-text {
-            color: var(--text-light);
-            font-size: 0.85em;
-        }
-        .bilingual-text .en-text::before {
-            content: " / ";
-            color: var(--border);
-        }
-        .lang-en .bilingual-text .vi-text {
-            color: var(--text-light);
-            font-size: 0.85em;
-        }
-        .lang-en .bilingual-text .en-text {
-            color: var(--text-dark);
-        }
-        .lang-en .bilingual-text .vi-text::after {
-            content: " / ";
-            color: var(--border);
-        }
-        .lang-en .bilingual-text .en-text::before {
-            content: "";
-        }
-        
-        /* Modal drag handle style synced with customer.php */
         .modal-drag-handle {
             display: flex;
             justify-content: center;
@@ -122,7 +27,6 @@ $TEXT = [
             display: block;
         }
         
-        /* Header icon style synced with customer.php bill modal */
         .header-icon {
             width: 36px;
             height: 36px;
@@ -136,11 +40,6 @@ $TEXT = [
             box-shadow: 0 4px 12px var(--gold-glow);
         }
         
-        /* Status badge bilingual */
-        .status-text-vi { display: <?= $isEn ? 'none' : 'inline' ?>; }
-        .status-text-en { display: <?= $isEn ? 'inline' : 'none' ?>; }
-        
-        /* Button text style */
         .btn-text {
             display: flex;
             flex-direction: column;
@@ -159,18 +58,15 @@ $TEXT = [
         }
     </style>
 </head>
-<body class="<?= $isEn ? 'lang-en' : 'lang-vi' ?>">
+<body>
     <div class="status-page">
-        <!-- Animated Background Elements -->
         <div class="bg-decoration">
             <div class="floating-circle circle-1"></div>
             <div class="floating-circle circle-2"></div>
         </div>
 
         <div class="status-content">
-            <!-- Success Animation Header (Modal-like) -->
             <div class="success-header">
-                <!-- Drag Handle like Modal Bottom -->
                 <div class="modal-drag-handle"><span></span></div>
                 
                 <div class="checkmark-wrapper">
@@ -182,39 +78,23 @@ $TEXT = [
                     </div>
                 </div>
                 
-                <!-- Bilingual Title -->
-                <h1 class="success-title bilingual-header">
-                    <span class="vi-text"><?= $TEXT['thank_you_vi'] ?? '' ?></span>
-                    <span class="en-text"><?= $TEXT['thank_you_en'] ?? '' ?></span>
-                </h1>
+                <h1 class="success-title">Thank you for your order!</h1>
                 
-                <!-- Bilingual Subtitle -->
-                <p class="success-subtitle bilingual-header">
-                    <span class="vi-text"><?= $TEXT['preparing_vi'] ?? '' ?></span>
-                    <span class="en-text"><?= $TEXT['preparing_en'] ?? '' ?></span>
-                </p>
+                <p class="success-subtitle">Staff is confirming your order</p>
                 
-                <!-- Order Number Badge -->
                 <div class="order-number-badge">
-                    <span class="badge-label bilingual-text">
-                        <span class="vi-text"><?= $TEXT['order_number_vi'] ?? '' ?></span>
-                        <span class="en-text"><?= $TEXT['order_number_en'] ?? '' ?></span>
-                    </span>
+                    <span class="badge-label">Order #</span>
                     <span class="badge-number">#<?= e($order['id']) ?></span>
                 </div>
             </div>
 
-            <!-- Order Items Card (Modal Bill Style) -->
             <div class="order-card">
                 <div class="card-header">
                     <div class="header-left">
                         <div class="header-icon">
                             <i class="fas fa-receipt"></i>
                         </div>
-                        <h3 class="bilingual-text">
-                            <span class="vi-text"><?= $TEXT['order_details_vi'] ?? '' ?></span>
-                            <span class="en-text"><?= $TEXT['order_details_en'] ?? '' ?></span>
-                        </h3>
+                        <h3>Order Details</h3>
                     </div>
                     <span class="order-id">#<?= e($order['id']) ?></span>
                 </div>
@@ -228,32 +108,31 @@ $TEXT = [
                                     <span class="item-qty"><?= $it['quantity'] ?>x</span>
                                     <div class="item-info">
                                         <?php 
-                                        // Ưu tiên tiếng Anh, tiếng Việt nhỏ dưới (same as bill modal)
-                                        $hasEn = !empty($it['item_name_en']);
-                                        $displayName = $hasEn ? e($it['item_name_en']) : e($it['item_name']);
-                                        $displayViName = $hasEn && $it['item_name'] !== $it['item_name_en'] ? e($it['item_name']) : '';
+                                        $displayName = !empty($it['item_name_en']) ? e($it['item_name_en']) : e($it['item_name']);
+                                        $displayViName = !empty($it['item_name_en']) && $it['item_name'] !== $it['item_name_en'] ? e($it['item_name']) : '';
                                         ?>
                                         <span class="item-name"><?= $displayName ?></span>
-                                        <?php if ($hasEn && $displayViName): ?>
+                                        <?php if ($displayViName): ?>
                                             <span class="item-name-vi"><?= $displayViName ?></span>
                                         <?php endif; ?>
                                         <?php if (!empty($it['note'])): ?>
                                             <span class="item-note">
                                                 <i class="fas fa-pen"></i>
-                                                <span class="bilingual-text">
-                                                    <span class="vi-text"><?= $TEXT['order_notes_vi'] ?? '' ?>:</span>
-                                                    <span class="en-text"><?= $TEXT['order_notes_en'] ?? '' ?>:</span>
-                                                </span>
-                                                <?= e($it['note']) ?>
+                                                Note: <?= e($it['note']) ?>
                                             </span>
                                         <?php endif; ?>
-                                        <!-- Status Badge Bilingual -->
                                         <span class="item-status status-<?= $it['status'] ?>">
                                             <i class="fas fa-<?= $it['status'] === 'confirmed' ? 'check-circle' : ($it['status'] === 'cooking' ? 'fire' : ($it['status'] === 'served' ? 'check' : ($it['status'] === 'cancelled' ? 'times-circle' : 'clock'))) ?>"></i>
-                                            <span class="bilingual-text">
-                                                <span class="vi-text"><?= $TEXT[$it['status'] . '_vi'] ?? '' ?></span>
-                                                <span class="en-text"><?= $TEXT[$it['status'] . '_en'] ?? '' ?></span>
-                                            </span>
+                                            <?php 
+                                            $statusText = [
+                                                'pending' => 'Pending',
+                                                'confirmed' => 'Confirmed',
+                                                'cooking' => 'Cooking',
+                                                'served' => 'Served',
+                                                'cancelled' => 'Cancelled'
+                                            ];
+                                            ?>
+                                            <?= $statusText[$it['status']] ?? $it['status'] ?>
                                         </span>
                                     </div>
                                 </div>
@@ -266,65 +145,39 @@ $TEXT = [
                 
                 <div class="card-footer">
                     <div class="total-row">
-                        <span class="total-label bilingual-text">
-                            <span class="vi-text"><?= $TEXT['subtotal_vi'] ?? '' ?></span>
-                            <span class="en-text"><?= $TEXT['subtotal_en'] ?? '' ?></span>
-                        </span>
+                        <span class="total-label">Subtotal</span>
                         <span class="total-amount"><?= formatPrice($total) ?></span>
                     </div>
                 </div>
             </div>
 
-            <!-- Action Buttons (Modal Footer Style) -->
             <div class="action-buttons">
                 <a href="<?= BASE_URL ?>/qr/menu?table_id=<?= $order['table_id'] ?>&token=<?= $_SESSION['qr_token'] ?? '' ?>" class="btn btn-primary">
                     <i class="fas fa-plus-circle"></i>
                     <span class="btn-text">
-                        <span class="primary"><?= $TEXT['add_more_' . $currentLang] ?? '' ?></span>
-                        <span class="secondary"><?= $isEn ? ($TEXT['add_more_vi'] ?? '') : ($TEXT['add_more_en'] ?? '') ?></span>
+                        <span class="primary">ORDER MORE</span>
                     </span>
                 </a>
                 <a href="<?= BASE_URL ?>/qr/menu?table_id=<?= $order['table_id'] ?>&token=<?= $_SESSION['qr_token'] ?? '' ?>&show_bill=1" class="btn btn-secondary">
                     <i class="fas fa-file-invoice-dollar"></i>
                     <span class="btn-text">
-                        <span class="primary"><?= $TEXT['check_bill_' . $currentLang] ?? '' ?></span>
-                        <span class="secondary"><?= $isEn ? ($TEXT['check_bill_vi'] ?? '') : ($TEXT['check_bill_en'] ?? '') ?></span>
+                        <span class="primary">CHECK BILL</span>
                     </span>
                 </a>
             </div>
 
-            <!-- Language Switcher -->
-            <div class="lang-switcher-wrapper">
-                <button onclick="toggleStatusLang()" class="lang-btn">
-                    <i class="fas fa-globe"></i>
-                    <span><?= $isEn ? 'VI' : 'EN' ?></span>
-                </button>
+            <div id="locStatusIndicator" class="loc-indicator">
+                <div class="loc-dot"></div>
+                <span class="loc-text">Verified</span>
             </div>
-        </div>
-
-        <!-- Location Status Indicator -->
-        <div id="locStatusIndicator" class="loc-indicator">
-            <div class="loc-dot"></div>
-            <span class="loc-text bilingual-text">
-                <span class="vi-text"><?= $TEXT['verified_vi'] ?? '' ?></span>
-                <span class="en-text"><?= $TEXT['verified_en'] ?? '' ?></span>
-            </span>
         </div>
     </div>
 
     <script>
         const CUSTOMER_CONFIG = {
             tableId: <?= (int)$order['table_id'] ?>,
-            baseUrl: '<?= BASE_URL ?>',
-            currentLang: '<?= $currentLang ?>'
+            baseUrl: '<?= BASE_URL ?>'
         };
-        
-        function toggleStatusLang() {
-            const newLang = CUSTOMER_CONFIG.currentLang === 'vi' ? 'en' : 'vi';
-            document.cookie = 'aurora_lang=' + newLang + '; path=/; max-age=31536000; SameSite=Lax';
-            localStorage.setItem('aurora_lang', newLang);
-            window.location.reload();
-        }
 
         function startStatusPolling() {
             const checkStatus = async () => {

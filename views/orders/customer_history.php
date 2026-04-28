@@ -1,60 +1,16 @@
 <?php
-// views/orders/customer_history.php — Customer Order History (Bilingual Vietnamese/English)
-$currentLang = $_COOKIE['aurora_lang'] ?? $_SESSION['lang'] ?? 'vi';
-$isEn = $currentLang === 'en';
-
-// Text translations
-$TEXT = [
-    'order_history_vi' => 'Lịch Sử Đơn Hàng',
-    'order_history_en' => 'ORDER HISTORY',
-    'no_history_vi' => 'Không có lịch sử đơn hàng',
-    'no_history_en' => 'No order history',
-    'paid_orders_vi' => 'Đơn hàng đã thanh toán sẽ hiển thị ở đây',
-    'paid_orders_en' => 'Paid orders will be shown here',
-    'back_menu_vi' => 'QUAY LẠI MENU',
-    'back_menu_en' => 'BACK TO MENU',
-    'order_vi' => 'ĐƠN HÀNG',
-    'order_en' => 'ORDER',
-    'open_vi' => 'ĐANG MỞ',
-    'open_en' => 'OPEN',
-    'paid_vi' => 'ĐÃ THANH TOÁN',
-    'paid_en' => 'PAID',
-    'total_vi' => 'Tổng',
-    'total_en' => 'Total',
-    'other_items_vi' => 'món khác',
-    'other_items_en' => 'other items',
-    'continue_ordering_vi' => 'TIẾP TỤC ĐẶT MÓN',
-    'continue_ordering_en' => 'CONTINUE ORDERING',
-    'order_details_vi' => 'Chi tiết đơn hàng',
-    'order_details_en' => 'Order Details',
-    'time_vi' => 'Thời gian',
-    'time_en' => 'Time',
-    'items_vi' => 'Các món đã gọi',
-    'items_en' => 'Order Items',
-    'no_items_vi' => 'Không có món',
-    'no_items_en' => 'No items',
-    'close_vi' => 'Đóng',
-    'close_en' => 'Close',
-    'room_vi' => 'PHÒNG',
-    'room_en' => 'ROOM',
-    'table_vi' => 'BÀN',
-    'table_en' => 'TABLE',
-];
+// views/orders/customer_history.php — Customer Order History (English Only)
 ?>
 <div class="customer-history-wrapper animate-fade-in">
     <div class="history-header-section">
         <div class="brand-logo">
             <h1 class="playfair">AURORA</h1>
-            <span class="lang" data-vi="<?= $TEXT['order_history_vi'] ?>" data-en="<?= $TEXT['order_history_en'] ?>"><?= $isEn ? $TEXT['order_history_en'] : $TEXT['order_history_vi'] ?></span>
+            <span>ORDER HISTORY</span>
         </div>
         <div class="table-badge">
             <i class="fas <?= $isRoomService ? 'fa-bed' : 'fa-utensils' ?>"></i>
-            <span><?= $isEn ? ($isRoomService ? $TEXT['room_en'] : $TEXT['table_en']) : ($isRoomService ? $TEXT['room_vi'] : $TEXT['table_vi']) ?> <?= e($table['name']) ?></span>
+            <span><?= $isRoomService ? 'ROOM' : 'TABLE' ?> <?= e($table['name']) ?></span>
         </div>
-        <!-- Language Toggle -->
-        <button onclick="toggleHistoryLang()" class="lang-toggle-btn" style="background: rgba(212,175,55,0.15); border: 1px solid rgba(212,175,55,0.3); padding: 8px 12px; border-radius: 20px; color: #d4af37; font-weight: 700; font-size: 0.75rem; cursor: pointer;">
-            <i class="fas fa-globe me-1"></i><?= $isEn ? 'VI' : 'EN' ?>
-        </button>
     </div>
 
     <div class="history-content">
@@ -63,11 +19,11 @@ $TEXT = [
                 <div class="empty-icon">
                     <i class="fas fa-receipt"></i>
                 </div>
-                <h3 class="lang" data-vi="<?= $TEXT['no_history_vi'] ?>" data-en="<?= $TEXT['no_history_en'] ?>"><?= $isEn ? $TEXT['no_history_en'] : $TEXT['no_history_vi'] ?></h3>
-                <p class="text-muted lang" data-vi="<?= $TEXT['paid_orders_vi'] ?>" data-en="<?= $TEXT['paid_orders_en'] ?>"><?= $isEn ? $TEXT['paid_orders_en'] : $TEXT['paid_orders_vi'] ?></p>
+                <h3>No order history</h3>
+                <p class="text-muted">Paid orders will be shown here</p>
                 <button class="btn-back-menu" onclick="window.location.href='<?= BASE_URL ?>/qr/menu?table_id=<?= $table['id'] ?>&token=<?= $token ?>'">
                     <i class="fas fa-arrow-left me-2"></i>
-                    <span class="lang" data-vi="<?= $TEXT['back_menu_vi'] ?>" data-en="<?= $TEXT['back_menu_en'] ?>"><?= $isEn ? $TEXT['back_menu_en'] : $TEXT['back_menu_vi'] ?></span>
+                    BACK TO MENU
                 </button>
             </div>
         <?php else: ?>
@@ -80,11 +36,11 @@ $TEXT = [
                         <div class="order-card" onclick="showOrderDetail(<?= htmlspecialchars(json_encode($order)) ?>)">
                             <div class="order-header">
                                 <div class="order-id">
-                                    <span class="label lang" data-vi="<?= $TEXT['order_vi'] ?>" data-en="<?= $TEXT['order_en'] ?>"><?= $isEn ? $TEXT['order_en'] : $TEXT['order_vi'] ?> #<?= $order['id'] ?></span>
+                                    <span class="label">ORDER #<?= $order['id'] ?></span>
                                     <?php if ($order['id'] == $currentOrderId): ?>
-                                        <span class="current-badge lang" data-vi="<?= $TEXT['open_vi'] ?>" data-en="<?= $TEXT['open_en'] ?>"><?= $isEn ? $TEXT['open_en'] : $TEXT['open_vi'] ?></span>
+                                        <span class="current-badge">OPEN</span>
                                     <?php else: ?>
-                                        <span class="closed-badge lang" data-vi="<?= $TEXT['paid_vi'] ?>" data-en="<?= $TEXT['paid_en'] ?>"><?= $isEn ? $TEXT['paid_en'] : $TEXT['paid_vi'] ?></span>
+                                        <span class="closed-badge">PAID</span>
                                     <?php endif; ?>
                                 </div>
                                 <div class="order-time">
@@ -102,17 +58,17 @@ $TEXT = [
                                 ?>
                                     <div class="preview-item">
                                         <span class="qty"><?= $item['quantity'] ?>x</span>
-                                        <span class="name"><?= $isEn && !empty($item['item_name_en']) ? e($item['item_name_en']) : e($item['item_name']) ?></span>
+                                        <span class="name"><?= !empty($item['item_name_en']) ? e($item['item_name_en']) : e($item['item_name']) ?></span>
                                     </div>
                                 <?php endfor; ?>
                                 <?php if ($itemCount > 3): ?>
-                                    <div class="more-items">+<?= $itemCount - 3 ?> <span class="lang" data-vi="<?= $TEXT['other_items_vi'] ?>" data-en="<?= $TEXT['other_items_en'] ?>"><?= $isEn ? $TEXT['other_items_en'] : $TEXT['other_items_vi'] ?></span></div>
+                                    <div class="more-items">+<?= $itemCount - 3 ?> other items</div>
                                 <?php endif; ?>
                             </div>
                             
                             <div class="order-footer">
                                 <div class="total-amount">
-                                    <span class="label lang" data-vi="<?= $TEXT['total_vi'] ?>" data-en="<?= $TEXT['total_en'] ?>"><?= $isEn ? $TEXT['total_en'] : $TEXT['total_vi'] ?></span>
+                                    <span class="label">Total</span>
                                     <span class="amount"><?= formatPrice($order['total']) ?></span>
                                 </div>
                                 <div class="view-detail-btn">
@@ -127,26 +83,24 @@ $TEXT = [
             <div class="action-buttons">
                 <button class="btn-back-menu" onclick="window.location.href='<?= BASE_URL ?>/qr/menu?table_id=<?= $table['id'] ?>&token=<?= $token ?>'">
                     <i class="fas fa-utensils me-2"></i>
-                    <span class="lang" data-vi="<?= $TEXT['continue_ordering_vi'] ?>" data-en="<?= $TEXT['continue_ordering_en'] ?>"><?= $isEn ? $TEXT['continue_ordering_en'] : $TEXT['continue_ordering_vi'] ?></span>
+                    CONTINUE ORDERING
                 </button>
             </div>
         <?php endif; ?>
     </div>
 </div>
 
-<!-- Order Detail Modal -->
 <div class="modal-backdrop" id="orderDetailModal" style="display:none;">
     <div class="modal modal-bottom modal-premium">
         <div class="modal-header">
-            <h3><i class="fas fa-file-invoice me-2"></i> <span class="lang" data-vi="<?= $TEXT['order_details_vi'] ?>" data-en="<?= $TEXT['order_details_en'] ?>"><?= $isEn ? $TEXT['order_details_en'] : $TEXT['order_details_vi'] ?></span></h3>
+            <h3><i class="fas fa-file-invoice me-2"></i> Order Details</h3>
             <button class="modal-close" onclick="closeOrderDetail()"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body" id="orderDetailContent">
-            <!-- Content will be populated by JS -->
         </div>
         <div class="modal-footer">
             <button class="btn-sheet-close" onclick="closeOrderDetail()">
-                <span class="lang" data-vi="<?= $TEXT['close_vi'] ?>" data-en="<?= $TEXT['close_en'] ?>"><?= $isEn ? $TEXT['close_en'] : $TEXT['close_vi'] ?></span>
+                Close
             </button>
         </div>
     </div>
@@ -200,11 +154,6 @@ $TEXT = [
     font-weight: 700;
     font-size: 0.8rem;
     color: var(--gold, #d4af37);
-}
-
-.lang-toggle-btn:hover {
-    background: var(--gold, #d4af37) !important;
-    color: #fff !important;
 }
 
 .history-content {
@@ -430,7 +379,6 @@ $TEXT = [
     margin-top: 2rem;
 }
 
-/* Modal styles */
 .modal-premium .order-detail-items {
     max-height: 50vh;
     overflow-y: auto;
@@ -485,62 +433,38 @@ $TEXT = [
 </style>
 
 <script>
-const historyLang = '<?= $currentLang ?>';
-const historyTexts = {
-    time_vi: '<?= $TEXT['time_vi'] ?>',
-    time_en: '<?= $TEXT['time_en'] ?>',
-    total_vi: '<?= $TEXT['total_vi'] ?>',
-    total_en: '<?= $TEXT['total_en'] ?>',
-    items_vi: '<?= $TEXT['items_vi'] ?>',
-    items_en: '<?= $TEXT['items_en'] ?>',
-    no_items_vi: '<?= $TEXT['no_items_vi'] ?>',
-    no_items_en: '<?= $TEXT['no_items_en'] ?>',
-    note_vi: 'Ghi chú',
-    note_en: 'Note'
-};
-
-function toggleHistoryLang() {
-    const newLang = historyLang === 'vi' ? 'en' : 'vi';
-    document.cookie = 'aurora_lang=' + newLang + '; path=/; max-age=31536000; SameSite=Lax';
-    localStorage.setItem('aurora_lang', newLang);
-    window.location.reload();
-}
-
 function showOrderDetail(order) {
     const content = document.getElementById('orderDetailContent');
-    const isEn = historyLang === 'en';
     let html = '<div class="order-detail-items">';
     
-    // Order info
     html += '<div style="background:#f8fafc;padding:12px;border-radius:12px;margin-bottom:1rem;">';
     html += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;">';
-    html += '<span style="color:#64748b;font-size:0.8rem;">' + (isEn ? historyTexts.time_en : historyTexts.time_vi) + '</span>';
-    html += '<span style="font-weight:600;">' + new Date(order.created_at).toLocaleString('vi-VN') + '</span>';
+    html += '<span style="color:#64748b;font-size:0.8rem;">Time</span>';
+    html += '<span style="font-weight:600;">' + new Date(order.created_at).toLocaleString('en-US') + '</span>';
     html += '</div>';
     html += '<div style="display:flex;justify-content:space-between;">';
-    html += '<span style="color:#64748b;font-size:0.8rem;">' + (isEn ? historyTexts.total_en : historyTexts.total_vi) + '</span>';
+    html += '<span style="color:#64748b;font-size:0.8rem;">Total</span>';
     html += '<span style="font-weight:700;color:var(--gold,#d4af37);font-size:1.1rem;">' + order.total_formatted + '</span>';
     html += '</div>';
     html += '</div>';
     
-    // Items
-    html += '<h4 style="margin-bottom:1rem;font-size:0.9rem;color:#64748b;text-transform:uppercase;">' + (isEn ? historyTexts.items_en : historyTexts.items_vi) + '</h4>';
+    html += '<h4 style="margin-bottom:1rem;font-size:0.9rem;color:#64748b;text-transform:uppercase;">Order Items</h4>';
     
     if (order.items && order.items.length > 0) {
         order.items.forEach(function(item) {
             html += '<div class="order-detail-item">';
             html += '<div class="detail-qty">' + item.quantity + '</div>';
             html += '<div class="detail-info">';
-            html += '<div class="detail-name">' + (isEn && item.item_name_en ? item.item_name_en : item.item_name) + '</div>';
+            html += '<div class="detail-name">' + (item.item_name_en || item.item_name) + '</div>';
             if (item.note) {
-                html += '<div class="detail-note"><i class="fas fa-pen"></i> ' + (isEn ? historyTexts.note_en : historyTexts.note_vi) + ': ' + item.note + '</div>';
+                html += '<div class="detail-note"><i class="fas fa-pen"></i> Note: ' + item.note + '</div>';
             }
             html += '</div>';
             html += '<div class="detail-price">' + formatPrice(item.item_price * item.quantity) + '</div>';
             html += '</div>';
         });
     } else {
-        html += '<p style="text-align:center;color:#94a3b8;padding:2rem;">' + (isEn ? historyTexts.no_items_en : historyTexts.no_items_vi) + '</p>';
+        html += '<p style="text-align:center;color:#94a3b8;padding:2rem;">No items</p>';
     }
     
     html += '</div>';
@@ -556,10 +480,9 @@ function closeOrderDetail() {
 }
 
 function formatPrice(amount) {
-    return new Intl.NumberFormat('vi-VN').format(amount) + '₫';
+    return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
 }
 
-// Animation on scroll
 document.addEventListener('DOMContentLoaded', function() {
     const items = document.querySelectorAll('.order-timeline-item');
     const observer = new IntersectionObserver((entries) => {

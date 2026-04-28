@@ -1,65 +1,6 @@
 <?php 
-// views/orders/paid_bill.php — Premium Paid Bill View (Bilingual Vietnamese/English)
-$currentLang = $_COOKIE['aurora_lang'] ?? $_SESSION['lang'] ?? 'vi';
-$isEn = $currentLang === 'en';
+// views/orders/paid_bill.php — Premium Paid Bill View (English Only)
 
-// Text translations
-$TEXT = [
-    'payment_successful_vi' => 'THANH TOÁN THÀNH CÔNG',
-    'payment_successful_en' => 'PAYMENT SUCCESSFUL',
-    'order_cancelled_vi' => 'ĐƠN HÀNG ĐÃ HỦY',
-    'order_cancelled_en' => 'ORDER CANCELLED',
-    'cancelled_note_vi' => 'Bàn đã được hủy, không có món được gọi',
-    'cancelled_note_en' => 'Table cancelled, no items ordered',
-    'thank_you_vi' => 'Cảm ơn bạn đã dùng bữa tại Aurora Restaurant',
-    'thank_you_en' => 'Thank you for dining at Aurora Restaurant',
-    'table_vi' => 'Bàn:',
-    'table_en' => 'Table:',
-    'bill_vi' => 'Hóa đơn #:',
-    'bill_en' => 'Bill #:',
-    'time_vi' => 'Thời gian:',
-    'time_en' => 'Time:',
-    'item_vi' => 'Món',
-    'item_en' => 'Item',
-    'qty_vi' => 'SL',
-    'qty_en' => 'Qty',
-    'amount_vi' => 'Thành tiền',
-    'amount_en' => 'Amount',
-    'total_vi' => 'TỔNG CỘNG',
-    'total_en' => 'TOTAL',
-    'payment_vi' => 'Thanh toán:',
-    'payment_en' => 'Payment:',
-    'cash_vi' => 'Tiền mặt',
-    'cash_en' => 'Cash',
-    'transfer_vi' => 'Chuyển khoản',
-    'transfer_en' => 'Transfer',
-    'see_you_again_vi' => 'Hẹn gặp lại!',
-    'see_you_again_en' => 'See you again!',
-    'note_vi' => 'THÔNG BÁO:',
-    'note_en' => 'NOTE:',
-    'beta_msg_vi' => 'Hệ thống đang trong giai đoạn thử nghiệm. Vui lòng <b>lưu hình hóa đơn</b> để tham khảo nếu cần. Xin cảm ơn!',
-    'beta_msg_en' => 'System is in beta testing phase. Please <b>save receipt image</b> for reference if needed. Thank you!',
-    'save_receipt_vi' => 'LƯU HÓA ĐƠN',
-    'save_receipt_en' => 'SAVE RECEIPT IMAGE',
-    'receipt_tip_vi' => '* Hình hóa đơn sẽ được lưu vào thư viện ảnh.',
-    'receipt_tip_en' => '* Receipt image will be saved to your photo gallery.',
-    'new_order_vi' => 'ĐẶT MÓN MỚI',
-    'new_order_en' => 'START NEW ORDER',
-    'leave_vi' => 'KẾT THÚC PHIÊN',
-    'leave_en' => 'LEAVE TABLE',
-    'creating_vi' => 'Đang tạo hình...',
-    'creating_en' => 'Creating image...',
-    'saved_vi' => 'Đã lưu hình!',
-    'saved_en' => 'Image saved!',
-    'error_vi' => 'Không thể tạo hình hóa đơn. Vui lòng thử lại.',
-    'error_en' => 'Cannot create receipt image. Please try again.',
-    'confirm_new_order_vi' => 'Bạn muốn đặt đơn hàng mới cho bàn này?',
-    'confirm_new_order_en' => 'Do you want to start a new order for this table?',
-    'confirm_exit_vi' => 'Bạn chắc chắn muốn kết thúc phiên này?',
-    'confirm_exit_en' => 'Are you sure you want to leave and end this session?',
-];
-
-// Calculate total to check if cancelled
 $totalAmount = 0;
 foreach ($items as $item) {
     if ($item['status'] !== 'cancelled') {
@@ -73,25 +14,11 @@ $isCancelled = $totalAmount == 0;
         <div class="success-check <?= $isCancelled ? 'cancelled' : '' ?>">
             <i class="fas fa-<?= $isCancelled ? 'times' : 'check' ?>"></i>
         </div>
-        <!-- Bilingual Title -->
         <h2 class="status-title <?= $isCancelled ? 'cancelled' : '' ?>">
-            <?php if ($isCancelled): ?>
-                <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'block' ?>;"><?= $TEXT['order_cancelled_vi'] ?></span>
-                <span class="lang-en" style="display: <?= $isEn ? 'block' : 'none' ?>;"><?= $TEXT['order_cancelled_en'] ?></span>
-            <?php else: ?>
-                <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'block' ?>;"><?= $TEXT['payment_successful_vi'] ?></span>
-                <span class="lang-en" style="display: <?= $isEn ? 'block' : 'none' ?>;"><?= $TEXT['payment_successful_en'] ?></span>
-            <?php endif; ?>
+            <?= $isCancelled ? 'ORDER CANCELLED' : 'PAYMENT SUCCESSFUL' ?>
         </h2>
-        <!-- Bilingual Subtitle -->
         <p class="status-subtitle">
-            <?php if ($isCancelled): ?>
-                <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'block' ?>;"><?= $TEXT['cancelled_note_vi'] ?></span>
-                <span class="lang-en" style="display: <?= $isEn ? 'block' : 'none' ?>;"><?= $TEXT['cancelled_note_en'] ?></span>
-            <?php else: ?>
-                <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'block' ?>;"><?= $TEXT['thank_you_vi'] ?></span>
-                <span class="lang-en" style="display: <?= $isEn ? 'block' : 'none' ?>;"><?= $TEXT['thank_you_en'] ?></span>
-            <?php endif; ?>
+            <?= $isCancelled ? 'Table cancelled, no items ordered' : 'Thank you for dining at Aurora Restaurant' ?>
         </p>
     </div>
 
@@ -102,18 +29,15 @@ $isCancelled = $totalAmount == 0;
             <div class="receipt-divider"></div>
             <div class="receipt-meta">
                 <div class="meta-item">
-                    <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['table_vi'] ?></span>
-                    <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['table_en'] ?></span>
+                    <span>Table:</span>
                     <strong><?= e($table['name']) ?></strong>
                 </div>
                 <div class="meta-item">
-                    <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['bill_vi'] ?></span>
-                    <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['bill_en'] ?></span>
+                    <span>Bill #:</span>
                     <strong>#<?= $order['id'] ?></strong>
                 </div>
                 <div class="meta-item">
-                    <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['time_vi'] ?></span>
-                    <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['time_en'] ?></span>
+                    <span>Time:</span>
                     <strong><?= date('d/m/Y H:i', strtotime($order['closed_at'] ?? $order['updated_at'])) ?></strong>
                 </div>
             </div>
@@ -123,18 +47,9 @@ $isCancelled = $totalAmount == 0;
             <table class="items-table">
                 <thead>
                     <tr>
-                        <th>
-                            <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['item_vi'] ?></span>
-                            <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['item_en'] ?></span>
-                        </th>
-                        <th class="text-center">
-                            <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['qty_vi'] ?></span>
-                            <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['qty_en'] ?></span>
-                        </th>
-                        <th class="text-right">
-                            <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['amount_vi'] ?></span>
-                            <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['amount_en'] ?></span>
-                        </th>
+                        <th>Item</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-right">Amount</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -147,7 +62,7 @@ $isCancelled = $totalAmount == 0;
                         ?>
                         <tr>
                             <td>
-                                <div class="item-name"><?= $isEn && !empty($item['item_name_en']) ? e($item['item_name_en']) : e($item['item_name']) ?></div>
+                                <div class="item-name"><?= !empty($item['item_name_en']) ? e($item['item_name_en']) : e($item['item_name']) ?></div>
                                 <div class="item-unit-price"><?= formatPrice($item['item_price']) ?></div>
                             </td>
                             <td class="text-center"><?= $item['quantity'] ?></td>
@@ -161,148 +76,101 @@ $isCancelled = $totalAmount == 0;
         <div class="receipt-footer">
             <div class="receipt-divider"></div>
             <div class="total-row">
-                <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['total_vi'] ?></span>
-                <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['total_en'] ?></span>
+                <span>TOTAL</span>
                 <?php if ($isCancelled): ?>
-                    <span class="total-amount cancelled-text">
-                        <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;">Đã hủy</span>
-                        <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;">Cancelled</span>
-                    </span>
+                    <span class="total-amount cancelled-text">Cancelled</span>
                 <?php else: ?>
                     <span class="total-amount"><?= formatPrice($total) ?></span>
                 <?php endif; ?>
             </div>
             <?php if (!$isCancelled): ?>
             <div class="payment-info">
-                <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['payment_vi'] ?></span>
-                <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['payment_en'] ?></span>
-                <strong><?= ($order['payment_method'] ?? 'cash') === 'cash' 
-                    ? ($isEn ? $TEXT['cash_en'] : $TEXT['cash_vi']) 
-                    : ($isEn ? $TEXT['transfer_en'] : $TEXT['transfer_vi']) ?></strong>
+                <span>Payment:</span>
+                <strong><?= ($order['payment_method'] ?? 'cash') === 'cash' ? 'Cash' : 'Transfer' ?></strong>
             </div>
             <?php endif; ?>
             <div class="receipt-barcode">
                 <i class="fas fa-barcode"></i>
-                <p>
-                    <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'block' ?>;"><?= $TEXT['see_you_again_vi'] ?></span>
-                    <span class="lang-en" style="display: <?= $isEn ? 'block' : 'none' ?>;"><?= $TEXT['see_you_again_en'] ?></span>
-                </p>
+                <p>See you again!</p>
             </div>
         </div>
         
-        <!-- Decorative receipt cut edge -->
         <div class="receipt-cut"></div>
     </div>
 
-    <!-- Beta Notice -->
     <div class="beta-notice">
         <i class="fas fa-info-circle"></i>
         <div class="notice-content">
-            <strong class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['note_vi'] ?></strong>
-            <strong class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['note_en'] ?></strong>
-            <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"> <?= $TEXT['beta_msg_vi'] ?></span>
-            <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"> <?= $TEXT['beta_msg_en'] ?></span>
+            <strong>NOTE:</strong>
+            System is in beta testing phase. Please <b>save receipt image</b> for reference if needed. Thank you!
         </div>
     </div>
-
-    <!-- Language Toggle -->
-    <button onclick="togglePaidBillLang()" class="lang-toggle-btn" style="width: 100%; padding: 12px; font-size: 0.9rem; border-radius: 12px; font-weight: 600; border: 1px solid #e2e8f0; cursor: pointer; background: #f8fafc; color: #64748b; margin-bottom: 15px;">
-        <i class="fas fa-globe me-2"></i>
-        <span><?= $isEn ? '🇻🇳 Tiếng Việt' : '🇬🇧 English' ?></span>
-    </button>
 
     <div class="action-buttons">
         <button class="btn-save-img" onclick="captureReceipt()">
             <i class="fas fa-camera"></i>
-            <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['save_receipt_vi'] ?></span>
-            <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['save_receipt_en'] ?></span>
+            SAVE RECEIPT IMAGE
         </button>
-        <p class="button-tip">
-            <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'block' ?>;"><?= $TEXT['receipt_tip_vi'] ?></span>
-            <span class="lang-en" style="display: <?= $isEn ? 'block' : 'none' ?>;"><?= $TEXT['receipt_tip_en'] ?></span>
-        </p>
+        <p class="button-tip">* Receipt image will be saved to your photo gallery.</p>
         <button class="btn-new-order" onclick="startNewOrder()">
             <i class="fas fa-plus-circle"></i>
-            <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['new_order_vi'] ?></span>
-            <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['new_order_en'] ?></span>
+            START NEW ORDER
         </button>
         <button class="btn-exit" onclick="exitSession()">
             <i class="fas fa-sign-out-alt"></i>
-            <span class="lang-vi" style="display: <?= $isEn ? 'none' : 'inline' ?>;"><?= $TEXT['leave_vi'] ?></span>
-            <span class="lang-en" style="display: <?= $isEn ? 'inline' : 'none' ?>;"><?= $TEXT['leave_en'] ?></span>
+            LEAVE TABLE
         </button>
     </div>
 </div>
 
-<!-- Load html2canvas for screenshot feature -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script>
-const paidBillLang = '<?= $currentLang ?>';
 const paidBillTexts = {
-    creating_vi: '<i class="fas fa-spinner fa-spin"></i> <?= $TEXT['creating_vi'] ?>',
-    creating_en: '<i class="fas fa-spinner fa-spin"></i> <?= $TEXT['creating_en'] ?>',
-    saved_vi: '<i class="fas fa-check"></i> <?= $TEXT['saved_vi'] ?>',
-    saved_en: '<i class="fas fa-check"></i> <?= $TEXT['saved_en'] ?>',
-    error_vi: '<?= $TEXT['error_vi'] ?>',
-    error_en: '<?= $TEXT['error_en'] ?>',
-    confirm_new_order_vi: '<?= $TEXT['confirm_new_order_vi'] ?>',
-    confirm_new_order_en: '<?= $TEXT['confirm_new_order_en'] ?>',
-    confirm_exit_vi: '<?= $TEXT['confirm_exit_vi'] ?>',
-    confirm_exit_en: '<?= $TEXT['confirm_exit_en'] ?>'
+    creating: '<i class="fas fa-spinner fa-spin"></i> Creating image...',
+    saved: '<i class="fas fa-check"></i> Image saved!',
+    error: 'Cannot create receipt image. Please try again.',
+    confirm_new_order: 'Do you want to start a new order for this table?',
+    confirm_exit: 'Are you sure you want to leave and end this session?'
 };
-
-function togglePaidBillLang() {
-    const newLang = paidBillLang === 'vi' ? 'en' : 'vi';
-    document.cookie = 'aurora_lang=' + newLang + '; path=/; max-age=31536000; SameSite=Lax';
-    localStorage.setItem('aurora_lang', newLang);
-    window.location.reload();
-}
 
 async function captureReceipt() {
     const receipt = document.querySelector('.receipt-paper');
     const btn = document.querySelector('.btn-save-img');
-    const isEn = paidBillLang === 'en';
-    const originalTextVi = '<i class="fas fa-camera"></i> <?= $TEXT['save_receipt_vi'] ?>';
-    const originalTextEn = '<i class="fas fa-camera"></i> <?= $TEXT['save_receipt_en'] ?>';
-    const originalText = isEn ? originalTextEn : originalTextVi;
+    const originalText = '<i class="fas fa-camera"></i> SAVE RECEIPT IMAGE';
     
-    btn.innerHTML = isEn ? paidBillTexts.creating_en : paidBillTexts.creating_vi;
+    btn.innerHTML = paidBillTexts.creating;
     btn.disabled = true;
 
     try {
-        // Create canvas from receipt element
         const canvas = await html2canvas(receipt, {
-            scale: 3, // Higher scale for better quality/printing
+            scale: 3,
             useCORS: true,
             backgroundColor: '#ffffff',
             logging: false
         });
         
-        // Convert to image and download
         const image = canvas.toDataURL("image/png");
         const link = document.createElement('a');
         link.download = `Aurora_Receipt_#${'<?= $order['id'] ?>'}.png`;
         link.href = image;
         link.click();
         
-        btn.innerHTML = isEn ? paidBillTexts.saved_en : paidBillTexts.saved_vi;
+        btn.innerHTML = paidBillTexts.saved;
         setTimeout(() => {
             btn.innerHTML = originalText;
             btn.disabled = false;
         }, 2000);
     } catch (err) {
         console.error('Capture error:', err);
-        alert(isEn ? paidBillTexts.error_en : paidBillTexts.error_vi);
+        alert(paidBillTexts.error);
         btn.innerHTML = originalText;
         btn.disabled = false;
     }
 }
 
 function startNewOrder() {
-    const isEn = paidBillLang === 'en';
-    const confirmMsg = isEn ? paidBillTexts.confirm_new_order_en : paidBillTexts.confirm_new_order_vi;
-    if (!confirm(confirmMsg)) return;
+    if (!confirm(paidBillTexts.confirm_new_order)) return;
     
     fetch('<?= BASE_URL ?>/qr/session/clear', {
         method: 'POST',
@@ -317,9 +185,7 @@ function startNewOrder() {
 }
 
 function exitSession() {
-    const isEn = paidBillLang === 'en';
-    const confirmMsg = isEn ? paidBillTexts.confirm_exit_en : paidBillTexts.confirm_exit_vi;
-    if (!confirm(confirmMsg)) return;
+    if (!confirm(paidBillTexts.confirm_exit)) return;
     
     fetch('<?= BASE_URL ?>/qr/session/clear', {
         method: 'POST',
@@ -328,8 +194,7 @@ function exitSession() {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            // Redirect to a neutral page or home
-            window.location.href = 'https://google.com'; // Or your homepage
+            window.location.href = 'https://google.com';
         }
     });
 }
@@ -343,7 +208,6 @@ function exitSession() {
         font-family: 'Inter', sans-serif;
     }
 
-    /* Success Banner */
     .success-banner { text-align: center; margin-bottom: 30px; }
     .success-check {
         width: 60px; height: 60px; background: #10b981; color: white;
@@ -359,7 +223,6 @@ function exitSession() {
     .status-title.cancelled { color: #ef4444; }
     .status-subtitle { color: #64748b; font-size: 0.9rem; }
 
-    /* Receipt Paper Effect */
     .receipt-paper {
         background: white;
         padding: 30px 20px;
@@ -390,7 +253,7 @@ function exitSession() {
     .total-amount { font-weight: 900; color: #d4af37; font-size: 1.4rem; }
     .cancelled-text { color: #ef4444; font-size: 1.1rem; font-weight: 700; }
     
-    .payment-info { display: flex; justify-content: space-between; font-size: 0.85rem; color: #475569; }
+    .payment-info { display: justify-content: space-between; font-size: 0.85rem; color: #475569; }
     
     .receipt-barcode { text-align: center; margin-top: 30px; color: #cbd5e1; }
     .receipt-barcode i { font-size: 3rem; display: block; margin-bottom: 5px; }
@@ -402,7 +265,6 @@ function exitSession() {
         background-size: 20px 20px; background-position: -10px -10px;
     }
 
-    /* Beta Notice */
     .beta-notice {
         background: rgba(212, 175, 55, 0.1);
         border: 1px solid rgba(212, 175, 55, 0.3);
@@ -419,14 +281,6 @@ function exitSession() {
     .beta-notice i { color: #d4af37; font-size: 1rem; margin-top: 2px; }
     .button-tip { font-size: 0.75rem; color: #94a3b8; text-align: center; margin-top: -5px; margin-bottom: 5px; font-style: italic; }
 
-    /* Language Toggle Button */
-    .lang-toggle-btn:hover {
-        background: var(--gold, #d4af37) !important;
-        color: #fff !important;
-        border-color: var(--gold, #d4af37) !important;
-    }
-
-    /* Action Buttons */
     .action-buttons { margin-top: 40px; display: flex; flex-direction: column; gap: 12px; }
     .btn-save-img {
         background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 16px; border-radius: 12px;
