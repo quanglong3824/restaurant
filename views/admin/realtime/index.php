@@ -682,14 +682,10 @@ function updateCartUI() {
                 </div>
             </div>
         `;
-});
+    });
         
-        container.innerHTML = html;
-    } catch (err) {
-        console.error('Render POS Grid error:', err);
-        container.innerHTML = `<div class="pos-loader"><i class="fas fa-exclamation-triangle"></i><h3>Lỗi hiển thị</h3><p>${err.message}</p></div>`;
-    }
-}
+    container.innerHTML = html;
+    countEl.textContent = addItemsCart.length + ' món';
 }
 
 function changeCartItemQty(id, delta) {
@@ -950,7 +946,9 @@ async function refreshData() {
     if (btn) btn.innerHTML = '<i class="fas fa-sync fa-spin"></i>';
 
     try {
-        const res = await fetch(BASE_URL + '/admin/realtime/data?t=' + Date.now());
+        const res = await fetch(BASE_URL + '/admin/realtime/data?t=' + Date.now(), {
+            headers: { 'Accept': 'application/json' }
+        });
         
         if (!res.ok) {
             console.error('HTTP Error:', res.status, res.statusText);
