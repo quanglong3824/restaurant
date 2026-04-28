@@ -431,6 +431,7 @@ if (!empty($items)) {
             <form method="POST" action="<?= BASE_URL ?>/tables/close" id="formCloseTable">
                 <input type="hidden" name="table_id" id="closeTableId">
                 <input type="hidden" name="order_id" id="closeOrderId">
+                <input type="hidden" id="isQuickCancel" value="0">
                 
                 <div style="margin-bottom:20px;">
                     <div style="font-size:0.65rem; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:10px;">PHƯƠNG THỨC</div>
