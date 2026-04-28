@@ -1440,8 +1440,7 @@ function submitMerge() {
         }
     });
 }
-    });
-}
+    }
 
 function unmergeTable(tableId) {
     if (!confirm('Tách bàn này khỏi nhóm ghép?')) return;
