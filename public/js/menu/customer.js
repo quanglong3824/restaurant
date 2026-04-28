@@ -821,8 +821,7 @@ function toggleCartModal() {
 function updateCartModal() {
     const container = document.getElementById('cartItemsList');
     const modalTotal = document.getElementById('modalCartTotal');
-    const isEn = typeof currentLang !== 'undefined' && currentLang === 'en';
-    
+    const isEn = true; // English only mode
     if (cart.length === 0) {
         container.innerHTML = `
             <div style="text-align:center;padding:2.5rem 1rem;color:#94a3b8;">
@@ -844,7 +843,6 @@ function updateCartModal() {
     let total = 0;
     
     cart.forEach((item, index) => {
-        // Hiển thị tên tiếng Anh ưu tiên, tiếng Việt nhỏ dưới
         let displayName = item.nameEn || item.name_en || item.name;
         let displayViName = item.name || '';
         let noteLabel = 'Note';
