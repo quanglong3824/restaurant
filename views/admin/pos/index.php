@@ -45,21 +45,24 @@ foreach (array_keys($grouped) as $a) {
 .pos-header h2 { font-size: 1.1rem; font-weight: 800; color: #1e293b; margin: 0; }
 .pos-header-actions { display: flex; gap: 8px; }
 
-.floor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; }
-.floor-card { background: white; border-radius: 14px; padding: 14px; cursor: pointer; border: 2px solid #e2e8f0; transition: all 0.2s; min-height: 90px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
-.floor-card:hover { border-color: #d4af37; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(212,175,55,0.25); }
-.floor-card.occupied { border-color: #ef4444; background: linear-gradient(135deg, #fef2f2 0%, white 100%); }
-.floor-card.occupied:hover { border-color: #dc2626; box-shadow: 0 8px 20px rgba(239,68,68,0.25); }
-.floor-card.merged-child { border-color: #8b5cf6; background: linear-gradient(135deg, #f3e8ff 0%, white 100%); }
-.floor-card.merged-child:hover { border-color: #7c3aed; }
-.floor-card.available { border-color: #10b981; background: linear-gradient(135deg, #d1fae5 0%, white 100%); }
-.floor-card.available:hover { border-color: #059669; }
-.floor-card-name { font-size: 1rem; font-weight: 800; color: #1e293b; }
-.floor-card-status { font-size: 0.7rem; color: #64748b; margin-top: 4px; font-weight: 600; }
-.floor-card.occupied .floor-card-status { color: #ef4444; }
-.floor-card.available .floor-card-status { color: #10b981; }
-.floor-card-icon { position: absolute; top: 8px; right: 8px; font-size: 0.8rem; opacity: 0.3; }
-.floor-card.occupied .floor-card-icon { opacity: 0.5; color: #ef4444; }
+.floor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+.premium-table-card { background: white; border-radius: 18px; padding: 1.25rem; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 110px; border: 1px solid #edf2f7; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer; }
+.premium-table-card:active { transform: scale(0.95); }
+.card-status-bar { position: absolute; top: 0; left: 0; right: 0; height: 6px; background: #e2e8f0; }
+.is-available .card-status-bar { background: linear-gradient(90deg, #10b981, #34d399); }
+.is-occupied .card-status-bar { background: linear-gradient(90deg, #ef4444, #f87171); }
+.is-merged-child .card-status-bar { background: repeating-linear-gradient(45deg, #b89B5e, #b89B5e 10px, #d4af37 10px, #d4af37 20px); }
+.card-content { display: flex; flex-direction: column; }
+.card-icon { position: absolute; bottom: -10px; right: -5px; font-size: 3.5rem; opacity: 0.04; transform: rotate(-15deg); transition: all 0.3s ease; }
+.is-occupied .card-icon { opacity: 0.08; color: #ef4444; }
+.table-id { font-size: 1.4rem; font-weight: 800; color: #1a202c; margin-bottom: 0.25rem; }
+.table-info { font-size: 0.7rem; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; }
+.master-label { background: var(--gold); color: white; padding: 2px 6px; border-radius: 6px; font-size: 0.6rem; }
+.merge-info { color: #8b5cf6; }
+.is-payment-requested { border: 2px solid #f59e0b !important; animation: premium-border-pulse 2s infinite; }
+@keyframes premium-border-pulse { 0% { border-color: #f59e0b; } 50% { border-color: #fbbf24; } 100% { border-color: #f59e0b; } }
+.payment-pulse-badge { position: absolute; top: 12px; right: 12px; background: #f59e0b; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 5; font-size: 0.8rem; box-shadow: 0 4px 8px rgba(245,158,11,0.3); }
+.premium-table-card:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(212,175,55,0.25); }
 .floor-card-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
 .floor-btn { padding: 5px 10px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; cursor: pointer; border: none; }
 .floor-btn-gold { background: #d4af37; color: white; }
@@ -73,6 +76,12 @@ foreach (array_keys($grouped) as $a) {
 .type-tab { padding: 10px 20px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; background: white; border: 2px solid #e2e8f0; color: #64748b; transition: all 0.2s; }
 .type-tab:hover { border-color: #d4af37; }
 .type-tab.active { background: #d4af37; color: white; border-color: #d4af37; }
+.floor-filter-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 8px 4px; scrollbar-width: none; margin-bottom: 12px; }
+.floor-filter-tabs::-webkit-scrollbar { display: none; }
+.floor-tab { white-space: nowrap; padding: 8px 16px; border-radius: 20px; background: white; border: 1px solid #e2e8f0; font-size: 0.8rem; font-weight: 700; color: #64748b; text-decoration: none; transition: all 0.2s; flex-shrink: 0; cursor: pointer; }
+.floor-tab:hover { border-color: #d4af37; color: #d4af37; }
+.floor-tab.active { background: #d4af37; color: white; border-color: #d4af37; box-shadow: 0 4px 12px rgba(212,175,55,0.3); }
+.area-section { margin-bottom: 20px; }
 
 .area-section { margin-bottom: 20px; }
 .area-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 10px 14px; background: white; border-radius: 10px; border: 1px solid #e2e8f0; }
@@ -239,6 +248,25 @@ function viewOrder(tableId) {
     var baseUrl = typeof POS !== 'undefined' ? POS.baseUrl : '<?= BASE_URL ?>';
     window.location.href = baseUrl + '/admin/pos?tab=order&table_id=' + tableId;
 }
+
+function filterFloor(floor, event) {
+    if (event) event.preventDefault();
+    var tabs = document.querySelectorAll('.floor-filter-tabs .floor-tab');
+    var sections = document.querySelectorAll('.area-section[data-floor]');
+    
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+        if (tabs[i].dataset.floor === floor) tabs[i].classList.add('active');
+    }
+    
+    for (var j = 0; j < sections.length; j++) {
+        if (floor === 'all' || sections[j].dataset.floor === floor) {
+            sections[j].style.display = 'block';
+        } else {
+            sections[j].style.display = 'none';
+        }
+    }
+}
 </script>
 
 <div class="pos-dashboard">
@@ -285,47 +313,54 @@ function viewOrder(tableId) {
                 </a>
             </div>
 
+            <?php if ($type === 'room' && !empty($room_areas)): ?>
+            <div class="floor-filter-tabs">
+                <a href="#" class="floor-tab active" data-floor="all" onclick="filterFloor('all', event)">Tất cả</a>
+                <?php foreach ($room_areas as $area => $tables): ?>
+                    <a href="#" class="floor-tab" data-floor="<?= e($area) ?>" onclick="filterFloor('<?= e($area) ?>', event)"><?= e($area) ?></a>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+
             <?php $areasToRender = ($type === 'room') ? $room_areas : $other_areas; ?>
             <?php foreach ($areasToRender as $area => $tables): ?>
-                <div class="area-section">
+                <div class="area-section" data-floor="<?= e($area) ?>">
                     <div class="area-header">
                         <i class="fas fa-map-marker-alt"></i>
                         <h3><?= $type === 'room' ? 'Tầng' : 'Khu' ?>: <?= e($area) ?></h3>
                     </div>
                     <div class="floor-grid">
                         <?php foreach ($tables as $t): ?>
-                            <?php $isOccupied = $t['status'] === 'occupied'; ?>
-                            <?php $isChild = !empty($t['parent_id']); ?>
-                            <div class="floor-card <?= $isOccupied ? 'occupied' : 'available' ?> <?= $isChild ? 'merged-child' : '' ?>" onclick="handleFloorCard(<?= $t['id'] ?>, <?= $isOccupied ? 1 : 0 ?>, '<?= e($t['name']) ?>')">
-                                <div class="floor-card-icon">
-                                    <i class="fas <?= $isOccupied ? 'fa-user' : 'fa-chair' ?>"></i>
-                                </div>
-                                <div class="floor-card-name"><?= e($t['name']) ?></div>
-                                <div class="floor-card-status">
-                                    <?= $isOccupied ? 'Có khách' : 'Trống' ?>
-                                    <?php if ($isChild): ?>
-                                        <span style="color:#8b5cf6">(Ghép)</span>
-                                    <?php endif; ?>
-                                </div>
-                                <?php if ($isOccupied): ?>
-                                    <div class="floor-card-actions">
-                                        <button class="floor-btn floor-btn-gold" onclick="event.stopPropagation();viewOrder(<?= $t['id'] ?>)">
-                                            <i class="fas fa-eye"></i> Chi tiết
-                                        </button>
-                                        <button class="floor-btn floor-btn-blue" onclick="event.stopPropagation();openTransferModal(<?= $t['id'] ?>)">
-                                            <i class="fas fa-exchange-alt"></i>
-                                        </button>
-                                        <?php if (!$isChild): ?>
-                                            <button class="floor-btn floor-btn-purple" onclick="event.stopPropagation();openMergeModal(<?= $t['id'] ?>)">
-                                                <i class="fas fa-link"></i>
-                                            </button>
+                            <?php 
+                            $isOccupied = $t['status'] === 'occupied'; 
+                            $isChild = !empty($t['parent_id']); 
+                            $isPaymentRequested = isset($t['order_note']) && strpos($t['order_note'], 'KHÁCH YÊU CẦU THANH TOÁN') !== false;
+                            $cardClass = $isOccupied ? 'is-occupied' : 'is-available';
+                            if ($isChild) $cardClass .= ' is-merged-child';
+                            if ($isPaymentRequested) $cardClass .= ' is-payment-requested';
+                            $icon = ($type === 'room') ? ($isOccupied ? 'fa-door-closed' : 'fa-door-open') : ($isOccupied ? 'fa-utensils' : 'fa-chair');
+                            ?>
+                            <div class="premium-table-card <?= $cardClass ?>" onclick="handleFloorCard(<?= $t['id'] ?>, <?= $isOccupied ? 1 : 0 ?>, '<?= e($t['name']) ?>')">
+                                <?php if ($isPaymentRequested): ?>
+                                    <div class="payment-pulse-badge"><i class="fas fa-hand-holding-usd"></i></div>
+                                <?php endif; ?>
+                                <div class="card-status-bar"></div>
+                                <div class="card-content">
+                                    <div class="table-id"><?= e($t['name']) ?></div>
+                                    <div class="table-info">
+                                        <?php if ($isChild): ?>
+                                            <span class="merge-info"><i class="fas fa-link"></i> <?= e($t['parent_name'] ?? 'P') ?></span>
                                         <?php else: ?>
-                                            <button class="floor-btn floor-btn-ghost" onclick="event.stopPropagation();unmergeTable(<?= $t['id'] ?>)">
-                                                <i class="fas fa-unlink"></i>
-                                            </button>
+                                            <?php $mergedChildren = $tableModel->getMergedTables($t['id']); ?>
+                                            <?php if (!empty($mergedChildren)): ?>
+                                                <span class="master-label">MASTER</span>
+                                            <?php else: ?>
+                                                <span class="capacity-label"><?= $t['capacity'] ?> <?= ($type === 'room') ? 'NGƯỜI' : 'GHẾ' ?></span>
+                                            <?php endif; ?>
                                         <?php endif; ?>
                                     </div>
-                                <?php endif; ?>
+                                </div>
+                                <div class="card-icon"><i class="fas <?= $icon ?>"></i></div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -337,18 +372,35 @@ function viewOrder(tableId) {
                     <div class="area-header"><i class="fas fa-crown"></i><h3>VIP 1 & 2</h3></div>
                     <div class="floor-grid">
                         <?php foreach (array_merge($vip1, $vip2) as $t): ?>
-                            <?php $isOccupiedVIP = $t['status'] === 'occupied'; ?>
-                            <?php $isChildVIP = !empty($t['parent_id']); ?>
-                            <div class="floor-card <?= $isOccupiedVIP ? 'occupied' : 'available' ?> <?= $isChildVIP ? 'merged-child' : '' ?>" onclick="handleFloorCard(<?= $t['id'] ?>, <?= $isOccupiedVIP ? 1 : 0 ?>, '<?= e($t['name']) ?>')">
-                                <div class="floor-card-icon"><i class="fas <?= $isOccupiedVIP ? 'fa-crown' : 'fa-chair' ?>"></i></div>
-                                <div class="floor-card-name"><?= e($t['name']) ?></div>
-                                <div class="floor-card-status"><?= $isOccupiedVIP ? 'VIP - Có khách' : 'VIP - Trống' ?><?php if ($isChildVIP): ?><span style="color:#8b5cf6">(Ghép)</span><?php endif; ?></div>
-                                <?php if ($isOccupiedVIP): ?>
-                                    <div class="floor-card-actions">
-                                        <button class="floor-btn floor-btn-gold" onclick="event.stopPropagation();viewOrder(<?= $t['id'] ?>)"><i class="fas fa-eye"></i></button>
-                                        <button class="floor-btn floor-btn-blue" onclick="event.stopPropagation();openTransferModal(<?= $t['id'] ?>)"><i class="fas fa-exchange-alt"></i></button>
-                                    </div>
+                            <?php 
+                            $isOccupiedVIP = $t['status'] === 'occupied'; 
+                            $isChildVIP = !empty($t['parent_id']); 
+                            $isPaymentRequestedVIP = isset($t['order_note']) && strpos($t['order_note'], 'KHÁCH YÊU CẦU THANH TOÁN') !== false;
+                            $cardClassVIP = $isOccupiedVIP ? 'is-occupied' : 'is-available';
+                            if ($isChildVIP) $cardClassVIP .= ' is-merged-child';
+                            if ($isPaymentRequestedVIP) $cardClassVIP .= ' is-payment-requested';
+                            ?>
+                            <div class="premium-table-card <?= $cardClassVIP ?>" onclick="handleFloorCard(<?= $t['id'] ?>, <?= $isOccupiedVIP ? 1 : 0 ?>, '<?= e($t['name']) ?>')">
+                                <?php if ($isPaymentRequestedVIP): ?>
+                                    <div class="payment-pulse-badge"><i class="fas fa-hand-holding-usd"></i></div>
                                 <?php endif; ?>
+                                <div class="card-status-bar"></div>
+                                <div class="card-content">
+                                    <div class="table-id"><?= e($t['name']) ?></div>
+                                    <div class="table-info">
+                                        <?php if ($isChildVIP): ?>
+                                            <span class="merge-info"><i class="fas fa-link"></i> <?= e($t['parent_name'] ?? 'P') ?></span>
+                                        <?php else: ?>
+                                            <?php $mergedVIP = $tableModel->getMergedTables($t['id']); ?>
+                                            <?php if (!empty($mergedVIP)): ?>
+                                                <span class="master-label">MASTER</span>
+                                            <?php else: ?>
+                                                <span style="color:#d4af37"><i class="fas fa-crown"></i> VIP</span>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <div class="card-icon"><i class="fas <?= $isOccupiedVIP ? 'fa-crown' : 'fa-chair' ?>"></i></div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -360,18 +412,35 @@ function viewOrder(tableId) {
                     <div class="area-header"><i class="fas fa-crown"></i><h3>VIP 3 & 4</h3></div>
                     <div class="floor-grid">
                         <?php foreach (array_merge($vip3, $vip4) as $t): ?>
-                            <?php $isOccupiedVIP34 = $t['status'] === 'occupied'; ?>
-                            <?php $isChildVIP34 = !empty($t['parent_id']); ?>
-                            <div class="floor-card <?= $isOccupiedVIP34 ? 'occupied' : 'available' ?> <?= $isChildVIP34 ? 'merged-child' : '' ?>" onclick="handleFloorCard(<?= $t['id'] ?>, <?= $isOccupiedVIP34 ? 1 : 0 ?>, '<?= e($t['name']) ?>')">
-                                <div class="floor-card-icon"><i class="fas <?= $isOccupiedVIP34 ? 'fa-crown' : 'fa-chair' ?>"></i></div>
-                                <div class="floor-card-name"><?= e($t['name']) ?></div>
-                                <div class="floor-card-status"><?= $isOccupiedVIP34 ? 'VIP - Có khách' : 'VIP - Trống' ?><?php if ($isChildVIP34): ?><span style="color:#8b5cf6">(Ghép)</span><?php endif; ?></div>
-                                <?php if ($isOccupiedVIP34): ?>
-                                    <div class="floor-card-actions">
-                                        <button class="floor-btn floor-btn-gold" onclick="event.stopPropagation();viewOrder(<?= $t['id'] ?>)"><i class="fas fa-eye"></i></button>
-                                        <button class="floor-btn floor-btn-blue" onclick="event.stopPropagation();openTransferModal(<?= $t['id'] ?>)"><i class="fas fa-exchange-alt"></i></button>
-                                    </div>
+                            <?php 
+                            $isOccupiedVIP34 = $t['status'] === 'occupied'; 
+                            $isChildVIP34 = !empty($t['parent_id']); 
+                            $isPaymentRequestedVIP34 = isset($t['order_note']) && strpos($t['order_note'], 'KHÁCH YÊU CẦU THANH TOÁN') !== false;
+                            $cardClassVIP34 = $isOccupiedVIP34 ? 'is-occupied' : 'is-available';
+                            if ($isChildVIP34) $cardClassVIP34 .= ' is-merged-child';
+                            if ($isPaymentRequestedVIP34) $cardClassVIP34 .= ' is-payment-requested';
+                            ?>
+                            <div class="premium-table-card <?= $cardClassVIP34 ?>" onclick="handleFloorCard(<?= $t['id'] ?>, <?= $isOccupiedVIP34 ? 1 : 0 ?>, '<?= e($t['name']) ?>')">
+                                <?php if ($isPaymentRequestedVIP34): ?>
+                                    <div class="payment-pulse-badge"><i class="fas fa-hand-holding-usd"></i></div>
                                 <?php endif; ?>
+                                <div class="card-status-bar"></div>
+                                <div class="card-content">
+                                    <div class="table-id"><?= e($t['name']) ?></div>
+                                    <div class="table-info">
+                                        <?php if ($isChildVIP34): ?>
+                                            <span class="merge-info"><i class="fas fa-link"></i> <?= e($t['parent_name'] ?? 'P') ?></span>
+                                        <?php else: ?>
+                                            <?php $mergedVIP34 = $tableModel->getMergedTables($t['id']); ?>
+                                            <?php if (!empty($mergedVIP34)): ?>
+                                                <span class="master-label">MASTER</span>
+                                            <?php else: ?>
+                                                <span style="color:#d4af37"><i class="fas fa-crown"></i> VIP</span>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <div class="card-icon"><i class="fas <?= $isOccupiedVIP34 ? 'fa-crown' : 'fa-chair' ?>"></i></div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -1440,7 +1509,6 @@ function submitMerge() {
         }
     });
 }
-    }
 
 function unmergeTable(tableId) {
     if (!confirm('Tách bàn này khỏi nhóm ghép?')) return;
