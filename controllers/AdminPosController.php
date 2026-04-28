@@ -588,4 +588,13 @@ class AdminPosController extends Controller
 
         $this->json(['ok' => true]);
     }
+
+    public function dismiss(): void
+    {
+        $orderId = (int) $this->input('order_id');
+        if ($orderId > 0) {
+            $this->orderModel->dismissFromRealtime($orderId);
+        }
+        $this->json(['ok' => true]);
+    }
 }

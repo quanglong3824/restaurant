@@ -657,7 +657,8 @@ function filterFloor(floor, event) {
                         </div>
                     <?php else: ?>
                         <?php foreach ($realtimeOrders as $ro): ?>
-                            <div class="order-select-card" onclick="viewOrder(<?= $ro['table_id'] ?>)" style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:12px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#d4af37'" onmouseout="this.style.borderColor='#e2e8f0'">
+                            <?php $isClosed = ($ro['status'] ?? 'open') === 'closed'; ?>
+                            <div class="order-select-card <?= $isClosed ? 'order-closed' : '' ?>" style="background:white;border:1px solid <?= $isClosed ? '#d1d5db' : '#e2e8f0' ?>;border-radius:12px;padding:12px;<?= $isClosed ? 'opacity:0.7' : '' ?>">
                                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
                                     <span style="font-weight:800;color:#1e293b"><?= e($ro['full_name']) ?></span>
                                     <span style="font-size:0.75rem;color:#64748b"><?= $ro['opened_at_fmt'] ?></span>
@@ -667,9 +668,20 @@ function filterFloor(floor, event) {
                                 </div>
                                 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
                                     <span style="font-weight:800;color:#d4af37"><?= $ro['total_fmt'] ?></span>
-                                    <span class="order-status-badge <?= $ro['status'] ?? 'active' ?>" style="font-size:0.65rem;padding:2px 8px;border-radius:6px;background:#dcfce7;color:#16a34a">
-                                        <?= ucfirst($ro['status'] ?? 'active') ?>
+                                    <span class="order-status-badge" style="font-size:0.65rem;padding:2px 8px;border-radius:6px;background:<?= $isClosed ? '#f3f4f6' : '#dcfce7' ?>;color:<?= $isClosed ? '#6b7280' : '#16a34a' ?>">
+                                        <?= $isClosed ? 'Closed' : 'Open' ?>
                                     </span>
+                                </div>
+                                <div style="display:flex;gap:8px;margin-top:8px">
+                                    <?php if ($isClosed): ?>
+                                        <button class="floor-btn floor-btn-ghost" onclick="event.stopPropagation();dismissRealtimeOrder(<?= $ro['id'] ?>)" style="flex:1">
+                                            <i class="fas fa-eye-slash"></i> Ẩn
+                                        </button>
+                                    <?php else: ?>
+                                        <button class="floor-btn floor-btn-gold" onclick="event.stopPropagation();viewOrder(<?= $ro['table_id'] ?>)" style="flex:1">
+                                            <i class="fas fa-eye"></i> Chi tiết
+                                        </button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -1548,6 +1560,27 @@ function refreshRealtime() {
                     '</div>' +
                 '</div>';
             }).join('');
+        }
+    });
+}
+
+function dismissRealtimeOrder(orderId) {
+    if (!confirm('Ẩn order này khỏi danh sách realtime?')) return;
+    
+    fetch(POS.baseUrl + '/admin/pos/dismiss', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: orderId })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+        if (d.ok) {
+            showToast('Đã ẩn order!', 'success');
+            setTimeout(function() {
+                window.location.reload();
+            }, 1000);
+        } else {
+            showToast(d.message || 'Lỗi ẩn order', 'error');
         }
     });
 }
