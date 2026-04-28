@@ -36,11 +36,7 @@ foreach (array_keys($grouped) as $a) {
 .pos-tab:hover { background: rgba(212,175,55,0.1); color: #d4af37; }
 .pos-tab.active { background: rgba(212,175,55,0.15); border-bottom-color: #d4af37; color: #d4af37; }
 .pos-content { flex: 1; overflow-y: auto; background: #f8fafc; padding: 16px; position: relative; z-index: 50; }
-
-.modal-backdrop { display: none !important; }
-.modal-backdrop.is-open { display: flex !important; z-index: 1500; }
 .pos-tab i { width: 18px; text-align: center; }
-.pos-content { flex: 1; overflow-y: auto; background: #f8fafc; padding: 16px; }
 .pos-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 12px 16px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; }
 .pos-header h2 { font-size: 1.1rem; font-weight: 800; color: #1e293b; margin: 0; }
 .pos-header-actions { display: flex; gap: 8px; }
@@ -61,6 +57,7 @@ foreach (array_keys($grouped) as $a) {
 .merge-info { color: #8b5cf6; }
 .is-payment-requested { border: 2px solid #f59e0b !important; animation: premium-border-pulse 2s infinite; }
 @keyframes premium-border-pulse { 0% { border-color: #f59e0b; } 50% { border-color: #fbbf24; } 100% { border-color: #f59e0b; } }
+@keyframes fadeInOut { 0% { opacity: 0; transform: translateX(-50%) translateY(-20px); } 20% { opacity: 1; transform: translateX(-50%) translateY(0); } 80% { opacity: 1; } 100% { opacity: 0; } }
 .payment-pulse-badge { position: absolute; top: 12px; right: 12px; background: #f59e0b; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 5; font-size: 0.8rem; box-shadow: 0 4px 8px rgba(245,158,11,0.3); }
 .premium-table-card:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(212,175,55,0.25); }
 .floor-card-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
@@ -230,6 +227,21 @@ function closeAllModals() {
     for (var i = 0; i < modals.length; i++) {
         modals[i].classList.remove('is-open');
     }
+}
+
+function showToast(message, type) {
+    type = type || 'success';
+    var toastColor = type === 'success' ? '#10b981' : (type === 'error' ? '#ef4444' : '#d4af37');
+    var toastIcon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-times-circle' : 'fa-info-circle');
+    
+    var toast = document.createElement('div');
+    toast.innerHTML = '<i class="fas ' + toastIcon + '"></i> ' + message;
+    toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:' + toastColor + ';color:white;padding:12px 24px;border-radius:10px;font-weight:700;z-index:2000;animation:fadeInOut 3s;box-shadow:0 4px 20px rgba(0,0,0,0.3)';
+    document.body.appendChild(toast);
+    
+    setTimeout(function() { 
+        toast.remove(); 
+    }, 3000);
 }
 
 function handleFloorCard(tableId, isOccupied, tableName) {
@@ -845,30 +857,92 @@ function filterFloor(floor, event) {
 <div class="modal-backdrop" id="modalPayment">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">Thanh toán</div>
+            <div class="modal-title"><i class="fas fa-credit-card" style="color:#d4af37"></i> Thanh toán</div>
             <button class="modal-close" onclick="closeModal('modalPayment')"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
-            <div style="text-align:center;margin-bottom:16px">
-                <div style="font-size:0.75rem;color:#64748b">Số tiền</div>
-                <div style="font-size:1.8rem;font-weight:800;color:#d4af37" id="paymentAmount"><?= formatPrice($orderTotal) ?></div>
+            <div style="text-align:center;margin-bottom:20px">
+                <div style="font-size:0.7rem;color:#64748b;font-weight:700">CẦN THANH TOÁN</div>
+                <div style="font-size:2rem;font-weight:800;color:#d4af37" id="paymentAmount"><?= formatPrice($orderTotal) ?></div>
             </div>
-            <div style="display:flex;gap:10px;margin-bottom:16px">
-                <label id="payCash" style="flex:1;padding:14px;background:#f8fafc;border:2px solid #d4af37;border-radius:10px;text-align:center;cursor:pointer" onclick="selectPayment('cash')">
-                    <input type="radio" name="pay_method" value="cash" checked style="display:none">
-                    <i class="fas fa-money-bill" style="color:#d4af37"></i>
-                    <div style="font-size:0.8rem;font-weight:700;margin-top:4px">Tiền mặt</div>
-                </label>
-                <label id="payTransfer" style="flex:1;padding:14px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;text-align:center;cursor:pointer" onclick="selectPayment('transfer')">
-                    <input type="radio" name="pay_method" value="transfer" style="display:none">
-                    <i class="fas fa-university" style="color:#64748b"></i>
-                    <div style="font-size:0.8rem;font-weight:700;margin-top:4px">Chuyển khoản</div>
-                </label>
+            <div style="margin-bottom:20px">
+                <div style="font-size:0.65rem;font-weight:700;color:#64748b;letter-spacing:1px;margin-bottom:10px">PHƯƠNG THỨC</div>
+                <div style="display:flex;gap:10px">
+                    <label id="payCash" style="flex:1;padding:14px;background:#f8fafc;border:2px solid #d4af37;border-radius:10px;text-align:center;cursor:pointer" onclick="selectPayment('cash')">
+                        <input type="radio" name="pay_method" value="cash" checked style="display:none">
+                        <i class="fas fa-money-bill" style="color:#d4af37;font-size:1.2rem"></i>
+                        <div style="font-size:0.75rem;font-weight:700;margin-top:4px;color:#d4af37">TIỀN MẶT</div>
+                    </label>
+                    <label id="payTransfer" style="flex:1;padding:14px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;text-align:center;cursor:pointer" onclick="selectPayment('transfer')">
+                        <input type="radio" name="pay_method" value="transfer" style="display:none">
+                        <i class="fas fa-university" style="color:#64748b;font-size:1.2rem"></i>
+                        <div style="font-size:0.75rem;font-weight:700;margin-top:4px;color:#64748b">CHUYỂN KHOẢN</div>
+                    </label>
+                </div>
+            </div>
+            <div style="margin-bottom:20px">
+                <div style="font-size:0.65rem;font-weight:700;color:#64748b;letter-spacing:1px;margin-bottom:10px">XÁC NHẬN</div>
+                <div id="payConfirmCard" onclick="togglePayConfirm()" style="padding:12px 16px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s">
+                    <div id="payConfirmIcon" style="width:32px;height:32px;background:#fff;border:2px solid #e2e8f0;border-radius:8px;display:flex;align-items:center;justify-content:center">
+                        <i class="fas fa-check" style="color:#64748b"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:0.85rem;font-weight:700;color:#1e293b">Đã nhận đủ tiền</div>
+                        <div style="font-size:0.65rem;color:#64748b">Xác nhận thanh toán</div>
+                    </div>
+                    <input type="checkbox" id="payConfirmed" style="display:none">
+                </div>
             </div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-ghost" onclick="closeModal('modalPayment')">Hủy</button>
-            <button class="btn btn-gold" onclick="submitPayment()"><i class="fas fa-credit-card"></i> Thanh toán</button>
+            <button class="btn btn-gold" id="btnSubmitPayment" onclick="submitPayment()"><i class="fas fa-credit-card"></i> HOÀN TẤT</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="modalConfirmOrder">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title"><i class="fas fa-check-circle" style="color:#d4af37"></i> Xác nhận Order</div>
+            <button class="modal-close" onclick="closeModal('modalConfirmOrder')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div style="text-align:center;margin-bottom:20px">
+                <div style="font-size:0.75rem;color:#64748b;font-weight:700">MÓN CHỜ XÁC NHẬN</div>
+                <div style="font-size:2rem;font-weight:800;color:#d4af37" id="confirmDraftCount"><?= count(array_filter($orderItems ?? [], fn($i) => ($i['status'] ?? 'draft') === 'draft')) ?></div>
+            </div>
+            <div style="padding:12px;background:#fef3c7;border-radius:10px;border:1px solid #fde68a;margin-bottom:16px">
+                <i class="fas fa-info-circle" style="color:#d97706"></i>
+                <span style="font-size:0.85rem;color:#92400e">Sau xác nhận, món sẽ được gửi vào bếp. Bạn có chắc chắn muốn tiếp tục?</span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('modalConfirmOrder')">Hủy</button>
+            <button class="btn btn-gold" onclick="submitConfirmOrder()"><i class="fas fa-check"></i> Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="modalCancelOrder">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title"><i class="fas fa-times-circle" style="color:#ef4444"></i> Hủy Order</div>
+            <button class="modal-close" onclick="closeModal('modalCancelOrder')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div style="text-align:center;margin-bottom:20px">
+                <i class="fas fa-exclamation-triangle" style="font-size:2.5rem;color:#ef4444;margin-bottom:12px"></i>
+                <div style="font-size:1rem;font-weight:700;color:#1e293b">Bạn chắc chắn muốn hủy bàn này?</div>
+            </div>
+            <div style="padding:12px;background:#fee2e2;border-radius:10px;border:1px solid #fecaca;margin-bottom:16px">
+                <i class="fas fa-warning" style="color:#dc2626"></i>
+                <span style="font-size:0.85rem;color:#991b1b">Hủy bàn sẽ xóa toàn bộ món đã chọn. Thao tác này không thể khôi phục!</span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeModal('modalCancelOrder')">Giữ lại</button>
+            <button class="btn btn-red" onclick="submitCancelOrder()"><i class="fas fa-times"></i> Hủy bàn</button>
         </div>
     </div>
 </div>
@@ -1130,14 +1204,42 @@ function selectPayment(method) {
     var transfer = document.getElementById('payTransfer');
     if (method === 'cash') {
         cash.style.borderColor = '#d4af37';
+        cash.style.background = 'rgba(212,175,55,0.08)';
         cash.querySelector('i').style.color = '#d4af37';
+        cash.querySelector('div').style.color = '#d4af37';
         transfer.style.borderColor = '#e2e8f0';
+        transfer.style.background = '#f8fafc';
         transfer.querySelector('i').style.color = '#64748b';
+        transfer.querySelector('div').style.color = '#64748b';
     } else {
         transfer.style.borderColor = '#d4af37';
+        transfer.style.background = 'rgba(212,175,55,0.08)';
         transfer.querySelector('i').style.color = '#d4af37';
+        transfer.querySelector('div').style.color = '#d4af37';
         cash.style.borderColor = '#e2e8f0';
+        cash.style.background = '#f8fafc';
         cash.querySelector('i').style.color = '#64748b';
+        cash.querySelector('div').style.color = '#64748b';
+    }
+}
+
+function togglePayConfirm() {
+    var cb = document.getElementById('payConfirmed');
+    var card = document.getElementById('payConfirmCard');
+    var iconBox = document.getElementById('payConfirmIcon');
+    cb.checked = !cb.checked;
+    if (cb.checked) {
+        card.style.borderColor = '#10b981';
+        card.style.background = '#d1fae5';
+        iconBox.style.background = '#10b981';
+        iconBox.style.borderColor = '#10b981';
+        iconBox.querySelector('i').style.color = '#fff';
+    } else {
+        card.style.borderColor = '#e2e8f0';
+        card.style.background = '#f8fafc';
+        iconBox.style.background = '#fff';
+        iconBox.style.borderColor = '#e2e8f0';
+        iconBox.querySelector('i').style.color = '#64748b';
     }
 }
 
@@ -1307,6 +1409,11 @@ function updateCartUI(d) {
 }
 
 function confirmOrder() {
+    openModal('modalConfirmOrder');
+}
+
+function submitConfirmOrder() {
+    closeModal('modalConfirmOrder');
     fetch(POS.baseUrl + '/admin/pos/confirm-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1315,9 +1422,10 @@ function confirmOrder() {
     .then(function(r) { return r.json(); })
     .then(function(d) {
         if (d.ok) {
+            showToast('Xác nhận order thành công!', 'success');
             window.location.replace(POS.baseUrl + '/admin/pos?tab=order&table_id=' + POS.tableId + '&msg=confirm');
         } else {
-            alert(d.message || 'Lỗi xác nhận');
+            showToast(d.message || 'Lỗi xác nhận', 'error');
         }
     });
 }
@@ -1327,6 +1435,12 @@ function openPaymentModal() {
 }
 
 function submitPayment() {
+    var confirmed = document.getElementById('payConfirmed');
+    if (!confirmed.checked) {
+        showToast('Vui lòng xác nhận đã nhận đủ tiền', 'warning');
+        return;
+    }
+    
     fetch(POS.baseUrl + '/admin/pos/payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1335,21 +1449,28 @@ function submitPayment() {
     .then(function(r) { return r.json(); })
     .then(function(d) {
         if (d.ok) {
-            closeAllModals();
+            closeModal('modalPayment');
+            showToast('Thanh toán thành công!', 'success');
             POS.orderId = 0;
             POS.tableId = 0;
-            window.location.replace(POS.baseUrl + '/admin/pos?tab=floor&paid=1');
+            setTimeout(function() {
+                window.location.replace(POS.baseUrl + '/admin/pos?tab=floor&paid=1');
+            }, 1500);
         } else {
-            alert(d.message || 'Lỗi thanh toán');
+            showToast(d.message || 'Lỗi thanh toán', 'error');
         }
     })
     .catch(function(e) {
-        alert('Lỗi kết nối: ' + e.message);
+        showToast('Lỗi kết nối: ' + e.message, 'error');
     });
 }
 
 function cancelOrder() {
-    if (!confirm('Hủy bàn này?')) return;
+    openModal('modalCancelOrder');
+}
+
+function submitCancelOrder() {
+    closeModal('modalCancelOrder');
     fetch(POS.baseUrl + '/admin/pos/payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1358,10 +1479,12 @@ function cancelOrder() {
     .then(function(r) { return r.json(); })
     .then(function(d) {
         if (d.ok) {
-            closeAllModals();
+            showToast('Hủy bàn thành công!', 'success');
             POS.orderId = 0;
             POS.tableId = 0;
             window.location.replace(POS.baseUrl + '/admin/pos?tab=floor&msg=cancel');
+        } else {
+            showToast(d.message || 'Lỗi hủy bàn', 'error');
         }
     });
 }
