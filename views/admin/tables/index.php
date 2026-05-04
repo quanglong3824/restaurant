@@ -326,14 +326,12 @@
 
             <!-- Print Header (hidden on screen) -->
             <div class="qr-print-header" style="display:none;">
-                <h1 style="font-family:'Playfair Display', serif; color:#D4AF37; margin:0; font-size:28px;">AURORA HOTEL PLAZA</h1>
-                <p style="margin:5px 0 15px; font-size:14px; letter-spacing:2px; color:#666;">RESTAURANT & BAR</p>
+                <!-- Hidden per user request for minimal style -->
             </div>
 
             <!-- Print Footer (hidden on screen) -->
             <div class="qr-print-footer" style="display:none;">
-                <p style="font-weight:600; margin-bottom:5px;">QUÉT Mã ĐỂ ĐẶT MÓN</p>
-                <p style="font-size:12px; color:#888;">Cảm ơn Quý khách / Thank you!</p>
+                <div id="qrPrintTableName" style="font-weight:700; font-size:14px; margin-top:10px; text-transform:uppercase;"></div>
             </div>
         </div>
 
@@ -752,48 +750,105 @@
             top: 0;
             background: #fff;
             padding: 0;
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
         }
 
-        .modal-content {
-            box-shadow: none;
+        .qr-modal-wrapper {
             margin: 0;
-            border: none;
+            padding: 0;
             width: 100%;
-            max-width: none;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-modal-card {
+            box-shadow: none !important;
+            margin: 0 !important;
+            border: none !important;
+            width: auto !important;
+            max-width: none !important;
+            padding: 0 !important;
+            background: white !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
 
         .no-print,
-        .modal-header,
+        .qr-modal-header,
+        .qr-instructions,
+        .qr-url-container,
+        .qr-modal-footer,
+        .qr-modal-title-bar,
+        .qr-table-name-container,
         #qrUrl {
             display: none !important;
         }
 
-        .qr-print-header,
+        .qr-modal-body {
+            padding: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+        }
+
+        .qr-code-container {
+            margin: 0 !important;
+        }
+
+        .qr-code-frame {
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            background: transparent !important;
+        }
+
+        .qr-code-wrapper {
+            min-width: unset !important;
+            min-height: unset !important;
+        }
+
+        #qrcode-canvas img {
+            width: 120mm !important;
+            height: 120mm !important;
+            border-radius: 0 !important;
+        }
+
+        .qr-logo-overlay {
+            width: 25mm !important;
+            height: 25mm !important;
+            border-radius: 4px !important;
+            padding: 3mm !important;
+            border: 1px solid #eee !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        }
+
+        .qr-print-header {
+            display: none !important;
+        }
+
         .qr-print-footer {
             display: block !important;
+            margin-top: 5mm !important;
+            text-align: center !important;
         }
 
-        #printableQrArea {
-            padding: 40px !important;
+        #qrPrintTableName {
+            font-size: 18pt !important;
+            font-family: 'Outfit', sans-serif !important;
+            color: #000 !important;
         }
 
-        #qrcode {
-            margin: 0 auto !important;
-            padding: 0 !important;
-            border: none !important;
-        }
-
-        .qr-logo-modal {
-            width: 80px;
-            height: 80px;
-        }
-
-        /* Larger logo for print */
-        #qrcode-canvas img {
-            width: 450px !important;
-            height: 450px !important;
-            border: none !important;
-            padding: 0 !important;
+        /* Force background graphics printing */
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
         }
     }
 </style>
@@ -836,6 +891,7 @@
 
                 qrTitle.innerText = `Mã QR: <?= $type === 'room' ? 'Phòng' : 'Bàn' ?> ${tableName}`;
                 qrTableDisplay.innerText = `<?= $type === 'room' ? 'PHÒNG' : 'BÀN' ?> ${tableName.toUpperCase()}`;
+                document.getElementById('qrPrintTableName').innerText = `<?= $type === 'room' ? 'PHÒNG' : 'BÀN' ?> ${tableName.toUpperCase()}`;
                 qrUrlText.innerText = fullUrl;
                 qrContainer.innerHTML = '';
 
