@@ -889,9 +889,9 @@
                 const fullUrl = `<?= BASE_URL ?>/q?t=${token}`;
                 currentQrUrl = fullUrl;
 
-                qrTitle.innerText = `Mã QR: <?= $type === 'room' ? 'Phòng' : 'Bàn' ?> ${tableName}`;
-                qrTableDisplay.innerText = `<?= $type === 'room' ? 'PHÒNG' : 'BÀN' ?> ${tableName.toUpperCase()}`;
-                document.getElementById('qrPrintTableName').innerText = `<?= $type === 'room' ? 'PHÒNG' : 'BÀN' ?> ${tableName.toUpperCase()}`;
+                qrTitle.innerText = `QR Code: <?= $type === 'room' ? 'Room' : 'Table' ?> ${tableName}`;
+                qrTableDisplay.innerText = `<?= $type === 'room' ? 'ROOM' : 'TABLE' ?> ${tableName.toUpperCase()}`;
+                document.getElementById('qrPrintTableName').innerText = `<?= $type === 'room' ? 'ROOM' : 'TABLE' ?> ${tableName.toUpperCase()}`;
                 qrUrlText.innerText = fullUrl;
                 qrContainer.innerHTML = '';
 

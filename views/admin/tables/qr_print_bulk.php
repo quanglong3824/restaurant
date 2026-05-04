@@ -205,7 +205,7 @@
                         <img src="<?= BASE_URL ?>/public/src/logo/favicon.png" class="qr-logo-center">
                     </div>
                     <div class="qr-table-name">
-                        <?= $type === 'room' ? 'PHÒNG' : 'BÀN' ?> <?= e(strtoupper($t['name'])) ?>
+                        <?= $type === 'room' ? 'ROOM' : 'TABLE' ?> <?= e(strtoupper($t['name'])) ?>
                     </div>
                 </div>
             <?php endforeach; ?>
