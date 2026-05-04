@@ -103,15 +103,12 @@
             justify-content: center;
         }
 
-        /* QR code canvas inside the wrapper */
-        .qr-code-wrapper > div {
-            width: 35mm;
-            height: 35mm;
-        }
-
-        .qr-code-wrapper canvas, .qr-code-wrapper img {
+        /* QR code canvas/image inside the specific container */
+        .qr-code-wrapper > div canvas, 
+        .qr-code-wrapper > div img {
             width: 35mm !important;
             height: 35mm !important;
+            display: block;
         }
 
         .qr-logo-center {
@@ -124,7 +121,8 @@
             background: white;
             padding: 1mm;
             border-radius: 2px;
-            z-index: 10;
+            z-index: 100;
+            display: block;
         }
 
         .qr-table-name {
