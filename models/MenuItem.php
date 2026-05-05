@@ -143,12 +143,12 @@ class MenuItem extends Model
     {
         // Kiểm tra cột menu_type có tồn tại không
         $hasMenuType = $this->hasColumn('menu_type');
-        
+
         if ($hasMenuType) {
             $this->execute(
                 "INSERT INTO menu_items
-                 (category_id, name, name_en, description, price, image, is_available, is_active, tags, note_options, note_options_en, sort_order, service_type, stock, menu_type)
-                 VALUES (?, ?, ?, ?, ?, ?, 1, 1, ?, ?, ?, ?, ?, ?, ?)",
+                 (category_id, name, name_en, description, price, image, is_available, is_active, tags, note_options, note_options_en, sort_order, stock, menu_type)
+                 VALUES (?, ?, ?, ?, ?, ?, 1, 1, ?, ?, ?, ?, ?, ?)",
                 [
                     $data['category_id'],
                     $data['name'],
@@ -160,7 +160,6 @@ class MenuItem extends Model
                     $data['note_options'] ?? null,
                     $data['note_options_en'] ?? null,
                     $data['sort_order'] ?? 0,
-                    $data['service_type'] ?? 'both',
                     $data['stock'] ?? -1,
                     $data['menu_type'] ?? 'asia',
                 ]
@@ -169,8 +168,8 @@ class MenuItem extends Model
             // Fallback khi cột menu_type chưa tồn tại
             $this->execute(
                 "INSERT INTO menu_items
-                 (category_id, name, name_en, description, price, image, is_available, is_active, tags, note_options, note_options_en, sort_order, service_type, stock)
-                 VALUES (?, ?, ?, ?, ?, ?, 1, 1, ?, ?, ?, ?, ?, ?, ?)",
+                 (category_id, name, name_en, description, price, image, is_available, is_active, tags, note_options, note_options_en, sort_order, stock)
+                 VALUES (?, ?, ?, ?, ?, ?, 1, 1, ?, ?, ?, ?, ?)",
                 [
                     $data['category_id'],
                     $data['name'],
@@ -182,7 +181,6 @@ class MenuItem extends Model
                     $data['note_options'] ?? null,
                     $data['note_options_en'] ?? null,
                     $data['sort_order'] ?? 0,
-                    $data['service_type'] ?? 'both',
                     $data['stock'] ?? -1,
                 ]
             );
@@ -194,13 +192,13 @@ class MenuItem extends Model
     {
         // Kiểm tra cột menu_type có tồn tại không
         $hasMenuType = $this->hasColumn('menu_type');
-        
+
         if ($hasMenuType) {
             $this->execute(
                 "UPDATE menu_items
                  SET category_id = ?, name = ?, name_en = ?, description = ?,
                      price = ?, tags = ?, note_options = ?, note_options_en = ?,
-                     sort_order = ?, is_active = ?, service_type = ?, stock = ?, menu_type = ?
+                     sort_order = ?, is_active = ?, stock = ?, menu_type = ?
                  WHERE id = ?",
                 [
                     $data['category_id'],
@@ -213,7 +211,6 @@ class MenuItem extends Model
                     $data['note_options_en'] ?? null,
                     $data['sort_order'] ?? 0,
                     $data['is_active'] ?? 1,
-                    $data['service_type'] ?? 'both',
                     $data['stock'] ?? -1,
                     $data['menu_type'] ?? 'asia',
                     $id,
@@ -225,7 +222,7 @@ class MenuItem extends Model
                 "UPDATE menu_items
                  SET category_id = ?, name = ?, name_en = ?, description = ?,
                      price = ?, tags = ?, note_options = ?, note_options_en = ?,
-                     sort_order = ?, is_active = ?, service_type = ?, stock = ?
+                     sort_order = ?, is_active = ?, stock = ?
                  WHERE id = ?",
                 [
                     $data['category_id'],
@@ -238,14 +235,12 @@ class MenuItem extends Model
                     $data['note_options_en'] ?? null,
                     $data['sort_order'] ?? 0,
                     $data['is_active'] ?? 1,
-                    $data['service_type'] ?? 'both',
                     $data['stock'] ?? -1,
                     $id,
                 ]
             );
         }
     }
-
     public function updateImage(int $id, string $image): void
     {
         $this->execute("UPDATE menu_items SET image = ? WHERE id = ?", [$image, $id]);

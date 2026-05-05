@@ -29,95 +29,26 @@ class AdminMenuController extends Controller
         Auth::requireRole(ROLE_ADMIN, ROLE_IT);
 
         // Get filter params
-        $serviceType = $this->input('service', ''); // restaurant, room_service, both, ''
-        $categoryId = $this->input('category', '');
-        $status = $this->input('status', ''); // active, inactive, available, unavailable, ''
         $search = trim($this->input('search', ''));
-        $menuType = $this->input('menu_type', ''); // asia, europe, alacarte, other
-        $tagFilter = $this->input('tag', ''); // bestseller, new, spicy, vegetarian, recommended
-        $stockFilter = $this->input('stock_status', ''); // in_stock, low_stock, out_of_stock
-        $priceRange = $this->input('price_range', ''); // 0-50000, 50000-100000, 100000-200000, 200000+
         
         // Pagination settings
         $page = max(1, (int) $this->input('page', 1));
         $limit = 20; // Items per page
         
-        // Get all items for calculating filter counts
+        // Get all items
         $allItems = $this->itemModel->getAll();
         
-        // Calculate filter counts from all items
-        $countRestaurant = count(array_filter($allItems, fn($i) => ($i['service_type'] ?? 'both') === 'restaurant'));
-        $countRoom = count(array_filter($allItems, fn($i) => ($i['service_type'] ?? 'both') === 'room_service'));
-        $countBoth = count(array_filter($allItems, fn($i) => ($i['service_type'] ?? 'both') === 'both'));
-        $countAll = count($allItems);
-        
         // Filter items based on parameters
-        $filteredItems = array_filter($allItems, function($item) use ($serviceType, $categoryId, $status, $search, $menuType, $tagFilter, $stockFilter, $priceRange) {
-            // Service type filter
-            if ($serviceType !== '' && ($item['service_type'] ?? 'both') !== $serviceType) {
-                return false;
-            }
-            
-            // Category filter
-            if ($categoryId !== '' && (int)($item['category_id'] ?? 0) !== (int)$categoryId) {
-                return false;
-            }
-            
-            // Menu type filter
-            if ($menuType !== '' && ($item['menu_type'] ?? 'asia') !== $menuType) {
-                return false;
-            }
-            
-            // Status filter
-            if ($status !== '') {
-                if ($status === 'active' && (int)($item['is_active'] ?? 1) !== 1) return false;
-                if ($status === 'inactive' && (int)($item['is_active'] ?? 1) !== 0) return false;
-                if ($status === 'available' && (int)($item['is_available'] ?? 1) !== 1) return false;
-                if ($status === 'unavailable' && (int)($item['is_available'] ?? 1) !== 0) return false;
-            }
-            
-            // Tag filter
-            if ($tagFilter !== '' && empty($item['tags']) || ($tagFilter !== '' && !str_contains($item['tags'] ?? '', $tagFilter))) {
-                return false;
-            }
-            
-            // Stock status filter
-            if ($stockFilter !== '') {
-                $stock = (int)($item['stock'] ?? -1);
-                if ($stockFilter === 'in_stock' && ($stock <= 0 && $stock !== -1)) return false;
-                if ($stockFilter === 'low_stock' && ($stock < 5 || $stock === -1)) return false;
-                if ($stockFilter === 'out_of_stock' && ($stock > 0 || $stock === -1)) return false;
-            }
-            
-            // Price range filter
-            if ($priceRange !== '') {
-                $price = (float)($item['price'] ?? 0);
-                switch ($priceRange) {
-                    case '0-50000':
-                        if ($price > 50000) return false;
-                        break;
-                    case '50000-100000':
-                        if ($price < 50000 || $price > 100000) return false;
-                        break;
-                    case '100000-200000':
-                        if ($price < 100000 || $price > 200000) return false;
-                        break;
-                    case '200000+':
-                        if ($price <= 200000) return false;
-                        break;
-                }
-            }
-            
+        $filteredItems = array_filter($allItems, function($item) use ($search) {
             // Search filter
             if ($search !== '') {
-                $searchLower = strtolower($search);
-                $nameMatch = stripos($item['name'] ?? '', $searchLower) !== false;
-                $nameEnMatch = stripos($item['name_en'] ?? '', $searchLower) !== false;
+                $searchLower = mb_strtolower($search);
+                $nameMatch = mb_stripos($item['name'] ?? '', $searchLower) !== false;
+                $nameEnMatch = mb_stripos($item['name_en'] ?? '', $searchLower) !== false;
                 if (!$nameMatch && !$nameEnMatch) {
                     return false;
                 }
             }
-            
             return true;
         });
         
@@ -135,31 +66,16 @@ class AdminMenuController extends Controller
         $this->view('layouts/admin', [
             'view' => 'admin/menu/index',
             'pageTitle' => 'Quản lý Món ăn',
-            'pageSubtitle' => $total . ' món (' . ($serviceType ? ucfirst(str_replace('_', ' ', $serviceType)) . ' - ' : '') . 'Trang ' . $page . '/' . $totalPages . ')',
+            'pageSubtitle' => $total . ' món (Trang ' . $page . '/' . $totalPages . ')',
             'items' => $items,
             'categories' => $categories,
-            'filterCounts' => [
-                'all' => $countAll,
-                'restaurant' => $countRestaurant,
-                'room_service' => $countRoom,
-                'both' => $countBoth,
-            ],
             'currentFilters' => [
-                'service' => $serviceType,
-                'category' => $categoryId,
-                'status' => $status,
-                'search' => $search,
-                'menu_type' => $menuType,
-                'tag' => $tagFilter,
-                'stock_status' => $stockFilter,
-                'price_range' => $priceRange,
+                'search' => $search
             ],
-            'pagination' => [
-                'page' => $page,
-                'limit' => $limit,
-                'total' => $total,
-                'totalPages' => $totalPages,
-            ],
+            'page' => $page,
+            'totalPages' => $totalPages,
+            'total' => $total,
+            'limit' => $limit
         ]);
     }
 
