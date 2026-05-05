@@ -94,12 +94,13 @@ if ($hasItems) {
         <div class="loc-icon-ring" style="color:#ef4444;">
             <i class="fas fa-map-marker-alt"></i>
         </div>
-        <h3 style="color:#ef4444;">YOU HAVE LEFT THE AREA</h3>
-        <p class="loc-sub">Menu is temporarily locked for order security</p>
+        <h3 style="color:#ef4444;">YOU HAVE LEFT THE AREA
+            <span class="loc-vi-sub" style="color:#f87171;">Bạn đã rời khỏi khu vực</span></h3>
+        <p class="loc-sub">Menu is temporarily locked for order security<br><small style="font-size:.65rem;">Thực đơn tạm khóa để bảo mật đơn hàng</small></p>
         <div class="loc-dist-badge err">
             <i class="fas fa-walking"></i> Distance: <span id="frozenDistVal">...</span>m
         </div>
-        <p class="loc-hint">Please return to the area to continue</p>
+        <p class="loc-hint">Please return to the area to continue<br><small>Vui lòng quay lại khu vực để tiếp tục</small></p>
     </div>
 </div>
 
@@ -115,20 +116,22 @@ if ($hasItems) {
     </script>
     <div class="loc-card">
 u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
-        <h3 class="loc-title">CONFIRM YOUR PRESENCE</h3>
+        <h3 class="loc-title">CONFIRM YOUR PRESENCE
+        <span class="loc-vi-sub">Xác nhận vị trí của bạn</span></h3>
         <p class="loc-sub">AURORA HOTEL PLAZA</p>
         <div id="liveDistance" class="loc-dist-badge" style="display:none;">
             <i class="fas fa-map-marker-alt"></i> <span id="distVal">...</span>m
         </div>
-        <p class="loc-desc">For order security and optimal service speed, please confirm your location.</p>
+        <p class="loc-desc">For order security and optimal service speed, please confirm your location.
+        <span class="loc-bi-desc">Để bảo mật đơn hàng và phục vụ nhanh, vui lòng xác nhận vị trí.</span></p>
         <ul class="loc-benefits">
-            <li><i class="fas fa-check-circle"></i> <span>Instant order confirmation</span></li>
-            <li><i class="fas fa-lock"></i> <span>No location history stored</span></li>
-            <li><i class="fas fa-history"></i> <span>Auto-delete when leaving</span></li>
+            <li><i class="fas fa-check-circle"></i> <span>Instant order confirmation <small class="bi-vi">Xác nhận đơn ngay</small></span></li>
+            <li><i class="fas fa-lock"></i> <span>No location history stored <small class="bi-vi">Không lưu lịch sử vị trí</small></span></li>
+            <li><i class="fas fa-history"></i> <span>Auto-delete when leaving <small class="bi-vi">Tự xóa khi rời đi</small></span></li>
         </ul>
         <div id="locationError" class="loc-error" style="display:none;"></div>
         <button id="btnAllowLocation" class="btn-loc-start">
-            <i class="fas fa-location-arrow"></i> <span>START EXPERIENCE</span>
+            <i class="fas fa-location-arrow"></i> <span>START EXPERIENCE<small class="bi-vi-btn">Bắt đầu trải nghiệm</small></span>
         </button>
         <p class="loc-privacy">By continuing, you agree to our privacy policy.</p>
     </div>
@@ -299,6 +302,65 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 
 /* ── Misc utils ── */
 .w-100{width:100%} .mb-2{margin-bottom:.5rem} .me-2{margin-right:.5rem}
+
+/* ── Bilingual helpers — Tiếng Việt nhỏ bên dưới ── */
+/* inline subtitle (sau text chính, xuống dòng) */
+.bi-vi-inline {
+    display: block;
+    font-size: .6rem;
+    font-weight: 500;
+    color: #94a3b8;
+    letter-spacing: .3px;
+    line-height: 1.2;
+    margin-top: 1px;
+}
+/* trong button — nhỏ hơn, cùng màu nhạt */
+.bi-vi-btn {
+    display: block;
+    font-size: .62rem;
+    font-weight: 500;
+    opacity: .75;
+    letter-spacing: .2px;
+    line-height: 1.1;
+    margin-top: 2px;
+}
+/* modal title phụ đề */
+.bi-modal-vi {
+    display: block;
+    font-size: .65rem;
+    font-weight: 400;
+    opacity: .6;
+    letter-spacing: .5px;
+    line-height: 1.2;
+    margin-top: 2px;
+}
+/* sidebar item phụ đề */
+.bi-vi-side {
+    display: block;
+    font-size: .68rem;
+    font-weight: 400;
+    color: #94a3b8;
+    line-height: 1.2;
+    margin-top: 1px;
+}
+/* location overlay phụ đề */
+.loc-vi-sub {
+    display: block;
+    font-size: .72rem;
+    font-weight: 400;
+    color: #94a3b8;
+    letter-spacing: .5px;
+    margin-top: 3px;
+}
+.loc-bi-desc {
+    display: block;
+    font-size: .75rem;
+    color: #94a3b8;
+    margin-top: 6px;
+    line-height: 1.4;
+}
+.bi-vi { display:block;font-size:.6rem;color:#94a3b8;font-weight:400;margin-top:1px; }
+
 .btn-gold {
     background:linear-gradient(135deg,var(--gold,#c5a059),var(--gold-dark,#a68341));
     color:#fff;border:none;padding:14px 20px;border-radius:12px;
@@ -451,7 +513,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     <div class="menu-search-container">
         <div class="menu-search-bar">
             <i class="fas fa-search"></i>
-            <input type="text" id="menuSearch" placeholder="Search (Vietnamese / English name)...">
+            <input type="text" id="menuSearch" placeholder="Search dish... / Tìm tên món...">
             <button id="btnClearSearch" style="display:none;background:none;border:none;color:#94a3b8;cursor:pointer;padding:0 4px;" onclick="clearMenuSearch()">
                 <i class="fas fa-times"></i>
             </button>
@@ -769,14 +831,14 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
         <?php if (empty($activeCategories)): ?>
         <div class="menu-empty-state">
             <i class="fas fa-utensils"></i>
-            <p style="font-weight:700;font-size:1rem;">No menu available</p>
-            <p style="font-size:.85rem;">Please contact staff for assistance</p>
+            <p style="font-weight:700;font-size:1rem;">No menu available <small class="bi-vi-inline">Chưa có thực đơn</small></p>
+            <p style="font-size:.85rem;">Please contact staff for assistance <small class="bi-vi-inline">Vui lòng liên hệ nhân viên</small></p>
         </div>
         <?php endif; ?>
 
         <div id="searchNoResult" class="menu-empty-state" style="display:none;">
             <i class="fas fa-search"></i>
-            <p style="font-weight:700;font-size:1rem;">No dishes found matching your search</p>
+            <p style="font-weight:700;font-size:1rem;">No dishes found <small class="bi-vi-inline">Không tìm thấy món</small></p>
             <button onclick="clearMenuSearch()" style="background:none;border:1.5px solid #e2e8f0;border-radius:20px;padding:8px 20px;cursor:pointer;font-weight:600;color:#64748b;margin-top:8px;">
                 Clear search
             </button>
@@ -794,22 +856,22 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
         <nav class="sidebar-nav">
             <a href="javascript:void(0)" class="sidebar-item" onclick="callWaiter('support'); toggleSidebar()">
                 <i class="fas fa-<?= $isRoomService ? 'concierge-bell' : 'hand-paper' ?>"></i>
-                <span><?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?></span>
+                <span><?= $isRoomService ? 'Call Reception' : 'Call Waiter' ?><small class="bi-vi-side"><?= $isRoomService ? 'Gọi lễ tân' : 'Gọi phục vụ' ?></small></span>
             </a>
             <a href="javascript:void(0)" class="sidebar-item <?= $hasItems ? 'has-items' : '' ?>" onclick="<?= $hasItems ? 'showBillTam()' : "callWaiter('payment')" ?>; toggleSidebar()">
                 <i class="fas fa-file-invoice-dollar"></i>
-                <span><?= $hasItems ? 'Bill' : 'Payment' ?></span>
+                <span><?= $hasItems ? 'Bill' : 'Payment' ?><small class="bi-vi-side"><?= $hasItems ? 'Hóa đơn' : 'Thanh toán' ?></small></span>
                 <?php if ($hasItems): ?>
                     <span class="sidebar-badge"></span>
                 <?php endif; ?>
             </a>
             <a href="javascript:void(0)" class="sidebar-item" onclick="showHistoryModal(); toggleSidebar()">
                 <i class="fas fa-history"></i>
-                <span>History</span>
+                <span>History<small class="bi-vi-side">Lịch sử</small></span>
             </a>
             <a href="javascript:void(0)" class="sidebar-item" onclick="window.location.reload()">
                 <i class="fas fa-sync-alt"></i>
-                <span>Refresh</span>
+                <span>Refresh<small class="bi-vi-side">Làm mới</small></span>
             </a>
         </nav>
     </aside>
@@ -823,7 +885,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
             <span class="cart-badge" id="cartCount">0</span>
         </div>
         <div class="cart-info">
-            <span class="cart-label">Your cart</span>
+            <span class="cart-label">Your cart <small class="bi-vi-inline">Giỏ hàng</small></span>
             <span class="cart-total" id="cartTotal">0₫</span>
         </div>
         <div class="cart-bar-arrow">
@@ -837,23 +899,23 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     <div class="modal modal-bottom">
         <div class="modal-drag-handle"><span></span></div>
         <div class="modal-header">
-            <h3><i class="fas fa-shopping-cart me-2"></i> Order Details</h3>
+            <h3><i class="fas fa-shopping-cart me-2"></i> Order Details<small class="bi-modal-vi">Chi tiết đặt món</small></h3>
             <button class="modal-close" onclick="toggleCartModal()"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
             <div id="cartItemsList" class="cart-items-container"></div>
             <div class="order-notes-box mt-3" style="margin-top:1rem;">
-                <label style="font-size:.72rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">ORDER NOTES</label>
-                <textarea id="orderNotes" placeholder="e.g., No onion, less spicy..."></textarea>
+                <label style="font-size:.72rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">ORDER NOTES <small style="font-size:.65rem;font-weight:500;color:#b0bec5;text-transform:none;letter-spacing:0;">Ghi chú đơn hàng</small></label>
+                <textarea id="orderNotes" placeholder="Note... / Ghi chú... (e.g., No onion / Ít hành)"></textarea>
             </div>
         </div>
         <div class="modal-footer">
             <div class="total-summary">
-                <span>Total</span>
+                <span>Total <small class="bi-vi-inline">Tổng cộng</small></span>
                 <strong id="modalCartTotal">0₫</strong>
             </div>
             <button class="btn-submit-order" id="btnSubmitOrder" onclick="submitOrder()">
-                <i class="fas fa-paper-plane me-2"></i> CONFIRM ORDER
+                <i class="fas fa-paper-plane me-2"></i> CONFIRM ORDER<small class="bi-vi-btn">Xác nhận đặt món</small>
             </button>
         </div>
     </div>
@@ -875,7 +937,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
             </div>
             <div id="detailOptsWrap" style="display:none;margin-bottom:1.25rem;">
                 <label style="font-size:.72rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:block;">
-                    Quick Options
+                    Quick Options <small class="bi-vi-inline">Tùy chọn nhanh</small>
                 </label>
                 <div id="detailOptsContainer" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
             </div>
@@ -887,13 +949,13 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                 </div>
                 <div class="note-input-box">
                     <i class="fas fa-edit"></i>
-                    <input type="text" id="detailNote" placeholder="e.g., No onion, less spicy...">
+                    <input type="text" id="detailNote" placeholder="Note... / Ghi chú... (e.g., No onion / Ít hành)">
                 </div>
             </div>
         </div>
         <div class="modal-footer">
             <button class="btn-submit-order w-100" id="btnAddOrder" onclick="addFromDetail()">
-                <i class="fas fa-cart-plus me-2"></i> ADD TO ORDER
+                <i class="fas fa-cart-plus me-2"></i> ADD TO ORDER<small class="bi-vi-btn">Thêm vào đơn</small>
             </button>
         </div>
     </div>
@@ -903,13 +965,13 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 <div id="historyModal" class="modal-backdrop hidden">
     <div class="modal modal-bottom modal-premium">
         <div class="modal-header">
-            <h3><i class="fas fa-history me-2"></i> Order History</h3>
+            <h3><i class="fas fa-history me-2"></i> Order History<small class="bi-modal-vi">Lịch sử đặt món</small></h3>
             <button class="modal-close" onclick="closeHistoryModal()"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body" id="historyModalContent">
             <div style="text-align:center;padding:2rem;color:#94a3b8;">
                 <i class="fas fa-spinner fa-spin" style="font-size:2rem;margin-bottom:1rem;"></i>
-                <p>Loading history...</p>
+                <p>Loading history... <small class="bi-vi-inline">Đang tải lịch sử</small></p>
             </div>
         </div>
     </div>
@@ -919,7 +981,7 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 <div id="billTamModal" class="modal-backdrop hidden">
     <div class="modal modal-bottom modal-premium">
         <div class="modal-header">
-            <h3><i class="fas fa-file-invoice-dollar me-2"></i> Preliminary Bill</h3>
+            <h3><i class="fas fa-file-invoice-dollar me-2"></i> Preliminary Bill<small class="bi-modal-vi">Hóa đơn tạm tính</small></h3>
             <button class="modal-close" onclick="closeBillTam()"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
@@ -948,21 +1010,21 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
                     <?php endforeach; ?>
                     <div class="bill-summary">
                         <div class="bill-total-row">
-                            <span>Subtotal</span>
+                            <span>Subtotal <small class="bi-vi-inline">Tạm tính</small></span>
                             <strong><?= formatPrice($orderTotal) ?></strong>
                         </div>
                     </div>
                 <?php else: ?>
                     <div class="menu-empty-state">
                         <i class="fas fa-receipt"></i>
-                        <p>No items ordered yet.</p>
+                        <p>No items ordered yet.<small class="bi-vi-inline">Chưa có món nào</small></p>
                     </div>
                 <?php endif; ?>
             </div>
         </div>
         <div class="modal-footer" style="display:flex;flex-direction:column;gap:.5rem;">
             <button class="btn-gold w-100" onclick="callWaiter('payment')">
-                <i class="fas fa-hand-holding-usd me-2"></i> REQUEST PAYMENT
+                <i class="fas fa-hand-holding-usd me-2"></i> REQUEST PAYMENT<small class="bi-vi-btn">Yêu cầu thanh toán</small>
             </button>
             <button class="btn-ghost w-100" onclick="closeBillTam()">
                 <span class="lang" data-vi="TIẾP TỤC ĐẶT MÓN / CONTINUE ORDERING" data-en="CONTINUE ORDERING / TIẾP TỤC ĐẶT MÓN">TIẾP TỤC ĐẶT MÓN / CONTINUE ORDERING</span>
