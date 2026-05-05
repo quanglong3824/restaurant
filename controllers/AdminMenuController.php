@@ -198,14 +198,15 @@ class AdminMenuController extends Controller
         
         // Build redirect URL with filters and page (không bao gồm menu_type)
         $params = array_filter([
-            'page' => $page,
-            'service' => $service,
-            'category' => $category,
-            'status' => $status,
-            'search' => $search,
-            'tag' => $tag,
+            'page'         => $page,
+            'service'      => $service,
+            'category'     => $category,
+            'status'       => $status,
+            'search'       => $search,
+            'tag'          => $tag,
             'stock_status' => $stockStatus,
-            'price_range' => $priceRange,
+            'price_range'  => $priceRange,
+            'highlighted'  => $id, // Để JS highlight row vừa sửa
         ], fn($v) => $v !== '' && $v !== null);
         
         $query = http_build_query($params);

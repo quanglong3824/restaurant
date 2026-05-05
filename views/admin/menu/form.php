@@ -8,7 +8,13 @@ $isEdit = !empty($item);
             <i class="fas fa-<?= $isEdit ? 'pen' : 'plus' ?>"></i>
             <?= $isEdit ? 'Sửa món: ' . e($item['name']) : 'Thêm Món mới' ?>
         </h2>
-        <a href="<?= BASE_URL ?>/admin/menu" class="btn btn-outline btn-sm">
+        <a href="<?= BASE_URL ?>/admin/menu<?php
+            $backParams = array_filter([
+                'page'   => $_GET['page'] ?? null,
+                'search' => $_GET['search'] ?? null,
+            ], fn($v) => $v !== '' && $v !== null);
+            echo $backParams ? '?' . http_build_query($backParams) : '';
+        ?>" class="btn btn-outline btn-sm">
             <i class="fas fa-arrow-left"></i> Quay lại
         </a>
     </div>
@@ -204,7 +210,13 @@ $isEdit = !empty($item);
                 <i class="fas fa-save"></i>
                 <?= $isEdit ? 'Lưu thay đổi' : 'Thêm món' ?>
             </button>
-            <a href="<?= BASE_URL ?>/admin/menu" class="btn btn-outline btn-lg">Huỷ</a>
+            <a href="<?= BASE_URL ?>/admin/menu<?php
+                $backParams = array_filter([
+                    'page'   => $_GET['page'] ?? null,
+                    'search' => $_GET['search'] ?? null,
+                ], fn($v) => $v !== '' && $v !== null);
+                echo $backParams ? '?' . http_build_query($backParams) : '';
+            ?>" class="btn btn-outline btn-lg">Huỷ</a>
         </div>
 
     </form>

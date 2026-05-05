@@ -137,7 +137,8 @@ function buildMenuUrl($search, $page = 1) {
             </thead>
             <tbody>
                 <?php foreach ($items as $item): ?>
-                    <tr data-cat="<?= $item['category_id'] ?>"
+                    <tr data-id="<?= $item['id'] ?>"
+                        data-cat="<?= $item['category_id'] ?>"
                         data-menu-type="<?= $item['menu_type'] ?? '' ?>"
                         data-name="<?= strtolower(e($item['name'])) ?> <?= strtolower(e($item['name_en'] ?? '')) ?>"
                         data-active="<?= $item['is_active'] ?>"
@@ -211,7 +212,7 @@ function buildMenuUrl($search, $page = 1) {
                         </td>
                         <td>
                             <div style="display:flex;gap:.35rem;">
-                                <a href="<?= BASE_URL ?>/admin/menu/edit?id=<?= $item['id'] ?>"
+                                <a href="<?= BASE_URL ?>/admin/menu/edit?id=<?= $item['id'] ?>&page=<?= $currentPage ?>&search=<?= urlencode($currentSearch) ?>"
                                     class="btn btn-outline btn-sm" title="Sửa món"><i class="fas fa-pen"></i></a>
                                 <form method="POST" action="<?= BASE_URL ?>/admin/menu/delete" style="display:inline">
                                     <input type="hidden" name="id" value="<?= $item['id'] ?>">
@@ -440,9 +441,36 @@ function buildMenuUrl($search, $page = 1) {
 @supports not (color: color-mix(in srgb, red, blue)) {
     .menu-type-badge { background: rgba(100,100,100,.1); border-color: rgba(100,100,100,.3); }
 }
+
+/* ── Highlight row after save ─────────────────────────────── */
+@keyframes rowHighlight {
+    0%   { background: rgba(34,197,94,.22); box-shadow: inset 0 0 0 2px rgba(34,197,94,.6); }
+    60%  { background: rgba(34,197,94,.12); box-shadow: inset 0 0 0 2px rgba(34,197,94,.25); }
+    100% { background: transparent;          box-shadow: none; }
+}
+.row-highlighted {
+    animation: rowHighlight 2.4s ease forwards;
+}
 </style>
 
 <script>
+/* ── Highlight saved row ─────────────────────────────────── */
+(function() {
+    const params = new URLSearchParams(window.location.search);
+    const hlId = params.get('highlighted');
+    if (!hlId) return;
+    const row = document.querySelector('tr[data-id="' + hlId + '"]');
+    if (row) {
+        row.classList.add('row-highlighted');
+        // Scroll row into view smoothly
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    // Clean URL (remove highlighted param) without reload
+    params.delete('highlighted');
+    const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+    history.replaceState(null, '', newUrl);
+})();
+
 /* ── Search with debounce ────────────────────────────────── */
 let _debounceTimer;
 document.getElementById('searchInput').addEventListener('input', function() {
