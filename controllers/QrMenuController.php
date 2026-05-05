@@ -188,7 +188,7 @@ class QrMenuController extends Controller
             }
 
             // --- LẤY DỮ LIỆU HIỂN THỊ MENU ---
-            $serviceType = ($table['type'] === 'room') ? 'room_service' : 'restaurant';
+            $serviceType = ''; // Bỏ lọc service_type để gộp menu phòng và nhà hàng
             $categories = $this->categoryModel->getAll();
             $menuItems = $this->menuModel->getAllActive($serviceType);
             

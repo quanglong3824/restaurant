@@ -1161,21 +1161,26 @@ function initTypeFilter() {
             typeTabs.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             const type = btn.dataset.type;
-            
+
             document.querySelectorAll('.menu-section').forEach(sec => {
                 sec.style.display = (type === 'all' || sec.dataset.type === type) ? 'block' : 'none';
             });
-            
+
             document.querySelectorAll('.cat-pill[data-type]').forEach(pill => {
                 pill.style.display = (type === 'all' || pill.dataset.type === type) ? 'inline-block' : 'none';
             });
-            
+
             // Re-init scroll spy for visible sections
             setTimeout(initScrollSpy, 100);
         });
     });
-}
 
+    // Trigger filter for initially active tab
+    const activeTab = document.querySelector('.type-tab.active');
+    if (activeTab) {
+        activeTab.click();
+    }
+}
 // Category Pill Click - Smooth Scroll
 function initCategoryPillClick() {
     document.querySelectorAll('.cat-pill').forEach(pill => {

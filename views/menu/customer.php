@@ -358,22 +358,21 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     <?php
     $presentTypes = array_unique(array_column($sortedCategories, 'menu_type'));
     $typeLabels = ['asia'=>'Món Á', 'europe'=>'Món Âu', 'alacarte'=>'Alacarte', 'other'=>'Đ.Uống & Khác'];
-    $typeLabelsEn = ['asia'=>'Asian', 'europe'=>'European', 'alacarte'=>'Alacarte', 'other'=>'Beverages & Others'];
+    $typeLabelsEn = ['asia'=>'ASIAN', 'europe'=>'EURO', 'alacarte'=>'ALA', 'other'=>'BEVERAGES & DRINK'];
     // Chỉ hiển thị tab bar nếu có từ 2 type trở lên
     ?>
     <?php if (count($presentTypes) > 1): ?>
     <div class="type-tab-bar" id="typeTabBar">
-        <button class="type-tab active" data-type="all"><span>ALL</span></button>
-        <?php foreach ($presentTypes as $tp): if (!isset($typeLabels[$tp])) continue; ?>
-            <button class="type-tab" data-type="<?= $tp ?>">
+        <?php $isFirst = true; foreach ($presentTypes as $tp): if (!isset($typeLabels[$tp])) continue; ?>
+            <button class="type-tab <?= $isFirst ? 'active' : '' ?>" data-type="<?= $tp ?>">
                 <span><?= strtoupper($typeLabelsEn[$tp]) ?></span>
             </button>
-        <?php endforeach; ?>
+        <?php $isFirst = false; endforeach; ?>
     </div>
     <?php endif; ?>
 
     <!-- Category nav sticky -->
-    <nav class="category-nav">
+    <nav class="category-nav" style="display: none;">
         <div class="category-nav-inner">
             <a href="javascript:void(0)" class="cat-pill active" data-category="all">
                 <span>All</span>

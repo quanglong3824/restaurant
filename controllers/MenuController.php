@@ -55,7 +55,7 @@ class MenuController extends Controller
 
         // Lấy thông tin bàn để lọc theo service_type
         $tableInfo = $tableId ? $tableModel->findById($tableId) : null;
-        $serviceType = ($tableInfo && $tableInfo['type'] === 'room') ? 'room_service' : 'restaurant';
+        $serviceType = ''; // Bỏ lọc service_type để gộp menu phòng và nhà hàng
 
         // Lấy categories dựa trên món thực tế thuộc menu_type (không phải dựa trên c.menu_type)
         // Nếu là tab 'sets', chúng ta không cần lấy categories từ menu_items
