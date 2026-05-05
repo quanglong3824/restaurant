@@ -1289,19 +1289,30 @@ function updateStickyPositions() {
     
     const isHidden = header && header.classList.contains('header-hidden');
     
-    // Compute actual header height (0 if hidden, otherwise measure)
-    let headerH = 0;
-    if (!isHidden && header) {
+    // Compute actual header height
+    // When hidden, offsetHeight might be unreliable or same. We capture it when not hidden or default to 60.
+    let headerH = 60;
+    if (header) {
         headerH = header.offsetHeight || 60;
     }
     const tabBarH = typeTabBar ? (typeTabBar.offsetHeight || 48) : 0;
     
     if (typeTabBar) {
         typeTabBar.style.top = headerH + 'px';
+        if (isHidden) {
+            typeTabBar.style.transform = `translateY(-${headerH}px)`;
+        } else {
+            typeTabBar.style.transform = 'translateY(0)';
+        }
     }
     
     if (categoryNav) {
         categoryNav.style.top = (headerH + tabBarH) + 'px';
+        if (isHidden) {
+            categoryNav.style.transform = `translateY(-${headerH}px)`;
+        } else {
+            categoryNav.style.transform = 'translateY(0)';
+        }
     }
 }
 
