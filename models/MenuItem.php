@@ -44,7 +44,8 @@ class MenuItem extends Model
         
         if ($hasMenuType) {
             return $this->findAll(
-                "SELECT i.*, c.name AS category_name, c.menu_type
+                "SELECT i.*, c.name AS category_name,
+                        COALESCE(NULLIF(i.menu_type,''), c.menu_type, 'other') AS menu_type
                  FROM menu_items i
                  LEFT JOIN menu_categories c ON c.id = i.category_id
                  $where

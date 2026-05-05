@@ -202,16 +202,41 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
 }
 .type-tab-bar::-webkit-scrollbar { display:none; }
 .type-tab {
-    white-space:nowrap;padding:7px 18px;border-radius:50px;
+    white-space:nowrap;padding:7px 16px;border-radius:50px;
     border:1.5px solid #e2e8f0;background:#f8fafc;
-    font-size:.75rem;font-weight:700;color:#64748b;
+    font-size:.72rem;font-weight:700;color:#64748b;
     cursor:pointer;transition:all .2s;flex-shrink:0;
+    display:flex;align-items:center;gap:5px;
 }
+.type-tab .tab-label-en { font-size:.7rem; font-weight:800; letter-spacing:.5px; }
+.type-tab .tab-label-vi { font-size:.65rem; color:#94a3b8; }
+.type-tab.active .tab-label-vi { color:rgba(255,255,255,.75); }
+.type-tab .tab-count-badge {
+    background:rgba(0,0,0,.1);color:inherit;
+    font-size:.6rem;font-weight:800;
+    padding:1px 5px;border-radius:8px;min-width:18px;text-align:center;
+}
+.type-tab.active .tab-count-badge { background:rgba(255,255,255,.25);color:#fff; }
 .type-tab.active {
     background:var(--gold,#c5a059);color:#fff;
     border-color:var(--gold,#c5a059);
     box-shadow:0 3px 10px rgba(197,160,89,.3);
 }
+/* ── Stats bar ── */
+.menu-stats-bar {
+    padding:6px 16px 4px;
+    background:#fff;
+    border-bottom:1px solid #f1f5f9;
+    font-size:.72rem;
+    color:#94a3b8;
+}
+.stats-total {
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+.stats-total i { color:var(--gold,#c5a059); font-size:.7rem; }
+.stats-total strong { color:#475569; font-weight:700; }
 
 /* ── Item tags ── */
 .item-tags { display:flex;flex-wrap:wrap;gap:4px;margin-top:5px; }
@@ -357,17 +382,53 @@ u         <div class="loc-icon-ring"><i class="fas fa-shield-alt"></i></div>
     <!-- Type tab bar (chỉ sinh ra các menu_type thực sự có trong danh mục của bàn này) -->
     <?php
     $presentTypes = array_unique(array_column($sortedCategories, 'menu_type'));
-    $typeLabels = ['asia'=>'Món Á', 'europe'=>'Món Âu', 'alacarte'=>'Alacarte', 'other'=>'Đ.Uống & Khác'];
-    $typeLabelsEn = ['asia'=>'ASIAN', 'europe'=>'EURO', 'alacarte'=>'ALA', 'other'=>'BEVERAGES & DRINK'];
+    // ── Nhãn 4 loại menu — đúng chính tả và đầy đủ
+    $typeLabels   = [
+        'asia'     => 'Món Á',
+        'europe'   => 'Món Âu',
+        'alacarte' => 'Alacarte',
+        'other'    => 'Đồ Uống',
+    ];
+    $typeLabelsEn = [
+        'asia'     => 'ASIAN',
+        'europe'   => 'EUROPEAN',
+        'alacarte' => 'ALACARTE',
+        'other'    => 'BEVERAGES',
+    ];
+    $typeIcons = [
+        'asia'     => 'fa-bowl-rice',
+        'europe'   => 'fa-wine-glass',
+        'alacarte' => 'fa-utensils',
+        'other'    => 'fa-cocktail',
+    ];
+    // ── Đếm số món active theo từng loại menu (gồm cả hết hàng)
+    $countByType = [];
+    $totalVisible = 0;
+    foreach ($menuItems as $_mi) {
+        $_t = $_mi['menu_type'] ?? 'other';
+        $countByType[$_t] = ($countByType[$_t] ?? 0) + 1;
+        $totalVisible++;
+    }
     // Chỉ hiển thị tab bar nếu có từ 2 type trở lên
     ?>
     <?php if (count($presentTypes) > 1): ?>
     <div class="type-tab-bar" id="typeTabBar">
         <?php $isFirst = true; foreach ($presentTypes as $tp): if (!isset($typeLabels[$tp])) continue; ?>
             <button class="type-tab <?= $isFirst ? 'active' : '' ?>" data-type="<?= $tp ?>">
-                <span><?= strtoupper($typeLabelsEn[$tp]) ?></span>
+                <span class="tab-label-en"><?= $typeLabelsEn[$tp] ?></span>
+                <span class="tab-label-vi"><?= $typeLabels[$tp] ?></span>
+                <?php if (isset($countByType[$tp]) && $countByType[$tp] > 0): ?>
+                <span class="tab-count-badge"><?= $countByType[$tp] ?></span>
+                <?php endif; ?>
             </button>
         <?php $isFirst = false; endforeach; ?>
+    </div>
+    <!-- Thống kê tổng số món -->
+    <div class="menu-stats-bar">
+        <div class="stats-total">
+            <i class="fas fa-utensils"></i>
+            <span><strong><?= $totalVisible ?></strong> món &mdash; <?= implode(' &bull; ', array_map(fn($tp) => ($typeLabels[$tp] ?? $tp) . ': <strong>' . ($countByType[$tp] ?? 0) . '</strong>', array_intersect(array_keys($typeLabels), $presentTypes))) ?></span>
+        </div>
     </div>
     <?php endif; ?>
 
